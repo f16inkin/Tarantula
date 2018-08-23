@@ -9,7 +9,7 @@
 namespace base;
 
 
-use tarantula\libs\Db;
+use libs\Db;
 
 class ModelTarantula
 {

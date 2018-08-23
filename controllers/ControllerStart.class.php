@@ -10,13 +10,17 @@ namespace controllers;
 
 
 use base\ControllerTarantula;
+use models\XmlParser;
 use SimpleXMLElement;
 
 class ControllerStart extends ControllerTarantula
 {
+    private $_parser;
+
     public function __construct()
     {
         parent::__construct();
+        $this->_parser = new XmlParser();
     }
 
     public function actionIndex(){
@@ -24,10 +28,14 @@ class ControllerStart extends ControllerTarantula
         $this->_view->render('start/start.page');
     }
 
+
     public function actionPath(){
         //$path = $xml = simplexml_load_file($_FILES['xml_file']['tmp_name']);
         //$path = simplexml_load_file(ROOT.'/storage/test.xml');
         $path = simplexml_load_file(ROOT.'/storage/CloseSession_2018-08-02_08-50-52.xml');
+        /*echo '-------------------ЕМКОСТИ-------------------';
+        echo '---------------------------------------------';
+        echo '<br>';
         foreach ($path->Sessions->Session->Tanks->Tank as $item) {
             echo 'Номер емкости ';
             echo $item['TankNum'];
@@ -38,51 +46,30 @@ class ControllerStart extends ControllerTarantula
             echo '<br>';
         }
         echo '<br>';
+        echo '------------------СЧЕТЧИКИ------------------';
         echo '---------------------------------------------';
         echo '<br>';
-        foreach ($path->Sessions->Session->Hoses->Hose as $item) {
+        $hosesCountersValues = $this->_parser->calcHosesCountersValues($path);
+        foreach ($hosesCountersValues as $singleHoseCounterValue){
             echo 'Номер рукава ';
-            echo $item['HoseNum'];
+            echo $singleHoseCounterValue['HoseNum'];
             echo ' Начальный счетчик ';
-            echo $item['StartCounter'];
+            echo $singleHoseCounterValue['StartCounter'];
             echo ' Конечный счетчик ';
-            echo $item['EndCounter'];
-            echo '<br>';
-        }
-        echo '<br>';
-        echo '---------------------------------------------';
-        echo '<br>';
-        $arrTop= [];
-        foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
-            $TankNum = (string)$item['TankNum'];
-            $PaymentModeName = (string)$item['PaymentModeName'];
-            $Volume = str_replace(',', '.', (string) $item['Volume']);
-            $arrTop[$TankNum][$PaymentModeName][] = $Volume;
-        }
-        for ($i = 1; $i < 7; $i++){
-            foreach ($arrTop[$i] as $key => $value){
-                echo $key.' --- '.array_sum($value);
-                echo '<br>';
-            }
-        }
-
-        echo '<pre>';
-       // print_r($arrTop);
-        echo '</pre>';
-        echo '<br>';
-        echo '---------------------------------------------';
-        echo '<br>';
-        /*foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail[0]->attributes() as $a => $b) {
-            echo $a,'="',$b;
+            echo $singleHoseCounterValue['EndCounter'];
             echo '<br>';
         }*/
-        /*$arrTop = [];
-        foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
-            $arrTop[(string)$item['TankNum']][(string)$item['PaymentModeName']] += str_replace(',', '.', (string) $item['Amount']);
-        }
-        echo '<pre>';
-        print_r($arrTop);
-        echo '</pre>';*/
+        echo '--------------------ЛИТРЫ--------------------';
+        echo '---------------------------------------------';
+
+
+        echo '--------------------ДЕНЬГИ-------------------';
+        echo '---------------------------------------------';
+        //$amountByPayment = $this->_parser->calcAmountByPayment($path);
+        $amountByPayment = $this->_parser->calcElementsByPayment($path, 'Amount');
+        $volumeByPayment = $this->_parser->calcElementsByPayment($path, 'Volume');
+        $arrPayments = $this->_parser->getArrPayments();
+        include $this->_view->returnPagePath('/start/parsed-data.page');
     }
 }
 function xmlAttribute($object, $attribute){
@@ -91,7 +78,4 @@ function xmlAttribute($object, $attribute){
     else
         return null;
 }
-$r=array(array(5,7), array(9,9));
-foreach($r as $key => $val)
-    echo $key.' — '.array_sum($val).'<br />';
 ?>

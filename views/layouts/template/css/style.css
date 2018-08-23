@@ -4,7 +4,7 @@ html, body {
 }
 #wrapper{
     margin: auto;
-    height: calc(100vh - 160px);
+    min-height: calc(100vh - 160px);
 }
 #header{
     height: 60px;
@@ -14,7 +14,7 @@ html, body {
 #sidebar{
     overflow: hidden;
     width:55px;
-    height: inherit;
+    height: calc(100vh - 50px);
     background-color: #f2e242;
     float: left;
 }

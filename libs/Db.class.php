@@ -6,7 +6,7 @@
  * Time: 13:04
  */
 
-namespace tarantula\libs;
+namespace libs;
 
 
 class Db
