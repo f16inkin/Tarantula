@@ -59,16 +59,14 @@ class ControllerStart extends ControllerTarantula
             echo $singleHoseCounterValue['EndCounter'];
             echo '<br>';
         }*/
-        echo '--------------------ЛИТРЫ--------------------';
-        echo '---------------------------------------------';
 
-
-        echo '--------------------ДЕНЬГИ-------------------';
-        echo '---------------------------------------------';
         //$amountByPayment = $this->_parser->calcAmountByPayment($path);
         $amountByPayment = $this->_parser->calcElementsByPayment($path, 'Amount');
         $volumeByPayment = $this->_parser->calcElementsByPayment($path, 'Volume');
         $arrPayments = $this->_parser->getArrPayments();
+        $hosesCountersValues = $this->_parser->calcHosesCountersValues($path);
+        echo '<pre>';
+        print_r($hosesCountersValues);
         include $this->_view->returnPagePath('/start/parsed-data.page');
     }
 }

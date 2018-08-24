@@ -6,7 +6,7 @@
  * Time: 12:41
  */
 ?>
-Parsed data will be here
+--------------------ДЕНЬГИ-------------------
 <table id="amount-by-payment" cellpadding="1" cellspacing="1" border="1">
     <thead>
         <th></th>
@@ -25,7 +25,7 @@ Parsed data will be here
     <?php endfor; ?>
     </tbody>
 </table>
-
+--------------------ЛИТРЫ--------------------
 <table id="volume-by-payment" cellpadding="1" cellspacing="1" border="1">
     <thead>
     <th></th>
