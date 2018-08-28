@@ -16,5 +16,9 @@ return[
     [
         '^start/path$'  => 'start/path',
         'construct'     =>  false
+    ],
+    [
+        '^start/report$'  => 'start/report',
+        'construct'     =>  false
     ]
 ];

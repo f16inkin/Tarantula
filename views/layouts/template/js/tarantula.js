@@ -31,3 +31,14 @@ function getParsedData() {
         }
     });
 }
+
+function getDataByDate() {
+    $.ajax({
+        type: "POST",
+        url: "/start/report",
+        cache: false,
+        success:function (response) {
+            $("#response").html(response);
+        }
+    });
+}

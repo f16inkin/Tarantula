@@ -11,12 +11,12 @@ namespace models;
 
 use base\ModelTarantula;
 
-class XmlParser //extends ModelTarantula
+class XmlParser extends ModelTarantula
 {
     private $_arrPayments;
     public function __construct()
     {
-        //parent::__construct();
+        parent::__construct();
         $this->_arrPayments = [
             'Наличные',
             'Ведомость',
@@ -32,26 +32,48 @@ class XmlParser //extends ModelTarantula
     }
 
     public function calcElementsByPayment($path, $element){
-        $arrAmount = [];
+        $arrElements = [];
         foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
             $TankNum = (string)$item['TankNum'];
             $FuelName = (string)$item['FuelName'];
-            $arrAmount[$TankNum]['Info']['FuelName'] = $FuelName;
+            $arrElements[$TankNum]['Info']['FuelName'] = $FuelName;
             for ($i = 0; $i < count($this->_arrPayments); $i++){
-                $arrAmount[$TankNum]['Payment'][$this->_arrPayments[$i]] = 0;
+                $arrElements[$TankNum]['Payment'][$this->_arrPayments[$i]] = 0;
             }
         }
         foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
             $TankNum = (string)$item['TankNum'];
             $FuelName = (string)$item['FuelName'];
             $PaymentModeName = (string)$item['PaymentModeName'];
-            $Amount = str_replace(',', '.', (string) $item[$element]);
-            $arrAmount[$TankNum]['Info']['FuelName'] = $FuelName;
-            $arrAmount[$TankNum]['Payment'][$PaymentModeName] += $Amount;
+            $Element = str_replace(',', '.', (string) $item[$element]);
+            $arrElements[$TankNum]['Info']['FuelName'] = $FuelName;
+            $arrElements[$TankNum]['Payment'][$PaymentModeName] += $Element;
         }
-        return $arrAmount;
+        return $arrElements;
     }
 
+    public function calcFuelRelease($path){
+        $arrRelease =[];
+        foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
+            $TankNum = (string)$item['TankNum'];
+            $FuelName = (string)$item['FuelName'];
+            for ($i = 0; $i < 6; $i++){
+                $arrRelease[$TankNum]['TankNumber'] = $TankNum;
+                $arrRelease[$TankNum][$FuelName] = 0;
+                //$arrRelease[$FuelName] = 0;
+            }
+        }
+        foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
+            $TankNum = (string)$item['TankNum'];
+            $FuelName = (string)$item['FuelName'];
+            $FuelRelease = str_replace(',', '.', (string) $item['Volume']);
+            for ($i = 0; $i < 6; $i++){
+                $arrRelease[$TankNum][$FuelName] += $FuelRelease;
+                //$arrRelease[$FuelName] += $FuelRelease;
+            }
+        }
+        return $arrRelease;
+    }
 
     public function calcHosesCountersValues($path){
         $hosesCountersValues = [];
@@ -66,6 +88,84 @@ class XmlParser //extends ModelTarantula
                 $hosesCountersValues[$hoseNum]['Difference'] = $difference; //разница между счетчиками
             }
         return $hosesCountersValues;
+    }
+
+    public function getDataByDate($date_start, $date_end, $subdivision, $fuel_id){
+        $query = ("SELECT * FROM `tarantula_fuel`
+                   WHERE `subdivision` = :subdivision AND `fuel_id` = :fuel_id AND `date` BETWEEN :date_start AND :date_end");
+        $result = $this->_db->prepare($query);
+        $result->execute([
+            'date_start' => $date_start,
+            'date_end' => $date_end,
+            'subdivision' => $subdivision,
+            'fuel_id' => $fuel_id,
+        ]);
+        if ($result->rowCount() > 0){
+            $i = 0;
+            $outputData = [];
+            while ($row = $result->fetch()){
+                $outPutData['data'][$row['id']]['id'] = $row['id'];
+                $outPutData['data'][$row['id']]['fuel_id'] = $row['fuel_id'];
+                $outPutData['data'][$row['id']]['start_volume'] = $row['start_volume'];
+                $outPutData['data'][$row['id']]['end_volume'] = $row['end_volume'];
+                $outPutData['data'][$row['id']]['fact_volume'] = $row['fact_volume'];
+                $outPutData['data'][$row['id']]['income'] = $row['income'];
+                $outPutData['data'][$row['id']]['outcome'] = $row['outcome'];
+                $outPutData['data'][$row['id']]['density'] = $row['density'];
+                $outPutData['data'][$row['id']]['temperature'] = $row['temperature'];
+                $outPutData['data'][$row['id']]['mass'] = ($row['density']/1000)*$row['fact_volume'];
+                $outPutData['data'][$row['id']]['date'] = $row['date'];
+                $outPutData['data'][$row['id']]['overage'] = $row['fact_volume']-$row['end_volume'];
+                $outPutData['data'][$row['id']]['overage'] = $row['fact_volume']-$row['end_volume'];
+                $i++;
+            }
+            $rpm = [];
+            $fact_outcome = [];
+            $count = count($outPutData['data']);
+            for ($i = 2; $i < $count+1; $i++){
+                $rpm[$i] = $outPutData['data'][$i-1]['mass']+$outPutData['data'][$i]['income']*($outPutData['data'][$i]['density']/1000)-$outPutData['data'][$i]['mass'];
+                $outPutData['data'][$i]['rpm'] = $rpm[$i];
+                $fact_outcome[$i] = $outPutData['data'][$i-1]['fact_volume']-$outPutData['data'][$i]['fact_volume']+$outPutData['data'][$i]['income'];
+                $outPutData['data'][$i]['fact_outcome'] = $fact_outcome[$i];
+            }
+            return $outPutData;
+        }
+    }
+
+    public function getDataByDate1($arrDate, $subdivision, $fuel_id){
+        $outPutData = [];
+        $query = ("SELECT * FROM `tarantula_fuel` 
+                   WHERE `subdivision` = :subdivision AND `fuel_id` =:fuel_id AND `date` = :date ");
+        foreach ($arrDate as $singleDate){
+            $result = $this->_db->prepare($query);
+            $result->execute([
+                'subdivision'=>$subdivision,
+                'date' => $singleDate,
+                'fuel_id' => $fuel_id
+            ]);
+            $data = $result->fetch();
+            $outPutData['data'][$data['id']]['id'] = $data['id'];
+            $outPutData['data'][$data['id']]['fuel_id'] = $data['fuel_id'];
+            $outPutData['data'][$data['id']]['start_volume'] = $data['start_volume'];
+            $outPutData['data'][$data['id']]['end_volume'] = $data['end_volume'];
+            $outPutData['data'][$data['id']]['fact_volume'] = $data['fact_volume'];
+            $outPutData['data'][$data['id']]['income'] = $data['income'];
+            $outPutData['data'][$data['id']]['outcome'] = $data['outcome'];
+            $outPutData['data'][$data['id']]['density'] = $data['density'];
+            $outPutData['data'][$data['id']]['temperature'] = $data['temperature'];
+            $outPutData['data'][$data['id']]['mass'] = ($data['density']/1000)*$data['fact_volume'];
+            $outPutData['data'][$data['id']]['date'] = $data['date'];
+            $outPutData['data'][$data['id']]['overage'] = $data['fact_volume']-$data['end_volume'];
+            $outPutData['data'][$data['id']]['overage'] = $data['fact_volume']-$data['end_volume'];
+        }
+        $rpm = [];
+        for ($i = 2; $i < count($outPutData['data'])+1; $i++){
+            $rpm[$i] = $outPutData['data'][$i-1]['mass']+$outPutData['data'][$i]['income']*($outPutData['data'][$i]['density']/1000)-$outPutData['data'][$i]['mass'];
+            $outPutData['data'][$i]['rpm'] = $rpm[$i];
+            $fact_outcome[$i] = $outPutData['data'][$i-1]['fact_volume']-$outPutData['data'][$i]['fact_volume']+$outPutData['data'][$i]['income'];
+            $outPutData['data'][$i]['fact_outcome'] = $fact_outcome[$i];
+        }
+        return $outPutData;
     }
 
     /**

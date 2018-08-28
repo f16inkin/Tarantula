@@ -65,10 +65,28 @@ class ControllerStart extends ControllerTarantula
         $volumeByPayment = $this->_parser->calcElementsByPayment($path, 'Volume');
         $arrPayments = $this->_parser->getArrPayments();
         $hosesCountersValues = $this->_parser->calcHosesCountersValues($path);
+        $fuelRelease = $this->_parser->calcFuelRelease($path);
+
+        $arrNames = ['Аи92' => 'Аи92', 'Аи95'];
+        $arrNumbers = ['Аи92' => 1,2];
+        $arrRep = array_replace($arrNames, $arrNumbers);
         echo '<pre>';
-        print_r($hosesCountersValues);
+        //print_r($amountByPayment);
+        //print_r($hosesCountersValues);
+        print_r($fuelRelease);
+        //print_r($arrRep);
         include $this->_view->returnPagePath('/start/parsed-data.page');
     }
+
+    public function actionReport(){
+        $arrDate = ['2018-08-01','2018-08-02', '2018-08-03'];
+        $subdivision = 4; //Очевидно
+        $fuel_id = 1; //Тут пока через <select> <option>.
+        //$content['report'] = $this->_parser->getDataByDate($arrDate, $subdivision, $fuel_id);
+        $content['report'] = $this->_parser->getDataByDate('2018-08-01', '2018-08-03', $subdivision, $fuel_id);
+        include $this->_view->returnPagePath('/start/report-by-date.page');
+    }
+
 }
 function xmlAttribute($object, $attribute){
     if(isset($object[$attribute]))
