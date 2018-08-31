@@ -14,6 +14,7 @@ use base\ModelTarantula;
 class XmlParser extends ModelTarantula
 {
     private $_arrPayments;
+
     public function __construct()
     {
         parent::__construct();
@@ -30,6 +31,7 @@ class XmlParser extends ModelTarantula
             'Дисконтные карты',
         ];
     }
+
 
     public function calcElementsByPayment($path, $element){
         $arrElements = [];
@@ -91,6 +93,14 @@ class XmlParser extends ModelTarantula
     }
 
     public function getDataByDate($date_start, $date_end, $subdivision, $fuel_id){
+        //Если дата не выбрана пользователем, то поиск идет на текущую дату
+        if (!isset($date_start)){
+            $date_start = date("Y-m-d");
+        }
+        if (!isset($date_end)){
+            $date_end = date("Y-m-d");
+        }
+        //Запрос данных из БД по значениям
         $query = ("SELECT * FROM `tarantula_fuel`
                    WHERE `subdivision` = :subdivision AND `fuel_id` = :fuel_id AND `date` BETWEEN :date_start AND :date_end");
         $result = $this->_db->prepare($query);
@@ -100,31 +110,35 @@ class XmlParser extends ModelTarantula
             'subdivision' => $subdivision,
             'fuel_id' => $fuel_id,
         ]);
+        //В случае если записи найдены для установленных фильтров. Наполняю массив значениями этих записей
         if ($result->rowCount() > 0){
-            $i = 0;
+            $i = 1;
             $outputData = [];
             while ($row = $result->fetch()){
-                $outPutData['data'][$row['id']]['id'] = $row['id'];
-                $outPutData['data'][$row['id']]['fuel_id'] = $row['fuel_id'];
-                $outPutData['data'][$row['id']]['start_volume'] = $row['start_volume'];
-                $outPutData['data'][$row['id']]['end_volume'] = $row['end_volume'];
-                $outPutData['data'][$row['id']]['fact_volume'] = $row['fact_volume'];
-                $outPutData['data'][$row['id']]['income'] = $row['income'];
-                $outPutData['data'][$row['id']]['outcome'] = $row['outcome'];
-                $outPutData['data'][$row['id']]['density'] = $row['density'];
-                $outPutData['data'][$row['id']]['temperature'] = $row['temperature'];
-                $outPutData['data'][$row['id']]['mass'] = ($row['density']/1000)*$row['fact_volume'];
-                $outPutData['data'][$row['id']]['date'] = $row['date'];
-                $outPutData['data'][$row['id']]['overage'] = $row['fact_volume']-$row['end_volume'];
-                $outPutData['data'][$row['id']]['overage'] = $row['fact_volume']-$row['end_volume'];
+                $outPutData['data'][$i]['id'] = $row['id'];
+                $outPutData['data'][$i]['fuel_id'] = $row['fuel_id'];
+                $outPutData['data'][$i]['start_volume'] = $row['start_volume'];
+                $outPutData['data'][$i]['end_volume'] = $row['end_volume'];
+                $outPutData['data'][$i]['fact_volume'] = $row['fact_volume'];
+                $outPutData['data'][$i]['income'] = $row['income'];
+                $outPutData['data'][$i]['outcome'] = $row['outcome'];
+                $outPutData['data'][$i]['density'] = $row['density'];
+                $outPutData['data'][$i]['temperature'] = $row['temperature'];
+                $outPutData['data'][$i]['mass'] = ($row['density']/1000)*$row['fact_volume'];
+                $outPutData['data'][$i]['date'] = $row['date'];
+                $outPutData['data'][$i]['overage'] = $row['fact_volume']-$row['end_volume'];
+                $outPutData['data'][$i]['overage'] = $row['fact_volume']-$row['end_volume'];
                 $i++;
             }
-            $rpm = [];
-            $fact_outcome = [];
+            $rpm = []; //Реализация по массе, начиная со дня date_start + 1
+            $fact_outcome = []; //Фактический отпуск
             $count = count($outPutData['data']);
+            //Массив всегда начинается с индекса 1. Изходя из логики расчета РпМ стартовым значением пербора будет 2.
+            //Формула РпМ = Масса(вчера) + Приход(сегодня) - Масса(сегодня)
             for ($i = 2; $i < $count+1; $i++){
                 $rpm[$i] = $outPutData['data'][$i-1]['mass']+$outPutData['data'][$i]['income']*($outPutData['data'][$i]['density']/1000)-$outPutData['data'][$i]['mass'];
                 $outPutData['data'][$i]['rpm'] = $rpm[$i];
+                //Фартический отпуск формула: ФО = ФО(вчера) - ФО(сегодня) + Приход(сегодня)
                 $fact_outcome[$i] = $outPutData['data'][$i-1]['fact_volume']-$outPutData['data'][$i]['fact_volume']+$outPutData['data'][$i]['income'];
                 $outPutData['data'][$i]['fact_outcome'] = $fact_outcome[$i];
             }

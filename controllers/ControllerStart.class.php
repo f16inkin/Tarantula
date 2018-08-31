@@ -79,11 +79,10 @@ class ControllerStart extends ControllerTarantula
     }
 
     public function actionReport(){
-        $arrDate = ['2018-08-01','2018-08-02', '2018-08-03'];
         $subdivision = 4; //Очевидно
         $fuel_id = 1; //Тут пока через <select> <option>.
         //$content['report'] = $this->_parser->getDataByDate($arrDate, $subdivision, $fuel_id);
-        $content['report'] = $this->_parser->getDataByDate('2018-08-01', '2018-08-03', $subdivision, $fuel_id);
+        $content['report'] = $this->_parser->getDataByDate('2018-07-31', '2018-08-03', $subdivision, $fuel_id);
         include $this->_view->returnPagePath('/start/report-by-date.page');
     }
 
