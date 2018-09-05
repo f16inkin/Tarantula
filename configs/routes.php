@@ -20,5 +20,10 @@ return[
     [
         '^start/report$'  => 'start/report',
         'construct'     =>  false
+    ],
+    [
+        '^start/add$'  => 'start/add',
+        'construct'     =>  false
     ]
+
 ];

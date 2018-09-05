@@ -33,6 +33,63 @@ class XmlParser extends ModelTarantula
     }
 
 
+    private function getTanksData($simpleXmlElement){
+        //Получаю полную дату открытия смены в формате строки
+        $xmlDate = (string)$simpleXmlElement->Sessions->Session['StartDateTime'];
+        //Конвертирую в удобный для вставки в БД формат
+        $date = date('d.m.Y', strtotime($xmlDate));
+        //Объявляю массив в который будут собираться распарсенные данные из XML отчета
+        $arrXml = [];
+
+        foreach ($simpleXmlElement->Sessions->Session->Tanks->Tank as $item){
+            $tankNum = (string)$item['TankNum'];
+            $arrXml[$tankNum]['TankNum'] = $tankNum;
+            $arrXml[$tankNum]['StartFuelVolume'] = str_replace(',', '.', (string)$item['StartFuelVolume']);
+            $arrXml[$tankNum]['EndFactVolume'] = str_replace(',', '.', (string)$item['EndFactVolume']);
+            $arrXml[$tankNum]['EndDensity'] = (string)$item['EndDensity'];
+            $arrXml[$tankNum]['EndTemperature'] = (string)$item['EndTemperature'];
+            $arrXml[$tankNum]['EndMass'] = str_replace(',', '.', (string)$item['EndMass']);
+        }
+        //Заполняю массив данными об отпущенном топливе в разрезе емкости / вида топлива
+        foreach ($simpleXmlElement->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
+            $TankNum = (string)$item['TankNum'];
+            $arrXml[$TankNum]['Outcome'] = 0;
+        }
+
+        foreach ($simpleXmlElement->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
+            $TankNum = (string)$item['TankNum'];
+            $FuelRelease = str_replace(',', '.', (string) $item['Volume']);
+            $arrXml[$TankNum]['Outcome'] += $FuelRelease;
+        }
+        //Заполняю массив данными о принятом топливе
+        foreach ($arrXml as $item){
+            $TankNum = (string)$item['TankNum'];
+            $arrXml[$TankNum]['Income'] = 0;
+        }
+
+        foreach ($simpleXmlElement->Sessions->Session->IncomesByDischarge->IncomeByDischarge as $item){
+            $TankNum = (string)$item['TankNum'];
+            $FuelIncome = str_replace(',', '.', (string) $item['Volume']);
+            $arrXml[$TankNum]['Income'] += $FuelIncome;
+        }
+
+        return $arrXml;
+    }
+
+    public function getXmlFiles($directory){
+        $files = scandir($directory);
+        $simpleXmlElements = [];
+        for ($i = 2; $i < count($files); $i++){
+            $simpleXmlElements[] = simplexml_load_file(ROOT.'/storage/'.$files[$i]);
+        }
+        $arr = [];
+        foreach ($simpleXmlElements as $simpleXmlElement){
+            $arr[] = $this->getTanksData($simpleXmlElement);
+        }
+        return $arr;
+    }
+
+
     public function calcElementsByPayment($path, $element){
         $arrElements = [];
         foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
@@ -62,7 +119,6 @@ class XmlParser extends ModelTarantula
             for ($i = 0; $i < 6; $i++){
                 $arrRelease[$TankNum]['TankNumber'] = $TankNum;
                 $arrRelease[$TankNum][$FuelName] = 0;
-                //$arrRelease[$FuelName] = 0;
             }
         }
         foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
@@ -146,7 +202,7 @@ class XmlParser extends ModelTarantula
         }
     }
 
-    public function getDataByDate1($arrDate, $subdivision, $fuel_id){
+    /*public function getDataByDate1($arrDate, $subdivision, $fuel_id){
         $outPutData = [];
         $query = ("SELECT * FROM `tarantula_fuel` 
                    WHERE `subdivision` = :subdivision AND `fuel_id` =:fuel_id AND `date` = :date ");
@@ -180,7 +236,7 @@ class XmlParser extends ModelTarantula
             $outPutData['data'][$i]['fact_outcome'] = $fact_outcome[$i];
         }
         return $outPutData;
-    }
+    }*/
 
     /**
      * @return array

@@ -30,37 +30,7 @@ class ControllerStart extends ControllerTarantula
 
 
     public function actionPath(){
-        //$path = $xml = simplexml_load_file($_FILES['xml_file']['tmp_name']);
-        //$path = simplexml_load_file(ROOT.'/storage/test.xml');
         $path = simplexml_load_file(ROOT.'/storage/CloseSession_2018-08-02_08-50-52.xml');
-        /*echo '-------------------ЕМКОСТИ-------------------';
-        echo '---------------------------------------------';
-        echo '<br>';
-        foreach ($path->Sessions->Session->Tanks->Tank as $item) {
-            echo 'Номер емкости ';
-            echo $item['TankNum'];
-            echo ' Начальный объем ';
-            echo $item['StartFuelVolume'];
-            echo ' Плотность ';
-            echo $item['EndDensity'];
-            echo '<br>';
-        }
-        echo '<br>';
-        echo '------------------СЧЕТЧИКИ------------------';
-        echo '---------------------------------------------';
-        echo '<br>';
-        $hosesCountersValues = $this->_parser->calcHosesCountersValues($path);
-        foreach ($hosesCountersValues as $singleHoseCounterValue){
-            echo 'Номер рукава ';
-            echo $singleHoseCounterValue['HoseNum'];
-            echo ' Начальный счетчик ';
-            echo $singleHoseCounterValue['StartCounter'];
-            echo ' Конечный счетчик ';
-            echo $singleHoseCounterValue['EndCounter'];
-            echo '<br>';
-        }*/
-
-        //$amountByPayment = $this->_parser->calcAmountByPayment($path);
         $amountByPayment = $this->_parser->calcElementsByPayment($path, 'Amount');
         $volumeByPayment = $this->_parser->calcElementsByPayment($path, 'Volume');
         $arrPayments = $this->_parser->getArrPayments();
@@ -84,6 +54,15 @@ class ControllerStart extends ControllerTarantula
         //$content['report'] = $this->_parser->getDataByDate($arrDate, $subdivision, $fuel_id);
         $content['report'] = $this->_parser->getDataByDate('2018-07-31', '2018-08-03', $subdivision, $fuel_id);
         include $this->_view->returnPagePath('/start/report-by-date.page');
+    }
+
+    /**
+     * Метод используется для чтения XML и добавления данных из него в таблицу
+     */
+    public function actionAdd(){
+        $a = $this->_parser->getXmlFiles(ROOT.'/storage/');
+        echo '<pre>';
+        print_r($a);
     }
 
 }
