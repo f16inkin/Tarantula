@@ -13,8 +13,8 @@ use base\ModelTarantula;
 
 class XmlParser extends ModelTarantula
 {
-    private $_arrPayments;
-    private $_arrFuels; //Виды топлива как в Tear
+    private $_arrPayments;          //Допустимые виды оплаты в ПО "Топаз АЗС".
+
     private $_arrStationsFuel; //Массив содержащий соотношение топлива к емкости для каждой АЗС
 
     public function __construct()
@@ -31,13 +31,6 @@ class XmlParser extends ModelTarantula
             'Переливы',
             'Банк. карта',
             'Дисконтные карты',
-        ];
-        $this->_arrFuels = [
-            1 => 'Аи92',
-            2 => 'Аи95',
-            3 => 'Аи98',
-            4 => 'ДТ',
-            5 => 'ДТ-ЕВРО',
         ];
 
         $this->_arrStationsFuel = [
@@ -64,21 +57,48 @@ class XmlParser extends ModelTarantula
                 6 => 'ДТ'
             ]
         ];
-
     }
 
 
-    public function replace_fuel_name_with_number($name){
-        $a = array_search($name, $this->_arrFuels);
-        return $a;
+    /**
+     * Метод будет возвращать из БД массив с данными о том в какой емкости находится какой вид топлива
+     */
+    private function getTanksFuelType($subdivision){
+        try{
+            /*$query = ("SELECT `number`, `fuel_type`, `name` FROM `tanks`
+                       INNER JOIN `fuel_types` ON `tanks`.`fuel_type` = `fuel_types`.`id`
+                       WHERE `subdivision` = :subdivision");*/
+            $query = ("SELECT `number`, `fuel_type` FROM `tanks`
+                       WHERE `subdivision` = :subdivision");
+            $result = $this->_db->prepare($query);
+            $result->execute([
+                'subdivision' => $subdivision
+            ]);
+            if ($result->rowCount() > 0){
+                while ($row = $result->fetch()){
+                    $tanksFuelType[$row['number']] = $row['fuel_type'];
+                }
+                return $tanksFuelType;
+            }
+            return null;
+        }catch (\Exception $e){
+            echo 'Error';
+        }
     }
 
-    public function replace_fuel_name_with_tank_number($station_code, $tank){
-        //$array = [1 => 'ДТ-ЕВРО', 2 => 'ДТ-ЕВРО', 3 => 'Аи92', 4 => 'Аи95', 5 => 'ДТ', 6 => 'ДТ-ЕВРО'];
-        //$a = array_search($name, $array);
-        return $this->_arrStationsFuel[$station_code][$tank];
+    /**
+     * Метод будет возвращать идентификатор топлива, для текущей емкости выбранного подразделения.
+     * Пример: для емкости 1 АЗС Чугуевка, этот метод на момент, вернет 5. Так как 5 это id ДТ-ЕВРО из таблицы
+     * fuel_types.
+     *
+     * @param $station_code
+     * @param $tank
+     * @return mixed
+     */
+    public function getFuelTypeFromTank(int $subdivision, string $tank){
+        $arrTanksFuelTypes = $this->getTanksFuelType($subdivision);
+        return $arrTanksFuelTypes[$tank];
     }
-
 
     private function getTanksData($simpleXmlElement){
         //Получаю полную дату открытия смены в формате строки
@@ -97,14 +117,11 @@ class XmlParser extends ModelTarantula
             $arrXml[$tankNum]['EndDensity'] = (string)$item['EndDensity'];
             $arrXml[$tankNum]['EndTemperature'] = (string)$item['EndTemperature'];
             $arrXml[$tankNum]['EndMass'] = str_replace(',', '.', (string)$item['EndMass']);
-
-            $arrXml[$tankNum]['FuelName'] = $this->replace_fuel_name_with_tank_number('00-000004', $tankNum);
+            $arrXml[$tankNum]['FuelName'] = $this->getFuelTypeFromTank(4, $tankNum);
         }
         //Заполняю массив данными об отпущенном топливе в разрезе емкости / вида топлива
         foreach ($simpleXmlElement->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
             $TankNum = (string)$item['TankNum'];
-            //$FuelName = (string)$item['FuelName'];
-            //$arrXml[$TankNum]['FuelId'] = $this->replace_fuel_name_with_tank_number($FuelName);
             $arrXml[$TankNum]['Outcome'] = 0;
         }
 
