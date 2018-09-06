@@ -14,6 +14,8 @@ use base\ModelTarantula;
 class XmlParser extends ModelTarantula
 {
     private $_arrPayments;
+    private $_arrFuels; //Виды топлива как в Tear
+    private $_arrStationsFuel; //Массив содержащий соотношение топлива к емкости для каждой АЗС
 
     public function __construct()
     {
@@ -30,6 +32,51 @@ class XmlParser extends ModelTarantula
             'Банк. карта',
             'Дисконтные карты',
         ];
+        $this->_arrFuels = [
+            1 => 'Аи92',
+            2 => 'Аи95',
+            3 => 'Аи98',
+            4 => 'ДТ',
+            5 => 'ДТ-ЕВРО',
+        ];
+
+        $this->_arrStationsFuel = [
+            '00-000004' => [
+                1 => 'ДТ-ЕВРО',
+                2 => 'ДТ-ЕВРО',
+                3 => 'Аи92',
+                4 => 'Аи95',
+                5 => 'ДТ',
+                6 => 'ДТ-ЕВРО'
+            ],
+            '00-000005' => [
+                1 => 'ДТ-ЕВРО',
+                2 => 'ДТ-ЕВРО',
+                3 => 'Аи95',
+                4 => 'Аи92',
+                5 => 'ДТ',
+                6 => 'Аи98'
+            ],
+            '00-000006' => [
+                2 => 'ДТ-ЕВРО',
+                3 => 'Аи95',
+                4 => 'Аи92',
+                6 => 'ДТ'
+            ]
+        ];
+
+    }
+
+
+    public function replace_fuel_name_with_number($name){
+        $a = array_search($name, $this->_arrFuels);
+        return $a;
+    }
+
+    public function replace_fuel_name_with_tank_number($station_code, $tank){
+        //$array = [1 => 'ДТ-ЕВРО', 2 => 'ДТ-ЕВРО', 3 => 'Аи92', 4 => 'Аи95', 5 => 'ДТ', 6 => 'ДТ-ЕВРО'];
+        //$a = array_search($name, $array);
+        return $this->_arrStationsFuel[$station_code][$tank];
     }
 
 
@@ -37,22 +84,27 @@ class XmlParser extends ModelTarantula
         //Получаю полную дату открытия смены в формате строки
         $xmlDate = (string)$simpleXmlElement->Sessions->Session['StartDateTime'];
         //Конвертирую в удобный для вставки в БД формат
-        $date = date('d.m.Y', strtotime($xmlDate));
+        $startDate = date('d.m.Y', strtotime($xmlDate));
         //Объявляю массив в который будут собираться распарсенные данные из XML отчета
         $arrXml = [];
 
         foreach ($simpleXmlElement->Sessions->Session->Tanks->Tank as $item){
             $tankNum = (string)$item['TankNum'];
+            $arrXml[$tankNum]['StartDate'] = $startDate;
             $arrXml[$tankNum]['TankNum'] = $tankNum;
             $arrXml[$tankNum]['StartFuelVolume'] = str_replace(',', '.', (string)$item['StartFuelVolume']);
             $arrXml[$tankNum]['EndFactVolume'] = str_replace(',', '.', (string)$item['EndFactVolume']);
             $arrXml[$tankNum]['EndDensity'] = (string)$item['EndDensity'];
             $arrXml[$tankNum]['EndTemperature'] = (string)$item['EndTemperature'];
             $arrXml[$tankNum]['EndMass'] = str_replace(',', '.', (string)$item['EndMass']);
+
+            $arrXml[$tankNum]['FuelName'] = $this->replace_fuel_name_with_tank_number('00-000004', $tankNum);
         }
         //Заполняю массив данными об отпущенном топливе в разрезе емкости / вида топлива
         foreach ($simpleXmlElement->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
             $TankNum = (string)$item['TankNum'];
+            //$FuelName = (string)$item['FuelName'];
+            //$arrXml[$TankNum]['FuelId'] = $this->replace_fuel_name_with_tank_number($FuelName);
             $arrXml[$TankNum]['Outcome'] = 0;
         }
 
@@ -72,6 +124,16 @@ class XmlParser extends ModelTarantula
             $FuelIncome = str_replace(',', '.', (string) $item['Volume']);
             $arrXml[$TankNum]['Income'] += $FuelIncome;
         }
+        //Вычисляю расчетный остаток
+        foreach ($arrXml as $item){
+            $TankNum = (string)$item['TankNum'];
+            $arrXml[$TankNum]['EndFuelVolume'] = 0;
+        }
+        foreach ($arrXml as $item){
+            $TankNum = (string)$item['TankNum'];
+            $outcome = isset($item['Outcome']) ? $item['Outcome'] : 0;
+            $arrXml[$TankNum]['EndFuelVolume'] = $item['StartFuelVolume'] - $outcome;
+        }
 
         return $arrXml;
     }
@@ -88,7 +150,6 @@ class XmlParser extends ModelTarantula
         }
         return $arr;
     }
-
 
     public function calcElementsByPayment($path, $element){
         $arrElements = [];
@@ -109,28 +170,6 @@ class XmlParser extends ModelTarantula
             $arrElements[$TankNum]['Payment'][$PaymentModeName] += $Element;
         }
         return $arrElements;
-    }
-
-    public function calcFuelRelease($path){
-        $arrRelease =[];
-        foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
-            $TankNum = (string)$item['TankNum'];
-            $FuelName = (string)$item['FuelName'];
-            for ($i = 0; $i < 6; $i++){
-                $arrRelease[$TankNum]['TankNumber'] = $TankNum;
-                $arrRelease[$TankNum][$FuelName] = 0;
-            }
-        }
-        foreach ($path->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
-            $TankNum = (string)$item['TankNum'];
-            $FuelName = (string)$item['FuelName'];
-            $FuelRelease = str_replace(',', '.', (string) $item['Volume']);
-            for ($i = 0; $i < 6; $i++){
-                $arrRelease[$TankNum][$FuelName] += $FuelRelease;
-                //$arrRelease[$FuelName] += $FuelRelease;
-            }
-        }
-        return $arrRelease;
     }
 
     public function calcHosesCountersValues($path){
@@ -201,42 +240,6 @@ class XmlParser extends ModelTarantula
             return $outPutData;
         }
     }
-
-    /*public function getDataByDate1($arrDate, $subdivision, $fuel_id){
-        $outPutData = [];
-        $query = ("SELECT * FROM `tarantula_fuel` 
-                   WHERE `subdivision` = :subdivision AND `fuel_id` =:fuel_id AND `date` = :date ");
-        foreach ($arrDate as $singleDate){
-            $result = $this->_db->prepare($query);
-            $result->execute([
-                'subdivision'=>$subdivision,
-                'date' => $singleDate,
-                'fuel_id' => $fuel_id
-            ]);
-            $data = $result->fetch();
-            $outPutData['data'][$data['id']]['id'] = $data['id'];
-            $outPutData['data'][$data['id']]['fuel_id'] = $data['fuel_id'];
-            $outPutData['data'][$data['id']]['start_volume'] = $data['start_volume'];
-            $outPutData['data'][$data['id']]['end_volume'] = $data['end_volume'];
-            $outPutData['data'][$data['id']]['fact_volume'] = $data['fact_volume'];
-            $outPutData['data'][$data['id']]['income'] = $data['income'];
-            $outPutData['data'][$data['id']]['outcome'] = $data['outcome'];
-            $outPutData['data'][$data['id']]['density'] = $data['density'];
-            $outPutData['data'][$data['id']]['temperature'] = $data['temperature'];
-            $outPutData['data'][$data['id']]['mass'] = ($data['density']/1000)*$data['fact_volume'];
-            $outPutData['data'][$data['id']]['date'] = $data['date'];
-            $outPutData['data'][$data['id']]['overage'] = $data['fact_volume']-$data['end_volume'];
-            $outPutData['data'][$data['id']]['overage'] = $data['fact_volume']-$data['end_volume'];
-        }
-        $rpm = [];
-        for ($i = 2; $i < count($outPutData['data'])+1; $i++){
-            $rpm[$i] = $outPutData['data'][$i-1]['mass']+$outPutData['data'][$i]['income']*($outPutData['data'][$i]['density']/1000)-$outPutData['data'][$i]['mass'];
-            $outPutData['data'][$i]['rpm'] = $rpm[$i];
-            $fact_outcome[$i] = $outPutData['data'][$i-1]['fact_volume']-$outPutData['data'][$i]['fact_volume']+$outPutData['data'][$i]['income'];
-            $outPutData['data'][$i]['fact_outcome'] = $fact_outcome[$i];
-        }
-        return $outPutData;
-    }*/
 
     /**
      * @return array

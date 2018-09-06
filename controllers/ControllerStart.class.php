@@ -35,16 +35,6 @@ class ControllerStart extends ControllerTarantula
         $volumeByPayment = $this->_parser->calcElementsByPayment($path, 'Volume');
         $arrPayments = $this->_parser->getArrPayments();
         $hosesCountersValues = $this->_parser->calcHosesCountersValues($path);
-        $fuelRelease = $this->_parser->calcFuelRelease($path);
-
-        $arrNames = ['Аи92' => 'Аи92', 'Аи95'];
-        $arrNumbers = ['Аи92' => 1,2];
-        $arrRep = array_replace($arrNames, $arrNumbers);
-        echo '<pre>';
-        //print_r($amountByPayment);
-        //print_r($hosesCountersValues);
-        print_r($fuelRelease);
-        //print_r($arrRep);
         include $this->_view->returnPagePath('/start/parsed-data.page');
     }
 
@@ -60,9 +50,8 @@ class ControllerStart extends ControllerTarantula
      * Метод используется для чтения XML и добавления данных из него в таблицу
      */
     public function actionAdd(){
-        $a = $this->_parser->getXmlFiles(ROOT.'/storage/');
-        echo '<pre>';
-        print_r($a);
+        $data = $this->_parser->getXmlFiles(ROOT.'/storage/');
+        include $this->_view->returnPagePath('/start/report-by-xml.page');
     }
 
 }

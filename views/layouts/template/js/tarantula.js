@@ -42,3 +42,14 @@ function getDataByDate() {
         }
     });
 }
+
+function getDataByXml() {
+    $.ajax({
+        type: "POST",
+        url: "/start/add",
+        cache: false,
+        success:function (response) {
+            $("#response").html(response);
+        }
+    });
+}

@@ -17,6 +17,7 @@
         <a href="#" class="btn btn-primary btn-sm" onclick="upload('xmlform')">Загрузить XML</a>
         <a href="#" class="btn btn-primary btn-sm" onclick="getParsedData()">Получить распарсенные данные</a>
         <a href="#" class="btn btn-primary btn-sm" onclick="getDataByDate()">Получить данные из БД</a>
+        <a href="#" class="btn btn-primary btn-sm" onclick="getDataByXml()">Получить данные из Xml файлов</a>
     </form>
 </div>
 <div id="response"></div>
