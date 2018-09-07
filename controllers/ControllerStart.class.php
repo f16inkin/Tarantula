@@ -48,7 +48,8 @@ class ControllerStart extends ControllerTarantula
      * Метод используется для чтения XML и добавления данных из него в таблицу
      */
     public function actionAdd(){
-        $data = $this->_parser->getXmlFiles(ROOT.'/storage/');
+        $subdivision_id = 4;//$_POST['subdivision_id'];
+        $data = $this->_parser->getXmlFiles($subdivision_id, ROOT.'/storage/');
         include $this->_view->returnPagePath('/start/report-by-xml.page');
     }
 

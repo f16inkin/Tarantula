@@ -13,9 +13,8 @@ use base\ModelTarantula;
 
 class XmlParser extends ModelTarantula
 {
-    private $_arrPayments;          //Допустимые виды оплаты в ПО "Топаз АЗС".
+    private $_arrPayments;  //Допустимые виды оплаты в ПО "Топаз АЗС".
 
-    private $_arrStationsFuel; //Массив содержащий соотношение топлива к емкости для каждой АЗС
 
     public function __construct()
     {
@@ -29,39 +28,12 @@ class XmlParser extends ModelTarantula
             'Дисконтная карта',
             'Со скидкой',
             'Переливы',
-            'Банк. карта',
-            'Дисконтные карты',
-        ];
-
-        $this->_arrStationsFuel = [
-            '00-000004' => [
-                1 => 'ДТ-ЕВРО',
-                2 => 'ДТ-ЕВРО',
-                3 => 'Аи92',
-                4 => 'Аи95',
-                5 => 'ДТ',
-                6 => 'ДТ-ЕВРО'
-            ],
-            '00-000005' => [
-                1 => 'ДТ-ЕВРО',
-                2 => 'ДТ-ЕВРО',
-                3 => 'Аи95',
-                4 => 'Аи92',
-                5 => 'ДТ',
-                6 => 'Аи98'
-            ],
-            '00-000006' => [
-                2 => 'ДТ-ЕВРО',
-                3 => 'Аи95',
-                4 => 'Аи92',
-                6 => 'ДТ'
-            ]
         ];
     }
 
-
     /**
-     * Метод будет возвращать из БД массив с данными о том в какой емкости находится какой вид топлива
+     * Метод будет возвращать из БД массив с данными о том в какой емкости находится какой вид топлива для выбранного
+     * подразделения
      */
     private function getTanksFuelType($subdivision){
         try{
@@ -100,14 +72,24 @@ class XmlParser extends ModelTarantula
         return $arrTanksFuelTypes[$tank];
     }
 
-    private function getTanksData($simpleXmlElement){
+    private function getTanksData(int $subdivision_id, $simpleXmlElement){
         //Получаю полную дату открытия смены в формате строки
         $xmlDate = (string)$simpleXmlElement->Sessions->Session['StartDateTime'];
         //Конвертирую в удобный для вставки в БД формат
         $startDate = date('d.m.Y', strtotime($xmlDate));
         //Объявляю массив в который будут собираться распарсенные данные из XML отчета
         $arrXml = [];
-
+        /*
+         * Собираю массив из данных которые я могу считать из XML^
+         * - Дата открытия смены,
+         * - Номер емкости,
+         * - Начальный объем,
+         * - Фактический объем, объем после замера метрштоком
+         * - Плотность, именно плотность не удельный весь
+         * - Температура
+         * - Масса топлива
+         * - Идентификатор топлива
+         */
         foreach ($simpleXmlElement->Sessions->Session->Tanks->Tank as $item){
             $tankNum = (string)$item['TankNum'];
             $arrXml[$tankNum]['StartDate'] = $startDate;
@@ -117,53 +99,74 @@ class XmlParser extends ModelTarantula
             $arrXml[$tankNum]['EndDensity'] = (string)$item['EndDensity'];
             $arrXml[$tankNum]['EndTemperature'] = (string)$item['EndTemperature'];
             $arrXml[$tankNum]['EndMass'] = str_replace(',', '.', (string)$item['EndMass']);
-            $arrXml[$tankNum]['FuelName'] = $this->getFuelTypeFromTank(4, $tankNum);
+            $arrXml[$tankNum]['Fuel'] = $this->getFuelTypeFromTank($subdivision_id, $tankNum);
         }
-        //Заполняю массив данными об отпущенном топливе в разрезе емкости / вида топлива
-        foreach ($simpleXmlElement->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
+        /*
+         * Заполняю массив данными об отпущенном топливе в разрезе емкости / вида топлива.
+         * Сначала добавляю в массив выше, новый индекс для каждой емкости и приравниваю его значение 0.
+         * Это делается для избежания notice "undefined index".
+         * После, я уже считываю значения outcome из XML файла и прибавляю их только для тех емкостей из которых
+         * был отпуск топлива. Те емкости из которых топливо не сливалось остануться с outcome равным 0.
+         */
+        //Шаг №1
+        foreach ($arrXml as $item){
             $TankNum = (string)$item['TankNum'];
             $arrXml[$TankNum]['Outcome'] = 0;
         }
-
+        //Шаг №2
         foreach ($simpleXmlElement->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
             $TankNum = (string)$item['TankNum'];
             $FuelRelease = str_replace(',', '.', (string) $item['Volume']);
             $arrXml[$TankNum]['Outcome'] += $FuelRelease;
         }
-        //Заполняю массив данными о принятом топливе
+        /*
+         * Заполняю массив данными о принятом топливе
+         * Сначала так же как и с outcome добавляю новый индекс в масив arrXml и приравниваю его 0.
+         * Потом прибавляю к нему значения для тех емкостей в которые происходила приемка топлива.
+         */
+        //Шаг №1
         foreach ($arrXml as $item){
             $TankNum = (string)$item['TankNum'];
             $arrXml[$TankNum]['Income'] = 0;
         }
-
+        //Шаг №2
         foreach ($simpleXmlElement->Sessions->Session->IncomesByDischarge->IncomeByDischarge as $item){
             $TankNum = (string)$item['TankNum'];
             $FuelIncome = str_replace(',', '.', (string) $item['Volume']);
             $arrXml[$TankNum]['Income'] += $FuelIncome;
         }
-        //Вычисляю расчетный остаток
+        /*
+         * Вычисляю расчетный остаток.
+         * Добавляю новый индекс EndFuelVolume и приравниваю его значение к 0.
+         * Высчи тваю разницу между начальным объемом
+         */
+        //Шаг №1
         foreach ($arrXml as $item){
             $TankNum = (string)$item['TankNum'];
             $arrXml[$TankNum]['EndFuelVolume'] = 0;
         }
+        //Шаг №2
         foreach ($arrXml as $item){
             $TankNum = (string)$item['TankNum'];
-            $outcome = isset($item['Outcome']) ? $item['Outcome'] : 0;
-            $arrXml[$TankNum]['EndFuelVolume'] = $item['StartFuelVolume'] - $outcome;
+            $arrXml[$TankNum]['EndFuelVolume'] = $item['StartFuelVolume'] + $item['Income'] - $item['Outcome'];
         }
 
         return $arrXml;
     }
 
-    public function getXmlFiles($directory){
+    public function getXmlFiles(int $subdivision_id, string $directory){
         $files = scandir($directory);
         $simpleXmlElements = [];
+        //Получаю имена всех файлов находящихся в директории storage и затем преобразую содержимое этих файлов в
+        //объекты SimpleXML и наполняю ими массив simpleXmlElements.
         for ($i = 2; $i < count($files); $i++){
             $simpleXmlElements[] = simplexml_load_file(ROOT.'/storage/'.$files[$i]);
         }
         $arr = [];
+        //Прохожу по каждому элементу массива simpleXmlElements и получаю из него информацию по смене.
+        //Возвращаю массив с распарсенными данными
         foreach ($simpleXmlElements as $simpleXmlElement){
-            $arr[] = $this->getTanksData($simpleXmlElement);
+            $arr[] = $this->getTanksData($subdivision_id, $simpleXmlElement);
         }
         return $arr;
     }
@@ -228,17 +231,17 @@ class XmlParser extends ModelTarantula
             $outputData = [];
             while ($row = $result->fetch()){
                 $outPutData['data'][$i]['id'] = $row['id'];
+                $outPutData['data'][$i]['date'] = $row['date'];
                 $outPutData['data'][$i]['fuel_id'] = $row['fuel_id'];
                 $outPutData['data'][$i]['start_volume'] = $row['start_volume'];
-                $outPutData['data'][$i]['end_volume'] = $row['end_volume'];
                 $outPutData['data'][$i]['fact_volume'] = $row['fact_volume'];
                 $outPutData['data'][$i]['income'] = $row['income'];
                 $outPutData['data'][$i]['outcome'] = $row['outcome'];
                 $outPutData['data'][$i]['density'] = $row['density'];
                 $outPutData['data'][$i]['temperature'] = $row['temperature'];
+                //Вычисляемые значения
                 $outPutData['data'][$i]['mass'] = ($row['density']/1000)*$row['fact_volume'];
-                $outPutData['data'][$i]['date'] = $row['date'];
-                $outPutData['data'][$i]['overage'] = $row['fact_volume']-$row['end_volume'];
+                $outPutData['data'][$i]['end_volume'] = $row['start_volume'] + $row['income'] - $row['outcome'];
                 $outPutData['data'][$i]['overage'] = $row['fact_volume']-$row['end_volume'];
                 $i++;
             }

@@ -24,7 +24,7 @@
         <?php foreach ($singleData as $row) :?>
             <tr>
                 <td><?=$row['StartDate'];?></td>
-                <td><?=$row['FuelName'];?></td>
+                <td><?=$row['Fuel'];?></td>
                 <td><?=$row['StartFuelVolume'];?></td>
                 <td><?=$row['EndFuelVolume'];?></td>
                 <td><?=$row['EndFactVolume'];?></td>
