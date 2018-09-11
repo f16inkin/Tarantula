@@ -38,7 +38,11 @@ function getDataByDate() {
         url: "/start/report",
         cache: false,
         success:function (response) {
-            $("#response").html(response);
+            if (response == false) {
+                $('#response').append('<div id="error_window">Запрашиваемые данные отсутствуют</div>');
+            }else {
+                $("#response").html(response);
+            }
         }
     });
 }
@@ -49,7 +53,14 @@ function getDataByXml() {
         url: "/start/add",
         cache: false,
         success:function (response) {
-            $("#response").html(response);
+            //Парсинг пришедшего из контроллера сообщения.
+            var res = JSON.parse(response);
+            //Для каждого элемента массива вывожу сообщение о загрузке
+            res.forEach(function(item) {
+                $('#wrapper').append('<div id="'+item.window+'">'+item.message+'</div>');
+                //Тут можно делать микро задержку после каждой итерации и получится эффект последовательного
+                //вывода сообщений
+            });
         }
     });
 }

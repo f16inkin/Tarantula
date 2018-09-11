@@ -39,25 +39,41 @@ class ControllerStart extends ControllerTarantula
 
     public function actionReport(){
         $subdivision = 4; //Очевидно
-        $fuel_id = 1; //Тут пока через <select> <option>.
-        $content['report'] = $this->_parser->getDataByDate('2018-07-31', '2018-08-03', $subdivision, $fuel_id);
-        include $this->_view->returnPagePath('/start/report-by-date.page');
+        $fuel_id = 5; //Тут пока через <select> <option>.
+        $content['report'] = $this->_parser->getDataByDate('2018-07-31', '2018-09-11', $subdivision, $fuel_id);
+        if (isset($content['report'])){
+            include $this->_view->returnPagePath('/start/report-by-date.page');
+        }else{
+            //Верну отрицание для того чтобы в AJAX вывести сообщение об отсутсвуии данных.
+            //Можно вернуть так же строку типа: echo 'error; и ловить в js так - if (response == 'error'){...}
+            return false;
+        }
     }
 
     /**
      * Метод используется для чтения XML и добавления данных из него в таблицу
      */
     public function actionAdd(){
+        //Входные данные с формы по которым будет осуществлятся фильтрация.
         $subdivision_id = 4;//$_POST['subdivision_id'];
-        $data = $this->_parser->getXmlFiles($subdivision_id, ROOT.'/storage/');
-        include $this->_view->returnPagePath('/start/report-by-xml.page');
+        $user = 1; //$_SESSION['user']['id'];
+
+        //Получаю массив сформированный из данных с XML файлов.
+        $arrXmlData = $this->_parser->getXmlFilesData($subdivision_id, ROOT.'/storage/');
+
+        //Здесь разбиваю массив из файлов по одному. В каждом таком одиночном массиве содержатся записи о каждом виде
+        //топлива.
+        foreach ($arrXmlData as $singleXmlData){
+            if ($this->_parser->insert($singleXmlData['data'], $subdivision_id, $user)){
+                $message[] = ['window' => 'success_window', 'message'=>'Файл '.$singleXmlData['file_name'].' обработан'];
+            }else{
+                $message[] = ['window' => 'fail_window', 'message'=>'Файл '.$singleXmlData['file_name'].' не обработан'];
+            }
+        }
+        //Отправка сообщения с результатом выполнения метода
+        echo json_encode($message);
+        //include $this->_view->returnPagePath('/start/report-by-xml.page');
     }
 
-}
-function xmlAttribute($object, $attribute){
-    if(isset($object[$attribute]))
-        return (string) $object[$attribute];
-    else
-        return null;
 }
 ?>

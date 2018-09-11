@@ -20,8 +20,8 @@
     <th>Масса</th>
     </thead>
     <tbody>
-    <?php foreach($data as $singleData):?>
-        <?php foreach ($singleData as $row) :?>
+    <?php foreach($arrXmlData as $singleXmlData):?>
+        <?php foreach ($singleXmlData as $row) :?>
             <tr>
                 <td><?=$row['StartDate'];?></td>
                 <td><?=$row['Fuel'];?></td>

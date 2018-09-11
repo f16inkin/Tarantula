@@ -37,9 +37,6 @@ class XmlParser extends ModelTarantula
      */
     private function getTanksFuelType($subdivision){
         try{
-            /*$query = ("SELECT `number`, `fuel_type`, `name` FROM `tanks`
-                       INNER JOIN `fuel_types` ON `tanks`.`fuel_type` = `fuel_types`.`id`
-                       WHERE `subdivision` = :subdivision");*/
             $query = ("SELECT `number`, `fuel_type` FROM `tanks`
                        WHERE `subdivision` = :subdivision");
             $result = $this->_db->prepare($query);
@@ -67,16 +64,26 @@ class XmlParser extends ModelTarantula
      * @param $tank
      * @return mixed
      */
-    public function getFuelTypeFromTank(int $subdivision, string $tank){
+    public function getFuelTypeFromTank(int $subdivision, int $tank){
         $arrTanksFuelTypes = $this->getTanksFuelType($subdivision);
         return $arrTanksFuelTypes[$tank];
     }
 
-    private function getTanksData(int $subdivision_id, $simpleXmlElement){
+    /**
+     * Метод собирает информацию из XML файла в массив
+     *
+     * @param int $subdivision_id
+     * @param $simpleXmlElement
+     * @return array
+     */
+    private function getXmlData(int $subdivision_id, $simpleXmlElement){
+        if (!isset($simpleXmlElement)){
+            return null;
+        }
         //Получаю полную дату открытия смены в формате строки
         $xmlDate = (string)$simpleXmlElement->Sessions->Session['StartDateTime'];
         //Конвертирую в удобный для вставки в БД формат
-        $startDate = date('d.m.Y', strtotime($xmlDate));
+        $startDate = date('Y-m-d', strtotime($xmlDate));
         //Объявляю массив в который будут собираться распарсенные данные из XML отчета
         $arrXml = [];
         /*
@@ -91,7 +98,7 @@ class XmlParser extends ModelTarantula
          * - Идентификатор топлива
          */
         foreach ($simpleXmlElement->Sessions->Session->Tanks->Tank as $item){
-            $tankNum = (string)$item['TankNum'];
+            $tankNum = (int)$item['TankNum'];
             $arrXml[$tankNum]['StartDate'] = $startDate;
             $arrXml[$tankNum]['TankNum'] = $tankNum;
             $arrXml[$tankNum]['StartFuelVolume'] = str_replace(',', '.', (string)$item['StartFuelVolume']);
@@ -150,25 +157,101 @@ class XmlParser extends ModelTarantula
             $TankNum = (string)$item['TankNum'];
             $arrXml[$TankNum]['EndFuelVolume'] = $item['StartFuelVolume'] + $item['Income'] - $item['Outcome'];
         }
-
         return $arrXml;
     }
 
-    public function getXmlFiles(int $subdivision_id, string $directory){
+    /**
+     * Метод возвращает массив с данными считанными со всех XML файлов которые находятся в специальном хранилище
+     *
+     * @param int $subdivision_id
+     * @param string $directory
+     * @return array
+     */
+    public function getXmlFilesData(int $subdivision_id, string $directory){
         $files = scandir($directory);
         $simpleXmlElements = [];
+        //Отключаю ошибки libxml и беру полномочия на обработку ошибок на себя.
+        libxml_use_internal_errors(true);
         //Получаю имена всех файлов находящихся в директории storage и затем преобразую содержимое этих файлов в
         //объекты SimpleXML и наполняю ими массив simpleXmlElements.
         for ($i = 2; $i < count($files); $i++){
-            $simpleXmlElements[] = simplexml_load_file(ROOT.'/storage/'.$files[$i]);
+            $simpleXmlElements[$i]['file_name'] = $files[$i];
+            $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file(ROOT.'/storage/'.$files[$i]) ? simplexml_load_file(ROOT.'/storage/'.$files[$i]) : null;
         }
+        //Возвращаю обработку ошибок в стандартное положение.
+        libxml_use_internal_errors(false);
         $arr = [];
         //Прохожу по каждому элементу массива simpleXmlElements и получаю из него информацию по смене.
         //Возвращаю массив с распарсенными данными
         foreach ($simpleXmlElements as $simpleXmlElement){
-            $arr[] = $this->getTanksData($subdivision_id, $simpleXmlElement);
+            $arr[$simpleXmlElement['file_name']]['file_name'] = $simpleXmlElement['file_name'];
+            $arr[$simpleXmlElement['file_name']]['data'] = $this->getXmlData($subdivision_id, $simpleXmlElement['simpleXmlElement']);
         }
         return $arr;
+    }
+
+    /**
+     * Метод вставляет в таблицу базы данных информацию полученную из XML файлов
+     *
+     * @param $xmlFileData
+     * @param $subdivision_id
+     * @param $user
+     */
+    public function insert($xmlFileData, $subdivision_id, $user){
+        try{
+            if (isset($xmlFileData)){
+                /**
+                 * Сначала форирую полузапрос.
+                 */
+                $query = ("INSERT INTO `tarantula_fuel` (`fuel_id`, `start_volume`, `end_volume`, `fact_volume`,
+                      `income`, `outcome`, `density`, `temperature`, `subdivision`, `user`, `tank`, `date`)
+                       VALUES ");
+                /**
+                 * Затем для каждой строки и пришедшего массива (данные за один день работы АЗС) получаю значения в формате:
+                 * (1, 1000, 500, 510, 0, 500, 735, 25, 4, 1, 1, 2018-09-10). Количество таких строк равно количеству
+                 * строк в пришедшем массиве. После получения всех этих строк я добавляют их в полузапрос, заканчивая
+                 * формирование полного запроса в формате:
+                 * ----------------------------------------------------------------------------------------------------
+                 * INSERT INTO `tarantula_fuel` (`fuel_id`, `start_volume`, `end_volume`, `fact_volume`,
+                 * `income`, `outcome`, `density`, `temperature`, `subdivision`, `user`, `tank`, `date`)
+                 *  VALUES
+                 * (5, 32634.32, 31191.67, 31885, 0, 1442.65, 836, 25, 4, 1, 1, '2018-08-01'),
+                 * (5, 37593.04, 36804, 36982.6, 0, 789.04, 836, 24, 4, 1, 2, '2018-08-01'),
+                 * (1, 3916.62, 4787.11, 4500, 2000, 1129.51, 738, 21, 4, 1, 3, '2018-08-01'),
+                 * ...........................................................................
+                 * (2, 2382.57, 2936.91, 3310, 1000, 445.66, 736, 20, 4, 1, 4, '2018-08-01');
+                 * ----------------------------------------------------------------------------------------------------
+                 *
+                 */
+                foreach ($xmlFileData as $row){
+                    $query .= sprintf("(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '%s'),",
+                        preg_replace('/[^0-9.]/', '', $row['Fuel']),
+                        preg_replace('/[^0-9.]/', '', $row['StartFuelVolume']),
+                        $row['EndFuelVolume'],
+                        $row['EndFactVolume'],
+                        $row['Income'],
+                        $row['Outcome'],
+                        $row['EndDensity'],
+                        $row['EndTemperature'],
+                        $subdivision_id,
+                        $user,
+                        $row['TankNum'],
+                        $row['StartDate']
+                    );
+                }
+                //Обрезаю в конце запроса запятую
+                $query = rtrim($query, ',');
+                //Выполняю запрос и возвращаю овет  о результате в json формате
+                $result = $this->_db->prepare($query);
+                //Верну ответ поб успехе или наоборот
+                return $result->execute() ? true : false;
+            }else{
+                return false;
+            }
+
+        }catch (\Exception $e){
+            echo 'Database error in Insert Method';
+        }
     }
 
     public function calcElementsByPayment($path, $element){
