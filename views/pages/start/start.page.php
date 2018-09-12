@@ -14,6 +14,12 @@
             <input class="form-control" type="file" id="xml_file" name="xml_file">
             <input type="text" name="image_kind" value="logo" hidden>
         </div>
+        <select name="subdivision_id">
+            <option value="4">Чугуевка</option>
+            <option value="5">Таежка</option>
+            <option value="7">Дальнегорск</option>
+            <option value="11">Арсеньев</option>
+        </select>
         <a href="#" class="btn btn-primary btn-sm" onclick="upload('xmlform')">Загрузить XML</a>
         <a href="#" class="btn btn-primary btn-sm" onclick="getParsedData()">Получить распарсенные данные</a>
         <a href="#" class="btn btn-primary btn-sm" onclick="getDataByDate()">Получить данные из БД</a>

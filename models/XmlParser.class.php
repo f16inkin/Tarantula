@@ -37,7 +37,8 @@ class XmlParser extends ModelTarantula
      */
     private function getTanksFuelType($subdivision){
         try{
-            $query = ("SELECT `number`, `fuel_type` FROM `tanks`
+            $query = ("SELECT `number`, `name`, `fuel_type` FROM `tanks`
+                       INNER JOIN `fuel_types` ON `fuel_types`.`id` = `tanks`.`fuel_type`
                        WHERE `subdivision` = :subdivision");
             $result = $this->_db->prepare($query);
             $result->execute([
@@ -45,7 +46,8 @@ class XmlParser extends ModelTarantula
             ]);
             if ($result->rowCount() > 0){
                 while ($row = $result->fetch()){
-                    $tanksFuelType[$row['number']] = $row['fuel_type'];
+                    $tanksFuelType['ids'][$row['number']] = $row['fuel_type'];
+                    $tanksFuelType['names'][$row['number']] = $row['name'];
                 }
                 return $tanksFuelType;
             }
@@ -64,9 +66,9 @@ class XmlParser extends ModelTarantula
      * @param $tank
      * @return mixed
      */
-    public function getFuelTypeFromTank(int $subdivision, int $tank){
+    public function getFuelTypeFromTank(int $subdivision, int $tank, string $field){
         $arrTanksFuelTypes = $this->getTanksFuelType($subdivision);
-        return $arrTanksFuelTypes[$tank];
+        return $arrTanksFuelTypes[$field][$tank];
     }
 
     /**
@@ -106,7 +108,7 @@ class XmlParser extends ModelTarantula
             $arrXml[$tankNum]['EndDensity'] = (string)$item['EndDensity'];
             $arrXml[$tankNum]['EndTemperature'] = (string)$item['EndTemperature'];
             $arrXml[$tankNum]['EndMass'] = str_replace(',', '.', (string)$item['EndMass']);
-            $arrXml[$tankNum]['Fuel'] = $this->getFuelTypeFromTank($subdivision_id, $tankNum);
+            $arrXml[$tankNum]['Fuel'] = $this->getFuelTypeFromTank($subdivision_id, $tankNum, 'ids');
         }
         /*
          * Заполняю массив данными об отпущенном топливе в разрезе емкости / вида топлива.
@@ -290,7 +292,7 @@ class XmlParser extends ModelTarantula
         return $hosesCountersValues;
     }
 
-    public function getDataByDate($date_start, $date_end, $subdivision, $fuel_id){
+    public function getDataByDate($date_start, $date_end, $subdivision, $tank){
         //Если дата не выбрана пользователем, то поиск идет на текущую дату
         if (!isset($date_start)){
             $date_start = date("Y-m-d");
@@ -300,46 +302,48 @@ class XmlParser extends ModelTarantula
         }
         //Запрос данных из БД по значениям
         $query = ("SELECT * FROM `tarantula_fuel`
-                   WHERE `subdivision` = :subdivision AND `fuel_id` = :fuel_id AND `date` BETWEEN :date_start AND :date_end");
+                   WHERE `subdivision` = :subdivision  AND `date` BETWEEN :date_start 
+                   AND :date_end AND `tank` = :tank");
         $result = $this->_db->prepare($query);
         $result->execute([
             'date_start' => $date_start,
             'date_end' => $date_end,
             'subdivision' => $subdivision,
-            'fuel_id' => $fuel_id,
+            'tank' => $tank
         ]);
         //В случае если записи найдены для установленных фильтров. Наполняю массив значениями этих записей
         if ($result->rowCount() > 0){
             $i = 1;
-            $outputData = [];
+            $outPutData = [];
             while ($row = $result->fetch()){
-                $outPutData['data'][$i]['id'] = $row['id'];
-                $outPutData['data'][$i]['date'] = $row['date'];
-                $outPutData['data'][$i]['fuel_id'] = $row['fuel_id'];
-                $outPutData['data'][$i]['start_volume'] = $row['start_volume'];
-                $outPutData['data'][$i]['fact_volume'] = $row['fact_volume'];
-                $outPutData['data'][$i]['income'] = $row['income'];
-                $outPutData['data'][$i]['outcome'] = $row['outcome'];
-                $outPutData['data'][$i]['density'] = $row['density'];
-                $outPutData['data'][$i]['temperature'] = $row['temperature'];
+                $outPutData[$i]['id'] = $row['id'];
+                $outPutData[$i]['date'] = $row['date'];
+                $outPutData[$i]['fuel_id'] = $row['fuel_id'];
+                $outPutData[$i]['start_volume'] = $row['start_volume'];
+                $outPutData[$i]['fact_volume'] = $row['fact_volume'];
+                $outPutData[$i]['income'] = $row['income'];
+                $outPutData[$i]['outcome'] = $row['outcome'];
+                $outPutData[$i]['density'] = $row['density'];
+                $outPutData[$i]['temperature'] = $row['temperature'];
                 //Вычисляемые значения
-                $outPutData['data'][$i]['mass'] = ($row['density']/1000)*$row['fact_volume'];
-                $outPutData['data'][$i]['end_volume'] = $row['start_volume'] + $row['income'] - $row['outcome'];
-                $outPutData['data'][$i]['overage'] = $row['fact_volume']-$row['end_volume'];
+                $outPutData[$i]['mass'] = round(($row['density']/1000)*$row['fact_volume'], 2);
+                $outPutData[$i]['end_volume'] = $row['start_volume'] + $row['income'] - $row['outcome'];
+                $outPutData[$i]['overage'] = $row['fact_volume']-$row['end_volume'];
                 $i++;
             }
             $rpm = []; //Реализация по массе, начиная со дня date_start + 1
             $fact_outcome = []; //Фактический отпуск
-            $count = count($outPutData['data']);
+            $count = count($outPutData);
             //Массив всегда начинается с индекса 1. Изходя из логики расчета РпМ стартовым значением пербора будет 2.
             //Формула РпМ = Масса(вчера) + Приход(сегодня) - Масса(сегодня)
             for ($i = 2; $i < $count+1; $i++){
-                $rpm[$i] = $outPutData['data'][$i-1]['mass']+$outPutData['data'][$i]['income']*($outPutData['data'][$i]['density']/1000)-$outPutData['data'][$i]['mass'];
-                $outPutData['data'][$i]['rpm'] = $rpm[$i];
+                $rpm[$i] = $outPutData[$i-1]['mass']+$outPutData[$i]['income']*($outPutData[$i]['density']/1000)-$outPutData[$i]['mass'];
+                $outPutData[$i]['rpm'] = $rpm[$i];
                 //Фартический отпуск формула: ФО = ФО(вчера) - ФО(сегодня) + Приход(сегодня)
-                $fact_outcome[$i] = $outPutData['data'][$i-1]['fact_volume']-$outPutData['data'][$i]['fact_volume']+$outPutData['data'][$i]['income'];
-                $outPutData['data'][$i]['fact_outcome'] = $fact_outcome[$i];
+                $fact_outcome[$i] = $outPutData[$i-1]['fact_volume']-$outPutData[$i]['fact_volume']+$outPutData[$i]['income'];
+                $outPutData[$i]['fact_outcome'] = $fact_outcome[$i];
             }
+            //$a = $outPutData;
             return $outPutData;
         }
     }
@@ -350,6 +354,11 @@ class XmlParser extends ModelTarantula
     public function getArrPayments(): array
     {
         return $this->_arrPayments;
+    }
+
+    public function getTankFuelArray($subdivision){
+        $data = $this->getTanksFuelType($subdivision);
+        return $data['names'];
     }
 
 }
