@@ -34,10 +34,6 @@ function getParsedData() {
 
 function getDataByDate() {
     var subdivision_id = $("select[name='subdivision_id']").val();
-    //var subdivision = $("input[name='subdivision']" ).val();
-        //$('select[name="overflow-fuel-type"]').each(function() {
-        //    arrFuelTypes.push($(this).val());
-        //});
     $.ajax({
         type: "POST",
         url: "/start/report",
@@ -54,9 +50,11 @@ function getDataByDate() {
 }
 
 function getDataByXml() {
+    var subdivision_id = $("select[name='subdivision_id']").val();
     $.ajax({
         type: "POST",
         url: "/start/add",
+        data: {"subdivision_id": subdivision_id},
         cache: false,
         success:function (response) {
             //Парсинг пришедшего из контроллера сообщения.

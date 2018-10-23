@@ -23,8 +23,12 @@ class ControllerStart extends ControllerTarantula
     }
 
     public function actionIndex(){
+        //При интеграции модуля поиск подразделения АЗС осуществлять через this->_subdivision -> getAllGasStations();
+        //Предварительно в конструторе создав объект $subdivision;
+        //this->_subdivision = new Subdivision();
+        $content['subdivisions'] = $this->_parser->getAllGasStations();
         $this->_view->setTitle('Начальная страница');
-        $this->_view->render('start/start.page');
+        $this->_view->render('start/start.page', $content);
     }
 
 
@@ -59,8 +63,11 @@ class ControllerStart extends ControllerTarantula
      * Метод используется для чтения XML и добавления данных из него в таблицу
      */
     public function actionAdd(){
-        //Входные данные с формы по которым будет осуществлятся фильтрация.
-        $subdivision_id = 4;//$_POST['subdivision_id'];
+        /*
+         * Входные данные с формы по которым будет осуществлятся фильтрация.
+         * Перед вставкой
+         */
+        $subdivision_id = $_POST['subdivision_id'];
         $user = 1; //$_SESSION['user']['id'];
 
         /*

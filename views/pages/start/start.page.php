@@ -15,10 +15,10 @@
             <input type="text" name="image_kind" value="logo" hidden>
         </div>
         <select name="subdivision_id">
-            <option value="4">Чугуевка</option>
-            <option value="5">Таежка</option>
-            <option value="7">Дальнегорск</option>
-            <option value="11">Арсеньев</option>
+            <?php foreach ($content['subdivisions'] as $id => $name) :?>
+            <option value="<?=$id;?>"><?=$name;?></option>
+
+            <?php endforeach; ?>
         </select>
         <a href="#" class="btn btn-primary btn-sm" onclick="upload('xmlform')">Загрузить XML</a>
         <a href="#" class="btn btn-primary btn-sm" onclick="getParsedData()">Получить распарсенные данные</a>

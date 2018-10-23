@@ -322,13 +322,13 @@ class XmlParser extends ModelTarantula
                 $outPutData[$i]['start_volume'] = $row['start_volume'];
                 $outPutData[$i]['fact_volume'] = $row['fact_volume'];
                 $outPutData[$i]['income'] = $row['income'];
-                $outPutData[$i]['outcome'] = $row['outcome'];
+                $outPutData[$i]['outcome'] = round($row['outcome'], 2);
                 $outPutData[$i]['density'] = $row['density'];
                 $outPutData[$i]['temperature'] = $row['temperature'];
                 //Вычисляемые значения
                 $outPutData[$i]['mass'] = round(($row['density']/1000)*$row['fact_volume'], 2);
-                $outPutData[$i]['end_volume'] = $row['start_volume'] + $row['income'] - $row['outcome'];
-                $outPutData[$i]['overage'] = $row['fact_volume']-$row['end_volume'];
+                $outPutData[$i]['end_volume'] = round($row['start_volume'] + $row['income'] - $row['outcome'], 2);
+                $outPutData[$i]['overage'] = round($row['fact_volume']-$row['end_volume'], 2);
                 $i++;
             }
             $rpm = []; //Реализация по массе, начиная со дня date_start + 1
@@ -341,7 +341,7 @@ class XmlParser extends ModelTarantula
                 $outPutData[$i]['rpm'] = $rpm[$i];
                 //Фартический отпуск формула: ФО = ФО(вчера) - ФО(сегодня) + Приход(сегодня)
                 $fact_outcome[$i] = $outPutData[$i-1]['fact_volume']-$outPutData[$i]['fact_volume']+$outPutData[$i]['income'];
-                $outPutData[$i]['fact_outcome'] = $fact_outcome[$i];
+                $outPutData[$i]['fact_outcome'] = round($fact_outcome[$i], 2);
             }
             //$a = $outPutData;
             return $outPutData;
@@ -359,6 +359,22 @@ class XmlParser extends ModelTarantula
     public function getTankFuelArray($subdivision){
         $data = $this->getTanksFuelType($subdivision);
         return $data['names'];
+    }
+
+    /**
+     * Это временных метод, он будет удален. Так как бует вместо него использоватся системный метод поиска подразделений
+     * по секциям
+     *
+     * @return array
+     */
+    public function getAllGasStations(){
+        return [
+          4 => 'АЗС Чугуевка',
+          5 => 'АЗС Таежка',
+          6 => 'АЗС Анучино',
+          7 => 'АЗС Дальнегорск',
+          11 => 'АЗС Арсеньев'
+        ];
     }
 
 }
