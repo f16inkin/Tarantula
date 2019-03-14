@@ -1,0 +1,10 @@
+html {
+    background: #ffe55f;
+    background-size: cover;
+    font-size: 10px;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+}

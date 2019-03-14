@@ -10,10 +10,9 @@ ini_set('display_errors',1);
 error_reporting(E_ALL);
 session_start();
 date_default_timezone_set('Asia/Vladivostok');
-
-use libs\Router;
-
-
+use core\libs\Configurator;
+use core\libs\Matcher;
+use core\libs\Router;
 //autoload #1
 function __autoload($className)
 {
@@ -28,7 +27,13 @@ function __autoload($className)
         echo 'Выброшено исключение: ',  $e->getMessage(), "\n";
     }
 }
-$router = new Router();
+//Определяю маршруты
+$routes = Configurator::getRoutes();
+//Определяю совпадения с маршрутами
+$matcher = new Matcher($routes);
+//Создаю маршрутизатор
+$router = new Router($matcher);
+//Запускаю маршрутизацию
 $router->Start();
 //var_dump($router);
 /*function convert($size)

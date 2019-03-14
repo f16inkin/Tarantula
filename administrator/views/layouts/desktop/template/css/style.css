@@ -1,0 +1,25 @@
+html, body {
+    margin:0;
+    padding:0;
+    background: red;
+}
+#wrapper{
+    margin: auto;
+    height: calc(100vh - 160px);
+}
+#header{
+    height: 60px;
+    background-color: #3c4554;
+}
+/*МЕНЮ*/
+#accordion{
+    padding: 5px;
+    border: solid;
+}
+.no-marker{
+    list-style-type: none;
+}
+/*ОТСТУПЫ*/
+.bottom-5px{
+    margin-bottom: 5px;
+}
