@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<DataPaket Version="3.15" DateTime="01.03.2019 8:56:34" Type="Aggregated" AZSCode="00-000004">
+	<Sessions>
+		<Session SessionNum="1400" StartDateTime="01.03.2019 1:25:50" EndDateTime="01.03.2019 8:54:58" UserName="Зинченко Н.Н.">
+			<Tanks>
+				<Tank TankNum="1" StartFuelVolume="6470,78" EndFactVolume="6574,9" EndDensity="844" EndTemperature="-1" EndHeight="507" EndMass="5549,22" EndWater="" TankExtCode="" DeadRest="40" DeadRestLiter="5481"/>
+				<Tank TankNum="2" StartFuelVolume="4323,15" EndFactVolume="4667,3" EndDensity="847" EndTemperature="-2" EndHeight="471" EndMass="3953,2" EndWater="" TankExtCode="" DeadRest="40" DeadRestLiter="4319"/>
+				<Tank TankNum="3" StartFuelVolume="8449,41" EndFactVolume="8323" EndDensity="756" EndTemperature="-3" EndHeight="1010" EndMass="6292,19" EndWater="" TankExtCode="" DeadRest="30" DeadRestLiter="1422"/>
+				<Tank TankNum="4" StartFuelVolume="7577,36" EndFactVolume="7889,4" EndDensity="755" EndTemperature="-2" EndHeight="982" EndMass="5956,5" EndWater="" TankExtCode="" DeadRest="35" DeadRestLiter="1790"/>
+				<Tank TankNum="5" StartFuelVolume="73,23" EndFactVolume="410,5" EndDensity="" EndTemperature="" EndHeight="45" EndMass="" EndWater="" TankExtCode="" DeadRest="35" DeadRestLiter="4271"/>
+				<Tank TankNum="6" StartFuelVolume="1500,01" EndFactVolume="1448" EndDensity="832" EndTemperature="0" EndHeight="300" EndMass="1204,74" EndWater="" TankExtCode="" DeadRest="40" DeadRestLiter="1500"/>
+			</Tanks>
+			<Hoses>
+				<Hose HoseNum="1" StartCounter="214200,7" EndCounter="214204,22" PumpNum="1" NumInPump="1" HoseType="1"/>
+				<Hose HoseNum="2" StartCounter="16276,73" EndCounter="16285,92" PumpNum="1" NumInPump="2" HoseType="1"/>
+				<Hose HoseNum="3" StartCounter="966526,22" EndCounter="966526,22" PumpNum="1" NumInPump="3" HoseType="1"/>
+				<Hose HoseNum="4" StartCounter="28634,79" EndCounter="28658,31" PumpNum="2" NumInPump="1" HoseType="1"/>
+				<Hose HoseNum="5" StartCounter="373757,57" EndCounter="373757,57" PumpNum="2" NumInPump="2" HoseType="1"/>
+				<Hose HoseNum="6" StartCounter="717214,06" EndCounter="717479,36" PumpNum="2" NumInPump="3" HoseType="1"/>
+				<Hose HoseNum="7" StartCounter="866447,23" EndCounter="866447,23" PumpNum="3" NumInPump="1" HoseType="1"/>
+				<Hose HoseNum="8" StartCounter="112344,42" EndCounter="112344,42" PumpNum="3" NumInPump="2" HoseType="1"/>
+				<Hose HoseNum="9" StartCounter="647563,02" EndCounter="647563,02" PumpNum="4" NumInPump="1" HoseType="1"/>
+				<Hose HoseNum="10" StartCounter="463873,69" EndCounter="463873,69" PumpNum="4" NumInPump="2" HoseType="1"/>
+				<Hose HoseNum="11" StartCounter="589350,86" EndCounter="589350,86" PumpNum="5" NumInPump="1" HoseType="1"/>
+			</Hoses>
+			<OutcomesByRetail>
+				<OutcomeByRetail TankNum="1" HoseName="6" FuelName="ДТ-ЕВРО" PaymentModeName="Наличные" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000016" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="265,3" Amount="12999,7" Mass="0" OrigPrice="49" OrderCount="2" Remark=""/>
+				<OutcomeByRetail TankNum="3" HoseName="1" FuelName="Аи92" PaymentModeName="Наличные" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000019" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="3,52" Amount="149,6" Mass="0" OrigPrice="42,5" OrderCount="1" Remark=""/>
+				<OutcomeByRetail TankNum="3" HoseName="4" FuelName="Аи92" PaymentModeName="Наличные" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000019" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="23,52" Amount="999,6" Mass="0" OrigPrice="42,5" OrderCount="1" Remark=""/>
+				<OutcomeByRetail TankNum="4" HoseName="2" FuelName="Аи95" PaymentModeName="Наличные" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000011" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="9,19" Amount="399,77" Mass="0" OrigPrice="43,5" OrderCount="1" Remark=""/>
+			</OutcomesByRetail>
+			<OutcomesByWholesale/>
+			<IncomesByDischarge/>
+			<IncomesByWholesale/>
+			<ItemOutcomesByRetail/>
+			<ItemOutcomesByPaysheet/>
+			<CashFlow>
+				<Cash DocTypeID="6" DocTypeName="Отпуск топлива" CashID="3" CashName="Драйвер ФР Атол он-лайн ФР (ФЗ 54)" Remark="" Amount="14548,67"/>
+				<Cash DocTypeID="15" DocTypeName="Выдача наличных" CashID="3" CashName="Драйвер ФР Атол он-лайн ФР (ФЗ 54)" Remark="" Amount="-14548,67"/>
+			</CashFlow>
+			<OutcomesByCoupon/>
+			<OutcomesByOffice/>
+			<OutcomesByCards/>
+			<HosesLocking/>
+			<TechReturns/>
+			<SurplusPostings/>
+			<LossRetirements/>
+			<TradeDocsInBills/>
+			<TradeDocsOutBills/>
+			<TradeDocsInActs/>
+			<TradeDocsOutActs/>
+			<TradeDocsMoveItems/>
+			<ItemRests/>
+		</Session>
+	</Sessions>
+</DataPaket>

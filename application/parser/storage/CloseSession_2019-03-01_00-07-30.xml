@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<DataPaket Version="3.15" DateTime="01.03.2019 0:04:30" Type="Aggregated" AZSCode="00-000004">
+	<Sessions>
+		<Session SessionNum="1399" StartDateTime="28.02.2019 8:46:05" EndDateTime="01.03.2019 0:04:28" UserName="Зинченко Н.Н.">
+			<Tanks>
+				<Tank TankNum="1" StartFuelVolume="7208,12" EndFactVolume="" EndDensity="844" EndTemperature="-1" EndHeight="" EndMass="" EndWater="" TankExtCode="" DeadRest="40" DeadRestLiter="5481"/>
+				<Tank TankNum="2" StartFuelVolume="5047,83" EndFactVolume="" EndDensity="847" EndTemperature="-2" EndHeight="" EndMass="" EndWater="" TankExtCode="" DeadRest="40" DeadRestLiter="4319"/>
+				<Tank TankNum="3" StartFuelVolume="8883,55" EndFactVolume="" EndDensity="756" EndTemperature="-3" EndHeight="" EndMass="" EndWater="" TankExtCode="" DeadRest="30" DeadRestLiter="1422"/>
+				<Tank TankNum="4" StartFuelVolume="7712,57" EndFactVolume="" EndDensity="755" EndTemperature="-2" EndHeight="" EndMass="" EndWater="" TankExtCode="" DeadRest="35" DeadRestLiter="1790"/>
+				<Tank TankNum="5" StartFuelVolume="73,23" EndFactVolume="" EndDensity="" EndTemperature="" EndHeight="" EndMass="" EndWater="" TankExtCode="" DeadRest="35" DeadRestLiter="4271"/>
+				<Tank TankNum="6" StartFuelVolume="1500,01" EndFactVolume="" EndDensity="832" EndTemperature="0" EndHeight="" EndMass="" EndWater="" TankExtCode="" DeadRest="40" DeadRestLiter="1500"/>
+			</Tanks>
+			<Hoses>
+				<Hose HoseNum="1" StartCounter="213925,56" EndCounter="214200,7" PumpNum="1" NumInPump="1" HoseType="1"/>
+				<Hose HoseNum="2" StartCounter="16189,78" EndCounter="16276,73" PumpNum="1" NumInPump="2" HoseType="1"/>
+				<Hose HoseNum="3" StartCounter="966526,22" EndCounter="966526,22" PumpNum="1" NumInPump="3" HoseType="1"/>
+				<Hose HoseNum="4" StartCounter="28475,79" EndCounter="28634,79" PumpNum="2" NumInPump="1" HoseType="1"/>
+				<Hose HoseNum="5" StartCounter="373709,31" EndCounter="373757,57" PumpNum="2" NumInPump="2" HoseType="1"/>
+				<Hose HoseNum="6" StartCounter="716476,72" EndCounter="717214,06" PumpNum="2" NumInPump="3" HoseType="1"/>
+				<Hose HoseNum="7" StartCounter="866447,23" EndCounter="866447,23" PumpNum="3" NumInPump="1" HoseType="1"/>
+				<Hose HoseNum="8" StartCounter="111971,7" EndCounter="112344,42" PumpNum="3" NumInPump="2" HoseType="1"/>
+				<Hose HoseNum="9" StartCounter="647563,02" EndCounter="647563,02" PumpNum="4" NumInPump="1" HoseType="1"/>
+				<Hose HoseNum="10" StartCounter="463521,73" EndCounter="463873,69" PumpNum="4" NumInPump="2" HoseType="1"/>
+				<Hose HoseNum="11" StartCounter="589350,86" EndCounter="589350,86" PumpNum="5" NumInPump="1" HoseType="1"/>
+			</Hoses>
+			<OutcomesByRetail>
+				<OutcomeByRetail TankNum="1" HoseName="6" FuelName="ДТ-ЕВРО" PaymentModeName="Ведомость" AgentName="ОКТАН 1" CardCode="" PartnerName="ОКТАН  1" PartnerINN="" TankExtCode="" FuelExtCode="000000016" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="00-000632" Volume="25" Amount="1225" Mass="0" OrigPrice="49" OrderCount="1" Remark=""/>
+				<OutcomeByRetail TankNum="1" HoseName="6" FuelName="ДТ-ЕВРО" PaymentModeName="Карты ТОПДОН" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000016" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="220" Amount="10780" Mass="0" OrigPrice="49" OrderCount="2" Remark="*"/>
+				<OutcomeByRetail TankNum="1" HoseName="6" FuelName="ДТ-ЕВРО" PaymentModeName="Наличные" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000016" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="492,34" Amount="24124,66" Mass="0" OrigPrice="49" OrderCount="7" Remark=""/>
+				<OutcomeByRetail TankNum="2" HoseName="8" FuelName="ДТ-ЕВРО" PaymentModeName="Карты ТОПДОН" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000016" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="372,72" Amount="3,73" Mass="0" OrigPrice="49" OrderCount="2" Remark="1"/>
+				<OutcomeByRetail TankNum="2" HoseName="10" FuelName="ДТ-ЕВРО" PaymentModeName="Карты ТОПДОН" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000016" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="250" Amount="2,5" Mass="0" OrigPrice="49" OrderCount="1" Remark="1"/>
+				<OutcomeByRetail TankNum="2" HoseName="10" FuelName="ДТ-ЕВРО" PaymentModeName="Наличные" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000016" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="101,96" Amount="4996,04" Mass="0" OrigPrice="49" OrderCount="1" Remark=""/>
+				<OutcomeByRetail TankNum="3" HoseName="1" FuelName="Аи92" PaymentModeName="Банк.карта" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000019" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="65,57" Amount="2786,73" Mass="0" OrigPrice="42,5" OrderCount="5" Remark=""/>
+				<OutcomeByRetail TankNum="3" HoseName="1" FuelName="Аи92" PaymentModeName="Ведомость" AgentName="" CardCode="" PartnerName="РН-карт" PartnerINN="" TankExtCode="" FuelExtCode="000000019" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="55" Amount="2337,5" Mass="0" OrigPrice="42,5" OrderCount="3" Remark=""/>
+				<OutcomeByRetail TankNum="3" HoseName="1" FuelName="Аи92" PaymentModeName="Ведомость" AgentName="ДВ Форест" CardCode="" PartnerName="ДВ Форест" PartnerINN="" TankExtCode="" FuelExtCode="000000019" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="00-000148" Volume="50,67" Amount="2153,48" Mass="0" OrigPrice="42,5" OrderCount="1" Remark=""/>
+				<OutcomeByRetail TankNum="3" HoseName="1" FuelName="Аи92" PaymentModeName="Дисконтная карта" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000019" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="0" Amount="0" Mass="0" OrigPrice="42,5" OrderCount="1" Remark="1"/>
+				<OutcomeByRetail TankNum="3" HoseName="1" FuelName="Аи92" PaymentModeName="Наличные" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000019" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="103,9" Amount="4415,76" Mass="0" OrigPrice="42,5" OrderCount="8" Remark=""/>
+				<OutcomeByRetail TankNum="3" HoseName="4" FuelName="Аи92" PaymentModeName="Ведомость" AgentName="ТРАНС" CardCode="" PartnerName="ТРАНС" PartnerINN="" TankExtCode="" FuelExtCode="000000019" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="00-000516" Volume="70" Amount="2975" Mass="0" OrigPrice="42,5" OrderCount="1" Remark=""/>
+				<OutcomeByRetail TankNum="3" HoseName="4" FuelName="Аи92" PaymentModeName="Дисконтная карта" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000019" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="60" Amount="2520" Mass="0" OrigPrice="42,5" OrderCount="1" Remark="1"/>
+				<OutcomeByRetail TankNum="3" HoseName="4" FuelName="Аи92" PaymentModeName="Карты ТОПДОН" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000019" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="29" Amount="0,29" Mass="0" OrigPrice="42,5" OrderCount="1" Remark="1"/>
+				<OutcomeByRetail TankNum="4" HoseName="2" FuelName="Аи95" PaymentModeName="Ведомость" AgentName="Лун ЮЭ" CardCode="" PartnerName="Лун ЮЭ" PartnerINN="" TankExtCode="" FuelExtCode="000000011" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="УП-000026" Volume="30" Amount="1305" Mass="0" OrigPrice="43,5" OrderCount="1" Remark=""/>
+				<OutcomeByRetail TankNum="4" HoseName="2" FuelName="Аи95" PaymentModeName="Наличные" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000011" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="56,95" Amount="2477,33" Mass="0" OrigPrice="43,5" OrderCount="3" Remark=""/>
+				<OutcomeByRetail TankNum="4" HoseName="5" FuelName="Аи95" PaymentModeName="Банк.карта" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000011" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="11,49" Amount="499,82" Mass="0" OrigPrice="43,5" OrderCount="1" Remark=""/>
+				<OutcomeByRetail TankNum="4" HoseName="5" FuelName="Аи95" PaymentModeName="Наличные" AgentName=" &lt;Не выбрано&gt;" CardCode="" PartnerName=" &lt;Не выбран&gt;" PartnerINN="" TankExtCode="" FuelExtCode="000000011" PaymentModeExtCode="" AgentExtCode="" PartnerExtCode="" Volume="36,77" Amount="1599,51" Mass="0" OrigPrice="43,5" OrderCount="3" Remark=""/>
+			</OutcomesByRetail>
+			<OutcomesByWholesale/>
+			<IncomesByDischarge/>
+			<IncomesByWholesale/>
+			<ItemOutcomesByRetail/>
+			<ItemOutcomesByPaysheet/>
+			<CashFlow>
+				<Cash DocTypeID="6" DocTypeName="Отпуск топлива" CashID="0" CashName=" &lt;Не выбран&gt;" Remark="" Amount="0"/>
+				<Cash DocTypeID="6" DocTypeName="Отпуск топлива" CashID="3" CashName="Драйвер ФР Атол он-лайн ФР (ФЗ 54)" Remark="" Amount="40133,3"/>
+				<Cash DocTypeID="15" DocTypeName="Выдача наличных" CashID="3" CashName="Драйвер ФР Атол он-лайн ФР (ФЗ 54)" Remark="" Amount="-40133,3"/>
+			</CashFlow>
+			<OutcomesByCoupon/>
+			<OutcomesByOffice>
+				<OutcomeByOffice Date="28.02.2019" Time="12:13:54" TankNum="2" TankExtCode="" HoseName="10" FuelName="ДТ-ЕВРО" FuelExtCode="000000016" PaymentModeName="Карты ТОПДОН" PaymentModeExtCode="" Remark="1" Volume="250" Amount="2,5" Mass="0" OrigPrice="49">
+					<CardCode>0011468800-000013341587916</CardCode>
+					<Schema Type="1"/>
+					<PartnerINN/>
+					<PartnerExtCode>8</PartnerExtCode>
+					<AmountExtCode/>
+				</OutcomeByOffice>
+				<OutcomeByOffice Date="28.02.2019" Time="12:22:53" TankNum="2" TankExtCode="" HoseName="8" FuelName="ДТ-ЕВРО" FuelExtCode="000000016" PaymentModeName="Карты ТОПДОН" PaymentModeExtCode="" Remark="1" Volume="172,7" Amount="1,73" Mass="0" OrigPrice="49">
+					<CardCode>0011468800-000013341587916</CardCode>
+					<Schema Type="1"/>
+					<PartnerINN/>
+					<PartnerExtCode>8</PartnerExtCode>
+					<AmountExtCode/>
+				</OutcomeByOffice>
+				<OutcomeByOffice Date="28.02.2019" Time="12:40:12" TankNum="1" TankExtCode="" HoseName="6" FuelName="ДТ-ЕВРО" FuelExtCode="000000016" PaymentModeName="Карты ТОПДОН" PaymentModeExtCode="" Remark="*" Volume="100" Amount="4900" Mass="0" OrigPrice="49">
+					<CardCode>0011468800-000010085382065</CardCode>
+					<Schema Type="1"/>
+					<PartnerINN>2983218485</PartnerINN>
+					<PartnerExtCode>96</PartnerExtCode>
+					<AmountExtCode/>
+				</OutcomeByOffice>
+				<OutcomeByOffice Date="28.02.2019" Time="12:42:53" TankNum="2" TankExtCode="" HoseName="8" FuelName="ДТ-ЕВРО" FuelExtCode="000000016" PaymentModeName="Карты ТОПДОН" PaymentModeExtCode="" Remark="1" Volume="200,02" Amount="2" Mass="0" OrigPrice="49">
+					<CardCode>0011468800-000014027487526</CardCode>
+					<Schema Type="1"/>
+					<PartnerINN/>
+					<PartnerExtCode>8</PartnerExtCode>
+					<AmountExtCode/>
+				</OutcomeByOffice>
+				<OutcomeByOffice Date="28.02.2019" Time="15:15:23" TankNum="3" TankExtCode="" HoseName="1" FuelName="Аи92" FuelExtCode="000000019" PaymentModeName="Дисконтная карта" PaymentModeExtCode="" Remark="1" Volume="0" Amount="0" Mass="0" OrigPrice="42,5">
+					<CardCode>0011468800-000010749410837</CardCode>
+					<Schema Type="0"/>
+				</OutcomeByOffice>
+				<OutcomeByOffice Date="28.02.2019" Time="15:18:49" TankNum="3" TankExtCode="" HoseName="4" FuelName="Аи92" FuelExtCode="000000019" PaymentModeName="Дисконтная карта" PaymentModeExtCode="" Remark="1" Volume="60" Amount="2520" Mass="0" OrigPrice="42,5">
+					<CardCode>0011468800-000010749410837</CardCode>
+					<Schema Type="0"/>
+				</OutcomeByOffice>
+				<OutcomeByOffice Date="28.02.2019" Time="18:06:39" TankNum="1" TankExtCode="" HoseName="6" FuelName="ДТ-ЕВРО" FuelExtCode="000000016" PaymentModeName="Карты ТОПДОН" PaymentModeExtCode="" Remark="*" Volume="120" Amount="5880" Mass="0" OrigPrice="49">
+					<CardCode>0011468800-000010085382065</CardCode>
+					<Schema Type="1"/>
+					<PartnerINN>2983218485</PartnerINN>
+					<PartnerExtCode>96</PartnerExtCode>
+					<AmountExtCode/>
+				</OutcomeByOffice>
+				<OutcomeByOffice Date="28.02.2019" Time="18:19:05" TankNum="3" TankExtCode="" HoseName="4" FuelName="Аи92" FuelExtCode="000000019" PaymentModeName="Карты ТОПДОН" PaymentModeExtCode="" Remark="1" Volume="29" Amount="0,29" Mass="0" OrigPrice="42,5">
+					<CardCode>0011468800-000011852389483</CardCode>
+					<Schema Type="1"/>
+					<PartnerINN/>
+					<PartnerExtCode>8</PartnerExtCode>
+					<AmountExtCode/>
+				</OutcomeByOffice>
+			</OutcomesByOffice>
+			<OutcomesByCards/>
+			<HosesLocking/>
+			<TechReturns/>
+			<SurplusPostings/>
+			<LossRetirements/>
+			<TradeDocsInBills/>
+			<TradeDocsOutBills/>
+			<TradeDocsInActs/>
+			<TradeDocsOutActs/>
+			<TradeDocsMoveItems/>
+			<ItemRests>
+				<ItemRest ItemRest="-90" StorageExtCode="" StorageName="Розничный склад" ItemExtCode="" ItemName="Дисконтная карта" ItemCode="4606224000619"/>
+				<ItemRest ItemRest="-6" StorageExtCode="" StorageName="Розничный склад" ItemExtCode="" ItemName="Незамерзающая жидкость 150" ItemCode="3E2073E01897"/>
+				<ItemRest ItemRest="-242" StorageExtCode="" StorageName="Розничный склад" ItemExtCode="" ItemName="Незамерзающая жидкость 80" ItemCode=""/>
+				<ItemRest ItemRest="-17" StorageExtCode="" StorageName="Розничный склад" ItemExtCode="" ItemName="Стеклоомывающая жидкость 2 шт 150" ItemCode=""/>
+				<ItemRest ItemRest="-95" StorageExtCode="" StorageName="Розничный склад" ItemExtCode="" ItemName="Стеклоомывающая жидкость зимняя 200" ItemCode=""/>
+				<ItemRest ItemRest="-9" StorageExtCode="" StorageName="Розничный склад" ItemExtCode="" ItemName="стеклоомывающая жидкость 3 шт 210" ItemCode=""/>
+			</ItemRests>
+		</Session>
+	</Sessions>
+</DataPaket>

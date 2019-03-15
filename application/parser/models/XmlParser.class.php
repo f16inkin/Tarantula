@@ -13,13 +13,22 @@ use core\base\Model;
 
 class XmlParser extends Model
 {
-    public function __construct()
+    private $_tanksFuelTypes = [];
+
+    public function __construct(int $subdivision_id)
     {
         parent::__construct();
+        $this->_tanksFuelTypes = $this->getTanksFuelType($subdivision_id);
     }
 
     /**
      * Метод возвращает массив с данными о том в какой емкости находится какой вид топлива для выбранного подразделения
+     * ----------------------------------------------------------------------------------------------------------------
+     * array =[ids = [], names = []]:
+     * ids = [3 => 1, 4 => 2, 5 => 4, 1 => 5, 2 => 5, 6 => 5] - массив где цифровому ключу идентификатору емкости
+     * соответствует идентификатор топлива.
+     * names = [3 => Аи92, 4=> Аи95, 5 => Дт, 1 => ДТ-ЕВРО, 2 => ДТ-ЕВРО, 6 => ДТ-ЕВРО] - массив где именному ключу
+     * идентификатору емкости соответствует идентификатор топлива.
      *
      * @param $subdivision
      * @return null | array
@@ -46,24 +55,47 @@ class XmlParser extends Model
         }
     }
 
-    private function getFuelTypeFromTank(int $subdivision, int $tank, string $field){
-        $arrTanksFuelTypes = $this->getTanksFuelType($subdivision);
-        return $arrTanksFuelTypes[$field][$tank];
-    }
-
-    private function getXmlData(int $subdivision_id, $simpleXmlElement){
+    /*---------------------------------------------------------------------------------------------------------------*/
+    /*--------------------------------------Обработка данных из раздела связанного с емкостями-----------------------*/
+    /*---------------------------------------------------------------------------------------------------------------*/
+    /**
+     * Метод вернет массив с данными считаннами из Xml отчета
+     * ------------------------------------------------------
+     * @param $simpleXmlElement
+     * @return array | null
+     */
+    private function getXmlTanksData($simpleXmlElement){
         if (!isset($simpleXmlElement)){
             return null;
         }
-        //Получаю полную дату открытия смены в формате строки
-        $xmlDate = (string)$simpleXmlElement->Sessions->Session['StartDateTime'];
-        //Конвертирую в удобный для вставки в БД формат
-        $startDate = date('Y-m-d', strtotime($xmlDate));
-        //Объявляю массив в который будут собираться распарсенные данные из XML отчета
+        /**
+         * Объявляю массив в который будут собираться распарсенные данные из XML отчета
+         * arrXml= [SessionInformation = [], SessionData = []]:
+         * SessionInformation = [Number, StartDateTime, EndDateTime, Operator] - информация о смене.
+         * SessionData = [TankNum, StartFuelVolume, EndFactVolume, EndDensity, EndTemperature, EndMass, Fuel, Outcome,
+         * Income, EndFuelVolume, Overage] - информация о топливе за смену.
+         */
         $arrXml = [];
         /*
          * Собираю массив из данных которые я могу считать из XML^
+         * - Номер смены,
          * - Дата открытия смены,
+         * - Дата закрытиясмены,
+         * - Ф.И.О. Оператора
+         */
+        $SessionInformation = [];
+        $sessionNumber = (string)$simpleXmlElement->Sessions->Session['SessionNum'];
+        $sessionStartDateTime = (string)$simpleXmlElement->Sessions->Session['StartDateTime'];
+        $sessionEndDateTime = (string)$simpleXmlElement->Sessions->Session['EndDateTime'];
+        $operator = (string)$simpleXmlElement->Sessions->Session['UserName'];
+        $SessionInformation = [
+            'Number' => $sessionNumber,
+            'StartDateTime' => $sessionStartDateTime,
+            'EndDateTime' => $sessionEndDateTime,
+            'Operator' => $operator
+        ];
+        /*
+         * Собираю массив из данных которые я могу считать из XML^
          * - Номер емкости,
          * - Начальный объем,
          * - Фактический объем, объем после замера метрштоком
@@ -72,16 +104,16 @@ class XmlParser extends Model
          * - Масса топлива
          * - Идентификатор топлива
          */
+        $sessionData = [];
         foreach ($simpleXmlElement->Sessions->Session->Tanks->Tank as $item){
             $tankNum = (int)$item['TankNum'];
-            $arrXml[$tankNum]['StartDate'] = $startDate;
-            $arrXml[$tankNum]['TankNum'] = $tankNum;
-            $arrXml[$tankNum]['StartFuelVolume'] = str_replace(',', '.', (string)$item['StartFuelVolume']);
-            $arrXml[$tankNum]['EndFactVolume'] = str_replace(',', '.', (string)$item['EndFactVolume']);
-            $arrXml[$tankNum]['EndDensity'] = (string)$item['EndDensity'];
-            $arrXml[$tankNum]['EndTemperature'] = (string)$item['EndTemperature'];
-            $arrXml[$tankNum]['EndMass'] = str_replace(',', '.', (string)$item['EndMass']);
-            $arrXml[$tankNum]['Fuel'] = $this->getFuelTypeFromTank($subdivision_id, $tankNum, 'ids');
+            $sessionData[$tankNum]['TankNum'] = $tankNum;
+            $sessionData[$tankNum]['StartFuelVolume'] = str_replace(',', '.', (string)$item['StartFuelVolume']);
+            $sessionData[$tankNum]['EndFactVolume'] = str_replace(',', '.', (string)$item['EndFactVolume']);
+            $sessionData[$tankNum]['EndDensity'] = (string)$item['EndDensity'];
+            $sessionData[$tankNum]['EndTemperature'] = (string)$item['EndTemperature'];
+            $sessionData[$tankNum]['EndMass'] = str_replace(',', '.', (string)$item['EndMass']);
+            $sessionData[$tankNum]['Fuel'] = $this->_tanksFuelTypes['names'][$tankNum];
         }
         /*
          * Заполняю массив данными об отпущенном топливе в разрезе емкости / вида топлива.
@@ -91,15 +123,15 @@ class XmlParser extends Model
          * был отпуск топлива. Те емкости из которых топливо не сливалось остануться с outcome равным 0.
          */
         //Шаг №1
-        foreach ($arrXml as $item){
+        foreach ($sessionData as $item){
             $TankNum = (string)$item['TankNum'];
-            $arrXml[$TankNum]['Outcome'] = 0;
+            $sessionData[$TankNum]['Outcome'] = 0;
         }
         //Шаг №2
         foreach ($simpleXmlElement->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
             $TankNum = (string)$item['TankNum'];
             $FuelRelease = str_replace(',', '.', (string) $item['Volume']);
-            $arrXml[$TankNum]['Outcome'] += $FuelRelease;
+            $sessionData[$TankNum]['Outcome'] += $FuelRelease;
         }
         /*
          * Заполняю массив данными о принятом топливе
@@ -107,36 +139,130 @@ class XmlParser extends Model
          * Потом прибавляю к нему значения для тех емкостей в которые происходила приемка топлива.
          */
         //Шаг №1
-        foreach ($arrXml as $item){
+        foreach ($sessionData as $item){
             $TankNum = (string)$item['TankNum'];
-            $arrXml[$TankNum]['Income'] = 0;
+            $sessionData[$TankNum]['Income'] = 0;
         }
         //Шаг №2
         foreach ($simpleXmlElement->Sessions->Session->IncomesByDischarge->IncomeByDischarge as $item){
             $TankNum = (string)$item['TankNum'];
             $FuelIncome = str_replace(',', '.', (string) $item['Volume']);
-            $arrXml[$TankNum]['Income'] += $FuelIncome;
+            $sessionData[$TankNum]['Income'] += $FuelIncome;
         }
         /*
          * Вычисляю расчетный остаток.
          * Добавляю новый индекс EndFuelVolume и приравниваю его значение к 0.
-         * Высчи тваю разницу между начальным объемом
+         * Высчитываю разницу между начальным объемом
          */
         //Шаг №1
-        foreach ($arrXml as $item){
+        foreach ($sessionData as $item){
             $TankNum = (string)$item['TankNum'];
-            $arrXml[$TankNum]['EndFuelVolume'] = 0;
+            $sessionData[$TankNum]['EndFuelVolume'] = 0;
         }
         //Шаг №2
-        foreach ($arrXml as $item){
+        foreach ($sessionData as $item){
             $TankNum = (string)$item['TankNum'];
-            $arrXml[$TankNum]['EndFuelVolume'] = $item['StartFuelVolume'] + $item['Income'] - $item['Outcome'];
+            $sessionData[$TankNum]['EndFuelVolume'] = $item['StartFuelVolume'] + $item['Income'] - $item['Outcome'];
         }
+        /*
+         * Вычисляю излишки топлива.
+         * Добавляю новый индекс Overage и приравниваю его значение к 0.
+         * Высчитываю разницу между расчетным и фактическим остатками
+         */
+        //Шаг №1
+        foreach ($sessionData as $item){
+            $TankNum = (string)$item['TankNum'];
+            $sessionData[$TankNum]['Overage'] = 0;
+        }
+        //Шаг №2
+        foreach ($sessionData as $item){
+            $TankNum = (string)$item['TankNum'];
+            $sessionData[$TankNum]['Overage'] = $item['EndFactVolume'] - $item['EndFuelVolume'];
+        }
+        /*
+         * Собираю все в выходной массив.
+         * Возвращаю данные если все прошло удачно.
+         */
+        $arrXml['SessionInformation'] = $SessionInformation;
+        $arrXml['SessionData'] = $sessionData;
         return $arrXml;
 
     }
 
-    public function getXmlFilesList(int $subdivision_id, string $directory){
+    /*---------------------------------------------------------------------------------------------------------------*/
+    /*------------------------------------Обработка данных из раздела связанного с реализацией-----------------------*/
+    /*---------------------------------------------------------------------------------------------------------------*/
+
+    private function getXmlOutcomesData($simpleXmlElement){
+        if (!isset($simpleXmlElement)){
+            return null;
+        }
+        /**
+         * Объявляю массив в который будут собираться распарсенные данные из XML отчета
+         * arrXml= [SessionInformation = [], SessionData = []]:
+         * SessionInformation = [Number, StartDateTime, EndDateTime, Operator] - информация о смене.
+         * SessionData = [TankNum, StartFuelVolume, EndFactVolume, EndDensity, EndTemperature, EndMass, Fuel, Outcome,
+         * Income, EndFuelVolume, Overage] - информация о топливе за смену.
+         */
+        $arrXml = [];
+        /*
+         * Собираю массив из данных которые я могу считать из XML^
+         * - Номер смены,
+         * - Дата открытия смены,
+         * - Дата закрытиясмены,
+         * - Ф.И.О. Оператора
+         */
+        $SessionInformation = [];
+        $sessionNumber = (string)$simpleXmlElement->Sessions->Session['SessionNum'];
+        $sessionStartDateTime = (string)$simpleXmlElement->Sessions->Session['StartDateTime'];
+        $sessionEndDateTime = (string)$simpleXmlElement->Sessions->Session['EndDateTime'];
+        $operator = (string)$simpleXmlElement->Sessions->Session['UserName'];
+        $SessionInformation = [
+            'Number' => $sessionNumber,
+            'StartDateTime' => $sessionStartDateTime,
+            'EndDateTime' => $sessionEndDateTime,
+            'Operator' => $operator
+        ];
+        /*
+         * Собираю массив из данных которые я могу считать из XML^
+         * - Номер емкости,
+         */
+        $sessionData = [];
+        foreach ($simpleXmlElement->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
+            $tankNum = (int)$item['TankNum'];
+            $sessionData[$tankNum]['TankNum'] = $tankNum;
+            $sessionData[$tankNum]['hoseName'] = (string)$item['hoseName'];
+            $sessionData[$tankNum]['FuelName'] = (string)$item['FuelName'];
+            $sessionData[$tankNum]['PaymentModeName'] = (string)$item['PaymentModeName'];
+            $sessionData[$tankNum]['PaymentModeExtCode'] = (string)$item['PaymentModeExtCode'];
+            $sessionData[$tankNum]['PaymentModeExtCode'] = (string)$item['PaymentModeExtCode'];
+            $sessionData[$tankNum]['Volume'] = str_replace(',', '.', (string)$item['Volume']);
+            $sessionData[$tankNum]['Amount'] = str_replace(',', '.', (string)$item['Amount']);
+            $sessionData[$tankNum]['OrigPrice'] = str_replace(',', '.', (string)$item['OrigPrice']);
+            $sessionData[$tankNum]['OrderCount'] = (string)$item['OrderCount'];
+            $sessionData[$tankNum]['Fuel'] = $this->_tanksFuelTypes['names'][$tankNum];
+        }
+
+    }
+
+    /*---------------------------------------------------------------------------------------------------------------*/
+    /*---------------------------------Обработка данных из раздела связанного с приемом топлива----------------------*/
+    /*---------------------------------------------------------------------------------------------------------------*/
+
+    private function getXmlIncomesData(){
+
+    }
+
+    /*---------------------------------------------------------------------------------------------------------------*/
+    /*---------------------------------------Обработка файлов и вывод информации-------------------------------------*/
+    /*---------------------------------------------------------------------------------------------------------------*/
+    /**
+     * Метод вернет масив объектов SimpleXmlElements с данными собранными с Xml файлов
+     * -----------------------------------------------------------------------------
+     * @param string $directory
+     * @return array
+     */
+    private function getXmlFilesList(string $directory){
         //
         $files = scandir($directory);
         $simpleXmlElements = [];
@@ -150,12 +276,17 @@ class XmlParser extends Model
         }
         //Возвращаю обработку ошибок в стандартное положение.
         libxml_use_internal_errors(false);
+        return $simpleXmlElements;
+    }
+
+    public function getTanksData(string $directory){
+        $simpleXmlElements = $this->getXmlFilesList($directory);
         $arr = [];
         //Прохожу по каждому элементу массива simpleXmlElements и получаю из него информацию по смене.
         //Возвращаю массив с распарсенными данными
         foreach ($simpleXmlElements as $simpleXmlElement){
             $arr[$simpleXmlElement['file_name']]['file_name'] = $simpleXmlElement['file_name'];
-            $arr[$simpleXmlElement['file_name']]['data'] = $this->getXmlData($subdivision_id, $simpleXmlElement['simpleXmlElement']);
+            $arr[$simpleXmlElement['file_name']]['data'] = $this->getXmlTanksData($simpleXmlElement['simpleXmlElement']);
         }
         return $arr;
     }

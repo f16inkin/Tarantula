@@ -21,8 +21,8 @@ class ControllerXmlParser extends ControllerApplication
 
     public function actionIndex()
     {
-        $parser = new XmlParser();
-        $content = $parser->getXmlFilesList(4, ROOT.'/application/parser/storage');
+        $parser = new XmlParser(4);
+        $content = $parser->getTanksData(ROOT.'/application/parser/storage');
         $this->_view->setTitle('Парсер XML файлов');
         $this->_view->render($this->_device.'/parser/parser.page',$content);
     }
