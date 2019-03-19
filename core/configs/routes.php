@@ -83,4 +83,24 @@ return[
             'arguments' => 0 //Или просто можно не писать этот параметр
         ]
     ],
+    [
+        '^parser/tanks$' => [
+            'construct' => false, //Аргумент идет в конструктор
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerXmlParser',
+            'action' => 'GetTanks',
+            'arguments' => 0 //Принимает один ааргумент
+        ]
+    ],
+    [
+        '^parser/main$' => [
+            'construct' => false,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerXmlParser',
+            'action' => 'GetMain',
+            'arguments' => 0
+        ]
+    ],
 ];

@@ -206,73 +206,6 @@ class XmlParser extends Model
     }
 
     /*---------------------------------------------------------------------------------------------------------------*/
-    /*------------------------------------Обработка данных из раздела связанного с реализацией-----------------------*/
-    /*---------------------------------------------------------------------------------------------------------------*/
-
-    private function getXmlOutcomesData($simpleXmlElement){
-        if (!isset($simpleXmlElement)){
-            return null;
-        }
-        /**
-         * Получаю данные о смене.
-         */
-        $sessionInformation = $this->getSessionInformation($simpleXmlElement);
-        /*
-         * Собираю массив из данных которые я могу считать из XML^
-         * - Номер емкости,
-         * - Номер рукава,
-         * - Имя топлива,
-         * - Имя вида оплаты
-         * - Код вида оплаты,
-         * -
-         */
-        $sessionData = [];
-        /*$i = 0;
-        foreach ($simpleXmlElement->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
-            $tankNum = (int)$item['TankNum'];
-            $sessionData[$tankNum][$i]['TankNum'] = $tankNum;
-            $sessionData[$tankNum][$i]['HoseName'] = (string)$item['HoseName'];
-            $sessionData[$tankNum][$i]['FuelName'] = (string)$item['FuelName'];
-            $sessionData[$tankNum][$i]['PaymentModeName'] = (string)$item['PaymentModeName'];
-            $sessionData[$tankNum][$i]['PaymentModeExtCode'] = (string)$item['PaymentModeExtCode'];
-            $sessionData[$tankNum][$i]['Volume'] = str_replace(',', '.', (string)$item['Volume']);
-            $sessionData[$tankNum][$i]['Amount'] = str_replace(',', '.', (string)$item['Amount']);
-            $sessionData[$tankNum][$i]['OrigPrice'] = str_replace(',', '.', (string)$item['OrigPrice']);
-            $sessionData[$tankNum][$i]['OrderCount'] = (string)$item['OrderCount'];
-            $sessionData[$tankNum][$i]['Fuel'] = $this->_tanksFuelTypes['names'][$tankNum];
-            $i++;
-        }*/
-        $i = 0;
-        foreach ($simpleXmlElement->Sessions->Session->OutcomesByRetail->OutcomeByRetail as $item){
-            $tankNum = (int)$item['TankNum'];
-            $PaymentModeName = (string)$item['PaymentModeName'];
-            $sessionData[$PaymentModeName][$i]['HoseName'] = (string)$item['HoseName'];
-            $sessionData[$PaymentModeName][$i]['FuelName'] = (string)$item['FuelName'];
-            $sessionData[$PaymentModeName][$i]['PaymentModeExtCode'] = (string)$item['PaymentModeExtCode'];
-            $sessionData[$PaymentModeName][$i]['Volume'] = str_replace(',', '.', (string)$item['Volume']);
-            $sessionData[$PaymentModeName][$i]['Amount'] = str_replace(',', '.', (string)$item['Amount']);
-            $sessionData[$PaymentModeName][$i]['OrigPrice'] = str_replace(',', '.', (string)$item['OrigPrice']);
-            $sessionData[$PaymentModeName][$i]['OrderCount'] = (string)$item['OrderCount'];
-            $sessionData[$PaymentModeName][$i]['Fuel'] = $this->_tanksFuelTypes['names'][$tankNum];
-            $i++;
-        }
-        $a = $sessionData;
-        foreach ($sessionData as $data){
-            $outcomesData[] = array_values($data);
-        }
-        return $outcomesData;
-
-    }
-
-    /*---------------------------------------------------------------------------------------------------------------*/
-    /*---------------------------------Обработка данных из раздела связанного с приемом топлива----------------------*/
-    /*---------------------------------------------------------------------------------------------------------------*/
-
-    private function getXmlIncomesData(){
-
-    }
-
-    /*---------------------------------------------------------------------------------------------------------------*/
     /*---------------------------------------Обработка файлов и вывод информации-------------------------------------*/
     /*---------------------------------------------------------------------------------------------------------------*/
     /**
@@ -306,18 +239,6 @@ class XmlParser extends Model
         foreach ($simpleXmlElements as $simpleXmlElement){
             $arr[$simpleXmlElement['file_name']]['file_name'] = $simpleXmlElement['file_name'];
             $arr[$simpleXmlElement['file_name']]['data'] = $this->getXmlTanksData($simpleXmlElement['simpleXmlElement']);
-        }
-        return $arr;
-    }
-
-    public function getOutcomesData($directory){
-        $simpleXmlElements = $this->getXmlFilesList($directory);
-        $arr = [];
-        //Прохожу по каждому элементу массива simpleXmlElements и получаю из него информацию по смене.
-        //Возвращаю массив с распарсенными данными
-        foreach ($simpleXmlElements as $simpleXmlElement){
-            $arr[$simpleXmlElement['file_name']]['file_name'] = $simpleXmlElement['file_name'];
-            $arr[$simpleXmlElement['file_name']]['data'] = $this->getXmlOutcomesData($simpleXmlElement['simpleXmlElement']);
         }
         return $arr;
     }
