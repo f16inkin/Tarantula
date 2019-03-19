@@ -11,21 +11,18 @@ namespace application\parser\controllers;
 
 use application\base\ControllerApplication;
 use application\parser\models\XmlParser;
+use core\models\Subdivision;
 
 class ControllerXmlParser extends ControllerApplication
 {
     private $_parser;
     private $_storage = ROOT.'/application/parser/storage';
-    private $_subdivision_id;
-    private $_subdivision_ids;
+    private $_subdivisions;
 
-    public function __construct($subdivision_id = null)
+    public function __construct()
     {
         parent::__construct();
-        if (isset($subdivision_id)){
-            $this->_parser = new XmlParser($subdivision_id);
-            $this->_subdivision_id = $subdivision_id;
-        }
+        $this->_subdivisions = (new Subdivision())->getUserSubdivisions($this->_user->getId());
     }
 
     /**
@@ -40,7 +37,7 @@ class ControllerXmlParser extends ControllerApplication
 
 
     public function actionIndex(){
-        $content['subdivision'] = $this->_subdivision_id;
+        $content['subdivisions'] = $this->_subdivisions;
         $this->_view->setTitle('Парсер XML файлов');
         $this->_view->render($this->_device.'/parser/parser.page', $content);
     }
@@ -52,7 +49,6 @@ class ControllerXmlParser extends ControllerApplication
 
     public function actionGetTanks(){
         $subdivision = $_POST['subdivision'];
-        //$content = $this->_parser->getTanksData($this->_storage);
         $content = (new XmlParser($subdivision))->getTanksData($this->_storage);
         $this->_view->setTitle('Данные по емкостям');
         $this->loadPage('/parser/ajax/successed/tanks/tanks.page', $content);
