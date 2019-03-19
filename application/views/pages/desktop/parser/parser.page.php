@@ -28,15 +28,8 @@
                     </li>
                 </ul>
             </div>
-            <div id="parser-workplace">
-                <div id="parser-nav-bar">
-                    <select id="subdivisions">
-                        <option value="4">АЗС Чугуевка</option>
-                        <option value="5">АЗС Таежка</option>
-                    </select>
-                    <a href="" onclick="showTanksData();return false;" class="btn btn-success btn-sm">Загрузить</a>
-                </div>
-                <div id="parser-content"></div>
+            <div id="parser-content">
+                <!--Контент AJAX-->
             </div>
         </div>
     </div>

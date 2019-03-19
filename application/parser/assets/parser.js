@@ -23,7 +23,7 @@ $(function () {
         case "incomes": showIncomesData(); break;
         case "office": showOfficeData(); break;
         default: showMainData(); break; //Если состояние еще не установлено, будет подгружаться заданная страница
-}
+    }
 });
 /*
  * --------------------------------------------------------------------------------------------------------------------
@@ -46,8 +46,8 @@ $("#parser-main").on("click", function () {
 $("#parser-tanks").on("click", function () {
     //Установка состояния
     localStorage.setItem("parserState", "tanks");
-    //Устанавливаю заголовок
-    $("#title").text("Емкости");
+    //Выполнение AJAX запроса, загрузка контента
+    showTanksData();
 });
 /**
  * Обрабатывает нажатие на вкладку "Отпуск топлива".
@@ -108,7 +108,7 @@ function showTanksData() {
     var request = $.ajax({
         type: "POST",
         url: "/parser/tanks/",
-        data:{"subdivision": subdivision},
+        data:{"subdivision": 4}, //Временно указал явное значение подразделения
         cache: false
     });
     request.done(function (response) {
@@ -116,6 +116,7 @@ function showTanksData() {
         $("#parser-tanks").addClass('active');
         //Подгружаю контент
         $("#parser-content").html(response);
-
+        //Устанавливаю заголовок
+        $("#title").text("Емкости");
     });
 }

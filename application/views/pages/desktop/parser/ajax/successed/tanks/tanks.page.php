@@ -19,7 +19,7 @@
                 </button>
             </h5>
         </div>
-        <div id="<?=substr($singleSession['file_name'],0, 32);?>" class="collapse" aria-labelledby="headingOne" data-parent="#monitoring-content">
+        <div id="<?=substr($singleSession['file_name'],0, 32);?>" class="collapse" aria-labelledby="headingOne" data-parent="#parser-content">
             <div class="card-body">
                 <table cellpadding="1" cellspacing="1" border="0" class="table-mine  full-width box-shadow--2dp">
                     <thead>
