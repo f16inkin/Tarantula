@@ -49,7 +49,8 @@ class ControllerXmlParser extends ControllerApplication
 
     public function actionGetTanks(){
         $subdivision = $_POST['subdivision'];
-        $content = (new XmlParser($subdivision))->getTanksData($this->_storage);
+        $content['subdivisions'] = $this->_subdivisions;
+        $content['files'] = (new XmlParser($subdivision))->getTanksData($this->_storage);
         $this->_view->setTitle('Данные по емкостям');
         $this->loadPage('/parser/ajax/successed/tanks/tanks.page', $content);
     }

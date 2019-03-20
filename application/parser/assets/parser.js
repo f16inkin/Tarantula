@@ -6,8 +6,6 @@
  *                                      Public Variables и загрузка страницы
  * --------------------------------------------------------------------------------------------------------------------
  */
-var subdivision = $('div#subdivision').data('subdivision'); //Текущее подразделение
-var parser_content = $('#parser-content');
 /*
  * Загрузка страницы
  * Каждый раз при перезагрузке страницы, браузер будет подгружать через AJAX именно ту часть которая была подгружена
@@ -17,13 +15,14 @@ var parser_content = $('#parser-content');
 $(function () {
     var state = localStorage.getItem("parserState");
     switch (state){
-        case "main": showMainData(); break;
-        case "tanks": showTanksData(); break;
+        case "main": showMainData(); $("#parser-main").addClass('active'); break;
+        case "tanks": showTanksPage(); $("#parser-tanks").addClass('active'); break;
         case "outcomes": showOutcomesData(); break;
         case "incomes": showIncomesData(); break;
         case "office": showOfficeData(); break;
         default: showMainData(); break; //Если состояние еще не установлено, будет подгружаться заданная страница
     }
+    $(".dropdown-toggle").dropdown();
 });
 /*
  * --------------------------------------------------------------------------------------------------------------------
@@ -47,7 +46,7 @@ $("#parser-tanks").on("click", function () {
     //Установка состояния
     localStorage.setItem("parserState", "tanks");
     //Выполнение AJAX запроса, загрузка контента
-    showTanksData();
+    showTanksPage();
 });
 /**
  * Обрабатывает нажатие на вкладку "Отпуск топлива".
@@ -92,13 +91,40 @@ function showMainData() {
         cache: false
     });
     request.done(function (response) {
-        //Выделяю кнопку
-        $("#parser-main").addClass('active');
         //Подгружаю контент
         $("#parser-content").html(response);
         //Устанавливаю заголовок
         $("#title").text("Parser");
     });
+}
+/**
+ * Подгружает панель навигации
+ */
+function showTanksPage() {
+    //Очистка раздела
+    $("div#parser-content").empty();
+    //Формирую строку с панелью навигации
+    var string = '<div class="parser-nav-bar">' +
+                    '<div class="parser-nav-bar-container">' +
+                        '<a href="" onclick="showTanksData();return false;" class="btn btn-success btn-sm">' +
+                        '<i class="fa fa-upload" aria-hidden="true"></i> Загрузить XML</a>' +
+                    '</div>' +
+                    '<div class="parser-nav-bar-container">' +
+                        '<a href="" onclick="cleanTanksPage();return false;" class="btn btn-danger btn-sm">' +
+                        '<i class="fa fa-broom" aria-hidden="true"></i> Очистить</a>' +
+                    '</div>' +
+                 '</div>' +
+                 '<div id="tanks-content"></div>';
+    //прикрепляю к разделу панель навигации
+    $("#parser-content").prepend(string);
+    //Устанавливаю заголовок страницы
+    $("#title").text("Емкости");
+}
+/**
+ * Очистка раздела с контентом емкостей
+ */
+function cleanTanksPage() {
+    $("div#tanks-content").empty();
 }
 /**
  * Подгружает AJAX контент с данными о топливе в емкостях
@@ -112,11 +138,7 @@ function showTanksData() {
         cache: false
     });
     request.done(function (response) {
-        //Выделяю кнопку
-        $("#parser-tanks").addClass('active');
         //Подгружаю контент
-        $("#parser-content").html(response);
-        //Устанавливаю заголовок
-        $("#title").text("Емкости");
+        $("#tanks-content").html(response);
     });
 }

@@ -6,20 +6,39 @@
  * Time: 10:32
  */
 ?>
+<div class="parser-content-header">
+    Добавление данных
+</div>
+<div class="parser-nav-bar">
+    <div class="parser-nav-bar-container">
+        <select id="subdivisions" style="width: 250px;">
+            <option value="0">Выберите подраздедление...</option>
+            <?php foreach ($content['subdivisions'] as $singleSubdivision) :?>
+                <option value="<?=$singleSubdivision['id'];?>"><?=$singleSubdivision['name'];?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="parser-nav-bar-container">
+        <a href="" id="handbook-button" class="btn btn-primary btn-sm" onclick="">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i> Добавить в БД</a>
+    </div>
+</div>
 <!---->
-<?php foreach ($content as $singleSession) :?>
+<?php foreach ($content['files'] as $singleSession) :?>
     <div class="card">
         <div class="card-header" id="headingOne">
             <h5 class="mb-0">
-                <button class="btn btn-primary" style="width: 500px;" data-toggle="collapse" data-target="#<?=substr($singleSession['file_name'],0, 32);?>">
+                <input type="text" value="<?=$singleSession['data']['SessionInformation']['Number'];?>" hidden>
+                <button class="btn btn-primary" style="width: 500px;" data-toggle="collapse" data-target="#Session_<?=$singleSession['data']['SessionInformation']['Number'];?>">
                     <div>
                         <?='№ Смены: '.$singleSession['data']['SessionInformation']['Number'];?>
                         <?='Оператор: '.$singleSession['data']['SessionInformation']['Operator'];?>
                     </div>
                 </button>
+                <button  class="btn btn-danger">Удалить</button>
             </h5>
         </div>
-        <div id="<?=substr($singleSession['file_name'],0, 32);?>" class="collapse" aria-labelledby="headingOne" data-parent="#parser-content">
+        <div id="Session_<?=$singleSession['data']['SessionInformation']['Number']; ?>" class="collapse" aria-labelledby="headingOne" data-parent="#parser-content">
             <div class="card-body">
                 <table cellpadding="1" cellspacing="1" border="0" class="table-mine  full-width box-shadow--2dp">
                     <thead>
