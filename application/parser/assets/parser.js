@@ -101,44 +101,74 @@ function showMainData() {
  * Подгружает панель навигации
  */
 function showTanksPage() {
-    //Очистка раздела
-    $("div#parser-content").empty();
-    //Формирую строку с панелью навигации
-    var string = '<div class="parser-nav-bar">' +
-                    '<div class="parser-nav-bar-container">' +
-                        '<a href="" onclick="showTanksData();return false;" class="btn btn-success btn-sm">' +
-                        '<i class="fa fa-upload" aria-hidden="true"></i> Загрузить XML</a>' +
-                    '</div>' +
-                    '<div class="parser-nav-bar-container">' +
-                        '<a href="" onclick="cleanTanksPage();return false;" class="btn btn-danger btn-sm">' +
-                        '<i class="fa fa-broom" aria-hidden="true"></i> Очистить</a>' +
-                    '</div>' +
-                 '</div>' +
-                 '<div id="tanks-content"></div>';
-    //прикрепляю к разделу панель навигации
-    $("#parser-content").prepend(string);
-    //Устанавливаю заголовок страницы
-    $("#title").text("Емкости");
+    var request = $.ajax({
+        type: "POST",
+        url: "/parser/tanks/",
+        cache: false
+    });
+    request.done(function (response) {
+        //Подгружаю контент
+        $("#parser-content").html(response);
+    });
 }
 /**
  * Очистка раздела с контентом емкостей
  */
 function cleanTanksPage() {
     $("div#tanks-content").empty();
+    $('#hidden-button').attr('hidden', true);
 }
 /**
  * Подгружает AJAX контент с данными о топливе в емкостях
  */
 function showTanksData() {
     var subdivision = $("#subdivisions").val();
+    if (subdivision == 0){
+        $('#tanksModalWindow').modal('show');
+        getSubdivisions();
+    }
+    else {
+        var request = $.ajax({
+            type: "POST",
+            url: "/parser/tanks/data/",
+            data:{"subdivision": subdivision}, //Временно указал явное значение подразделения
+            cache: false
+        });
+        request.done(function (response) {
+            //Подгружаю контент
+            $("#tanks-content").html(response);
+            $('#hidden-button').attr('hidden', false);
+        });
+    }
+}
+/**
+ * Подгружает combo box с доступными подразделеними в модальное окно
+ */
+function getSubdivisions() {
     var request = $.ajax({
         type: "POST",
-        url: "/parser/tanks/",
-        data:{"subdivision": 4}, //Временно указал явное значение подразделения
+        url: "/parser/tanks/subdivisions/",
+        cache: false
+    });
+    request.done(function (response) {
+        $("#modal-content").html(response)
+    });
+}
+/**
+ * Слушатель нажатия на кнопку загрузки XML в модальном окне
+ */
+$('#parser-content').on('click' , '#modalUploadXmlButton', function () {
+    var subdivision = $("#modal-subdivisions").val();
+    var request = $.ajax({
+        type: "POST",
+        url: "/parser/tanks/data/",
+        data:{"subdivision": subdivision}, //Временно указал явное значение подразделения
         cache: false
     });
     request.done(function (response) {
         //Подгружаю контент
         $("#tanks-content").html(response);
+        $('#hidden-button').attr('hidden', false);
+        $('#tanksModalWindow').modal('hide');
     });
-}
+});

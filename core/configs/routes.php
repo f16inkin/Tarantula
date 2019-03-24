@@ -83,16 +83,35 @@ return[
             'arguments' => 0 //Или просто можно не писать этот параметр
         ]
     ],
+    /**
+     * Загрузка страницы для раздела с емкостями
+     */
     [
         '^parser/tanks$' => [
             'construct' => false, //Аргумент идет в конструктор
             'module' => 'parser',
             'folder' => 'application',
             'controller' => 'ControllerXmlParser',
-            'action' => 'GetTanks',
+            'action' => 'GetTanksPage',
             'arguments' => 0 //Принимает один ааргумент
         ]
     ],
+    /**
+     * Загрузка данных для раздела "Емкости"
+     */
+    [
+        '^parser/tanks/data$' => [
+            'construct' => false,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerXmlParser',
+            'action' => 'GetTanksData',
+            'arguments' => 0
+        ]
+    ],
+    /**
+     * Загрузка главной страницы парсера
+     */
     [
         '^parser/main$' => [
             'construct' => false,
@@ -100,6 +119,16 @@ return[
             'folder' => 'application',
             'controller' => 'ControllerXmlParser',
             'action' => 'GetMain',
+            'arguments' => 0
+        ]
+    ],
+    [
+        '^parser/tanks/subdivisions$' => [
+            'construct' => false,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerXmlParser',
+            'action' => 'GetSubdivisions',
             'arguments' => 0
         ]
     ],

@@ -35,7 +35,9 @@ class ControllerXmlParser extends ControllerApplication
         include $this->_view->returnPagePath('application', $this->_device.$page);
     }
 
-
+    /**
+     * Загружает layout страницы парсера, в которую потом подгружаются части модуля
+     */
     public function actionIndex(){
         $content['subdivisions'] = $this->_subdivisions;
         $this->_view->setTitle('Парсер XML файлов');
@@ -46,13 +48,32 @@ class ControllerXmlParser extends ControllerApplication
         $content = [];
         $this->loadPage('/parser/ajax/successed/main.page', $content);
     }
-
-    public function actionGetTanks(){
-        $subdivision = $_POST['subdivision'];
-        $content['subdivisions'] = $this->_subdivisions;
-        $content['files'] = (new XmlParser($subdivision))->getTanksData($this->_storage);
-        $this->_view->setTitle('Данные по емкостям');
+    /*---------------------------------------------------------------------------------------------------------------*/
+    /*--------------------------------------Обработка данных из раздела связанного с емкостями-----------------------*/
+    /*---------------------------------------------------------------------------------------------------------------*/
+    /**
+     * Загружает страницу емкостей, а так же доступные пользователю подразделения
+     */
+    public function actionGetTanksPage(){
+        $content = $this->_subdivisions;
         $this->loadPage('/parser/ajax/successed/tanks/tanks.page', $content);
+    }
+
+    /**
+     * Загружает данные собранные из XML файлов
+     */
+    public function actionGetTanksData(){
+        $subdivision = $_POST['subdivision'];
+        $content = (new XmlParser($subdivision))->getTanksData($this->_storage);
+        $this->loadPage('/parser/ajax/successed/tanks/tanks-data.page', $content);
+    }
+
+    /**
+     * Подгружает подразделения в комбо боксе
+     */
+    public function actionGetSubdivisions(){
+        $content = $this->_subdivisions;
+        $this->loadPage('/parser/ajax/successed/tanks/select.page', $content);
     }
 
 }
