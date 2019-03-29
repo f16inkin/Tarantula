@@ -17,12 +17,12 @@ $(function () {
     switch (state){
         case "main": showMainData(); $("#parser-main").addClass('active'); break;
         case "tanks": showTanksPage(); $("#parser-tanks").addClass('active'); break;
-        case "outcomes": showOutcomesData(); break;
+        case "outcomes": /*showOutcomesData();*/ $("#parser-outcomes").addClass('active'); break;
         case "incomes": showIncomesData(); break;
         case "office": showOfficeData(); break;
-        default: showMainData(); break; //Если состояние еще не установлено, будет подгружаться заданная страница
+        default: showMainData(); $("#parser-main").addClass('active'); break; //Если состояние еще не установлено, будет подгружаться заданная страница
     }
-    $(".dropdown-toggle").dropdown();
+    //$(".dropdown-toggle").dropdown();
 });
 /*
  * --------------------------------------------------------------------------------------------------------------------
@@ -109,6 +109,8 @@ function showTanksPage() {
     request.done(function (response) {
         //Подгружаю контент
         $("#parser-content").html(response);
+        //Устанавливаю заголовок
+        $("#title").text("Емкости");
     });
 }
 /**
@@ -131,7 +133,7 @@ function showTanksData() {
         var request = $.ajax({
             type: "POST",
             url: "/parser/tanks/data/",
-            data:{"subdivision": subdivision}, //Временно указал явное значение подразделения
+            data:{"subdivision": subdivision},
             cache: false
         });
         request.done(function (response) {

@@ -91,8 +91,8 @@ return[
             'construct' => false, //Аргумент идет в конструктор
             'module' => 'parser',
             'folder' => 'application',
-            'controller' => 'ControllerXmlParser',
-            'action' => 'GetTanksPage',
+            'controller' => 'ControllerTanks',
+            'action' => 'Index',
             'arguments' => 0 //Принимает один ааргумент
         ]
     ],
@@ -104,8 +104,8 @@ return[
             'construct' => false,
             'module' => 'parser',
             'folder' => 'application',
-            'controller' => 'ControllerXmlParser',
-            'action' => 'GetTanksData',
+            'controller' => 'ControllerTanks',
+            'action' => 'GetData',
             'arguments' => 0
         ]
     ],
@@ -117,8 +117,8 @@ return[
             'construct' => false,
             'module' => 'parser',
             'folder' => 'application',
-            'controller' => 'ControllerXmlParser',
-            'action' => 'GetMain',
+            'controller' => 'ControllerMain',
+            'action' => 'Index',
             'arguments' => 0
         ]
     ],
@@ -127,7 +127,7 @@ return[
             'construct' => false,
             'module' => 'parser',
             'folder' => 'application',
-            'controller' => 'ControllerXmlParser',
+            'controller' => 'ControllerTanks',
             'action' => 'GetSubdivisions',
             'arguments' => 0
         ]
