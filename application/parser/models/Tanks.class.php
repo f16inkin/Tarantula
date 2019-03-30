@@ -131,7 +131,6 @@ class Tanks extends ModelParserBase
          */
         $arrXml['SessionInformation'] = $sessionInformation;
         $arrXml['SessionData'] = $sessionData;
-        $arrXml['SessionNumber'] = $sessionInformation['Number'];
         return $arrXml;
     }
 
@@ -174,7 +173,7 @@ class Tanks extends ModelParserBase
                         preg_replace('/[^-?0-9.]/', '', $row['EndTemperature']), //Допускаются отрицательные значения
                         preg_replace('/[^0-9.]/', '', $row['EndMass']),
                         $row['TankNum'],
-                        $xmlFileData['SessionNumber']
+                        $xmlFileData['SessionInformation']['Number']
                     );
                 }
                 //Обрезаю в конце запроса запятую
