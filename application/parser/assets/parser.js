@@ -144,6 +144,29 @@ function showTanksData() {
     }
 }
 /**
+ * Вставляет данные в БД
+ */
+function addTanksData() {
+    var subdivision = $("#subdivisions").val();
+    if (subdivision == 0){
+        $('#tanksModalWindow').modal('show');
+        getSubdivisions();
+    }
+    else {
+        var request = $.ajax({
+            type: "POST",
+            url: "/parser/tanks/insert/",
+            data:{"subdivision": subdivision},
+            cache: false
+        });
+        request.done(function (response) {
+            //Подгружаю контент
+            $("#tanks-content").html(response);
+            $('#hidden-button').attr('hidden', false);
+        });
+    }
+}
+/**
  * Подгружает combo box с доступными подразделеними в модальное окно
  */
 function getSubdivisions() {

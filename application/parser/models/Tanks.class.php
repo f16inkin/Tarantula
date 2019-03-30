@@ -56,9 +56,9 @@ class Tanks extends ModelParserBase
             $sessionData[$tankNum]['TankNum'] = $tankNum;
             $sessionData[$tankNum]['StartFuelVolume'] = str_replace(',', '.', (string)$item['StartFuelVolume']);
             $sessionData[$tankNum]['EndFactVolume'] = str_replace(',', '.', (string)$item['EndFactVolume']);
-            $sessionData[$tankNum]['EndDensity'] = (string)$item['EndDensity'];
-            $sessionData[$tankNum]['EndTemperature'] = (string)$item['EndTemperature'];
-            $sessionData[$tankNum]['EndMass'] = str_replace(',', '.', (string)$item['EndMass']);
+            $sessionData[$tankNum]['EndDensity'] = (!empty((string)$item['EndDensity']) ? (string)$item['EndDensity'] : 0);
+            $sessionData[$tankNum]['EndTemperature'] = (!empty((string)$item['EndTemperature']) ? (string)$item['EndTemperature'] : 0);
+            $sessionData[$tankNum]['EndMass'] = (!empty((string)$item['EndMass']) ? (string)$item['EndMass'] : 0);
             $sessionData[$tankNum]['Fuel'] = $this->_tanksFuelTypes['names'][$tankNum];
         }
         /*
@@ -131,18 +131,19 @@ class Tanks extends ModelParserBase
          */
         $arrXml['SessionInformation'] = $sessionInformation;
         $arrXml['SessionData'] = $sessionData;
+        $arrXml['SessionNumber'] = $sessionInformation['Number'];
         return $arrXml;
     }
 
     //
-    private function insertTanksData(array $xmlFileData, int $subdivision_id, int $session_id){
+    public function insertTanksData(array $xmlFileData){
         try{
             if (isset($xmlFileData)){
                 /**
                  * Сначала форирую полузапрос.
                  */
-                $query = ("INSERT INTO `tarantula_fuel` (`fuel_id`, `start_volume`, `end_volume`, `fact_volume`,
-                      `income`, `outcome`, `density`, `temperature`, `subdivision`, `user`, `tank`, `date`)
+                $query = ("INSERT INTO `tarantula_fuel` (`start_volume`, `end_volume`, `fact_volume`, `overage`, `income`,
+                          `outcome`, `density`, `temperature`, `mass`, `tank`, `session`)
                        VALUES ");
                 /**
                  * Затем для каждой строки и пришедшего массива (данные за один день работы АЗС) получаю значения в формате:
@@ -161,19 +162,19 @@ class Tanks extends ModelParserBase
                  * ----------------------------------------------------------------------------------------------------
                  *
                  */
-                foreach ($xmlFileData as $row){
-                    $query .= sprintf("(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '%s'),",
-                        preg_replace('/[^0-9.]/', '', $row['Fuel']),
+                foreach ($xmlFileData['SessionData'] as $row){
+                    $query .= sprintf("(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s),",
                         preg_replace('/[^0-9.]/', '', $row['StartFuelVolume']),
-                        $row['EndFuelVolume'],
-                        $row['EndFactVolume'],
+                        preg_replace('/[^0-9.]/', '', $row['EndFuelVolume']),
+                        preg_replace('/[^0-9.]/', '', $row['EndFactVolume']),
+                        $row['Overage'],
                         $row['Income'],
                         $row['Outcome'],
-                        $row['EndDensity'],
-                        $row['EndTemperature'],
-                        $subdivision_id,
+                        preg_replace('/[^0-9.]/', '', $row['EndDensity']),
+                        preg_replace('/[^-?0-9.]/', '', $row['EndTemperature']), //Допускаются отрицательные значения
+                        preg_replace('/[^0-9.]/', '', $row['EndMass']),
                         $row['TankNum'],
-                        $row['StartDate']
+                        $xmlFileData['SessionNumber']
                     );
                 }
                 //Обрезаю в конце запроса запятую
@@ -197,15 +198,13 @@ class Tanks extends ModelParserBase
      * @return array
      */
     public function getTanksData(string $directory){
-        $simpleXmlElements = $this->getXmlFilesList($directory);
+        $simpleXmlElements = (new XmlReportsHandler($directory))->loadCorrectXml();
         $arr = [];
         //Прохожу по каждому элементу массива simpleXmlElements и получаю из него информацию по смене.
         //Возвращаю массив с распарсенными данными
         foreach ($simpleXmlElements as $simpleXmlElement){
-            if (isset($simpleXmlElement['simpleXmlElement'])){
-                $arr[$simpleXmlElement['file_name']]['file_name'] = $simpleXmlElement['file_name'];
-                $arr[$simpleXmlElement['file_name']]['data'] = $this->getXmlTanksData($simpleXmlElement['simpleXmlElement']);
-            }
+            $arr[$simpleXmlElement['file_name']] = $this->getXmlTanksData($simpleXmlElement['simpleXmlElement']);
+            $arr[$simpleXmlElement['file_name']]['RecordId'] = $simpleXmlElement['record_id'];
         }
         return $arr;
     }

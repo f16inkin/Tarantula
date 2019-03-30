@@ -14,11 +14,13 @@ use core\base\Model;
 class ModelParserBase extends Model
 {
     protected $_tanksFuelTypes = [];
+    protected $_subdivision_id;
 
     public function __construct(int $subdivision_id)
     {
         parent::__construct();
         $this->_tanksFuelTypes = $this->getTanksFuelType($subdivision_id);
+        $this->_subdivision_id = $subdivision_id;
     }
 
     /**
@@ -81,28 +83,4 @@ class ModelParserBase extends Model
         ];
         return $SessionInformation;
     }
-
-    /**
-     * Метод вернет масив объектов SimpleXmlElements с данными собранными с Xml файлов
-     * -----------------------------------------------------------------------------
-     * @param string $directory
-     * @return array
-     */
-    protected function getXmlFilesList(string $directory){
-        //
-        $files = scandir($directory);
-        $simpleXmlElements = [];
-        //Отключаю ошибки libxml и беру полномочия на обработку ошибок на себя.
-        libxml_use_internal_errors(true);
-        //Получаю имена всех файлов находящихся в директории storage и затем преобразую содержимое этих файлов в
-        //объекты SimpleXML и наполняю ими массив simpleXmlElements.
-        for ($i = 2; $i < count($files); $i++){
-            $simpleXmlElements[$i]['file_name'] = $files[$i];
-            $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($directory.'/'.$files[$i]) ? simplexml_load_file($directory.'/'.$files[$i]) : null;
-        }
-        //Возвращаю обработку ошибок в стандартное положение.
-        libxml_use_internal_errors(false);
-        return $simpleXmlElements;
-    }
-
 }

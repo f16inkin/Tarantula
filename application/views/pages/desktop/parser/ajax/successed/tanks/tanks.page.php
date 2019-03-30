@@ -24,7 +24,7 @@
             <i class="fa fa-broom" aria-hidden="true"></i> Очистить</a>
     </div>
     <div id="hidden-button" class="parser-nav-bar-container" hidden>
-        <a href="" id="handbook-button" class="btn btn-primary btn-sm" onclick="">
+        <a href="" id="handbook-button" class="btn btn-primary btn-sm" onclick="addTanksData(); return false;">
             <i class="fa fa-plus-circle" aria-hidden="true"></i> Добавить в БД</a>
     </div>
 </div>

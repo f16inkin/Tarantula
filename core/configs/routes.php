@@ -110,6 +110,19 @@ return[
         ]
     ],
     /**
+     * Вставка данных в БД из раздела "Емкости"
+     */
+    [
+        '^parser/tanks/insert$' => [
+            'construct' => false,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerTanks',
+            'action' => 'InsertData',
+            'arguments' => 0
+        ]
+    ],
+    /**
      * Загрузка главной страницы парсера
      */
     [

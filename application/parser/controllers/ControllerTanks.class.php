@@ -37,6 +37,22 @@ class ControllerTanks extends ControllerParserBase
         $this->loadPage('/parser/ajax/successed/tanks/tanks-data.page', $content);
     }
 
+    public function actionInsertData(){
+        $subdivision = $_POST['subdivision'];
+        $tanks = new Tanks($subdivision);
+        $data = $tanks->getTanksData($this->_storage);
+        foreach ($data as $singleFile) {
+            if($tanks->insertTanksData($singleFile)){
+                echo 'Файл обработан';
+                echo '<br>';
+            }
+            else{
+                echo 'Ошибка загрузки файла';
+                echo '<br>';
+            }
+        }
+    }
+
     /**
      * Подгружает подразделения в комбо боксе
      */

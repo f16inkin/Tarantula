@@ -14,17 +14,18 @@
     <div class="card">
         <div class="card-header" id="headingOne">
             <h5 class="mb-0">
-                <input type="text" value="<?=$singleSession['data']['SessionInformation']['Number'];?>" hidden>
-                <button class="btn btn-primary" style="width: 500px;" data-toggle="collapse" data-target="#Session_<?=$singleSession['data']['SessionInformation']['Number'];?>">
+                <input type="text" value="<?=$singleSession['SessionInformation']['Number'];?>" hidden>
+                <button class="btn btn-primary" style="width: 500px;" data-toggle="collapse" data-target="#Session_<?=$singleSession['SessionInformation']['Number'];?>">
                     <div>
-                        <?='№ Смены: '.$singleSession['data']['SessionInformation']['Number'];?>
-                        <?='Оператор: '.$singleSession['data']['SessionInformation']['Operator'];?>
+                        <?='ID: '.$singleSession['RecordId'];?>
+                        <?='№ Смены: '.$singleSession['SessionInformation']['Number'];?>
+                        <?='Оператор: '.$singleSession['SessionInformation']['Operator'];?>
                     </div>
                 </button>
                 <button  class="btn btn-danger">Удалить</button>
             </h5>
         </div>
-        <div id="Session_<?=$singleSession['data']['SessionInformation']['Number']; ?>" class="collapse" aria-labelledby="headingOne" data-parent="#parser-content">
+        <div id="Session_<?=$singleSession['SessionInformation']['Number']; ?>" class="collapse" aria-labelledby="headingOne" data-parent="#parser-content">
             <div class="card-body">
                 <table cellpadding="1" cellspacing="1" border="0" class="table-mine  full-width box-shadow--2dp">
                     <thead>
@@ -43,7 +44,7 @@
                     </tr>
                     </thead>
                     <tbody id="table-content">
-                    <?php foreach ($singleSession['data']['SessionData'] as $tankFuel) :?>
+                    <?php foreach ($singleSession['SessionData'] as $tankFuel) :?>
                         <tr class="tr-table-content">
                             <td><?=$tankFuel['TankNum'];?></td>
                             <td><?=$tankFuel['Fuel'];?></td>
