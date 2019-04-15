@@ -9,6 +9,7 @@
 namespace application\parser\models;
 
 
+use application\parser\base\AbstractFileHandler;
 use application\parser\base\ModelParserBase;
 
 class Tanks extends ModelParserBase
@@ -196,8 +197,8 @@ class Tanks extends ModelParserBase
      * @param string $directory
      * @return array
      */
-    public function getTanksData(string $directory){
-        $dbHandler  = new DatabaseHandler();
+    public function getTanksData(AbstractFileHandler $handler){
+        $dbHandler  = new DatabaseHandler($handler);
         $simpleXmlElements = $dbHandler->loadCorrectXml();
         $arr = [];
         //Прохожу по каждому элементу массива simpleXmlElements и получаю из него информацию по смене.

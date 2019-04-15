@@ -10,6 +10,7 @@ namespace application\parser\base;
 
 
 use application\base\ControllerApplication;
+use application\parser\models\XmlReportsHandler;
 use core\models\Subdivision;
 
 class ControllerParserBase extends ControllerApplication

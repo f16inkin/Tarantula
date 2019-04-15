@@ -20,4 +20,12 @@ abstract class AbstractFileHandler
 
     abstract public function scanStorage();
 
+    /**
+     * @return string
+     */
+    public function getStorage(): string
+    {
+        return $this->_storage;
+    }
+
 }

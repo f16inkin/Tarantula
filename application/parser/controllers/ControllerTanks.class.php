@@ -32,14 +32,14 @@ class ControllerTanks extends ControllerParserBase
      */
     public function actionGetData(){
         $subdivision = $_POST['subdivision'];
-        $content = (new Tanks($subdivision))->getTanksData($this->_storage);
+        $content = (new Tanks($subdivision))->getTanksData($this->_handler);
         $this->loadPage('/parser/ajax/successed/tanks/tanks-data.page', $content);
     }
 
     public function actionInsertData(){
         $subdivision = $_POST['subdivision'];
         $tanks = new Tanks($subdivision);
-        $data = $tanks->getTanksData($this->_storage);
+        $data = $tanks->getTanksData($this->_handler);
         foreach ($data as $singleFile) {
             if($tanks->insertTanksData($singleFile)){
                 echo 'Файл обработан';

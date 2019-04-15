@@ -71,11 +71,11 @@ class DatabaseHandler extends Model
                     }
                     return $records;
                 }
-                return null;
             }catch (\Exception $e){
                 echo 'DataBase Error';
             }
         }
+        return null;
     }
 
     /**
@@ -147,15 +147,15 @@ class DatabaseHandler extends Model
                 $files = $result->fetchAll();
                 return $files;
             }
-            return null;
         }catch (\Exception $e){
             echo "Db Error";
         }
+        return null;
     }
 
     /**
      * Метод возвращает массив с объектами simpleXML для дальнейшей их обработки.
-     * ---------------------------------------------------------------
+     * --------------------------------------------------------------------------
      * @return array
      */
     public function loadCorrectXml(){
@@ -164,7 +164,7 @@ class DatabaseHandler extends Model
         for ($i = 0; $i < count($files); $i++){
             $simpleXmlElements[$i]['record_id'] = $files[$i]['id']; //id файла в таблцие временных файлов
             $simpleXmlElements[$i]['file_name'] = $files[$i]['file_name']; //имя файла в таблице временных файлов
-            $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_storage.'/'.$files[$i]['file_name']) ? simplexml_load_file($this->_storage.'/'.$files[$i]['file_name']) : null;
+            $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_handler->getStorage().'/'.$files[$i]['file_name']) ? simplexml_load_file($this->_handler->getStorage().'/'.$files[$i]['file_name']) : null;
         }
         //Возвращаю обработку ошибок в стандартное положение.
         libxml_use_internal_errors(false);
