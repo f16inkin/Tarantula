@@ -197,7 +197,8 @@ class Tanks extends ModelParserBase
      * @return array
      */
     public function getTanksData(string $directory){
-        $simpleXmlElements = (new XmlReportsHandler($directory))->loadCorrectXml();
+        $dbHandler  = new DatabaseHandler();
+        $simpleXmlElements = $dbHandler->loadCorrectXml();
         $arr = [];
         //Прохожу по каждому элементу массива simpleXmlElements и получаю из него информацию по смене.
         //Возвращаю массив с распарсенными данными

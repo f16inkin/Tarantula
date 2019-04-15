@@ -9,16 +9,19 @@
 namespace application\parser\models;
 
 
-use core\base\Model;
+use application\parser\base\AbstractFileHandler;
 
-class XmlReportsHandler extends Model
+class XmlReportsHandler extends AbstractFileHandler
 {
-    private $_storage;
-
+    /**
+     * Параметр - строка путь с хранилищем XML отчетов
+     * -----------------------------------------------
+     * XmlReportsHandler constructor.
+     * @param string $storage
+     */
     public function __construct(string $storage)
     {
-        parent::__construct();
-        $this->_storage = $storage;
+        parent::__construct($storage);
     }
 
     /**
@@ -27,7 +30,7 @@ class XmlReportsHandler extends Model
      * -------------------------------------------------------------------------------------------------------
      * @return array|null
      */
-    private function scanStorage(){
+    public function scanStorage(){
         //Сканирую директорию на наличие XML отчетов
         $files = array_slice(scandir($this->_storage),2);
         //Если директория пуста, верну null
@@ -53,114 +56,6 @@ class XmlReportsHandler extends Model
         //Возвращаю обработку ошибок в стандартное положение.
         libxml_use_internal_errors(false);
         return $dividedFiles;
-    }
-
-    /**
-     * Очищает временную таблицу с информацией о файлах в хранилище
-     * ------------------------------------------------------------
-     * @return bool
-     */
-    private function clearTable(){
-        try{
-            $query = ("DELETE FROM `tarantula_temporary` WHERE `user` = :user_id");
-            $result = $this->_db->prepare($query);
-            $result->execute([
-                'user_id' => $_SESSION['user']['id']
-            ]);
-            return $result->execute() ? true : false;
-        }catch (\Exception $e){
-            echo "Db Error";
-        }
-    }
-
-    /**
-     * Метод получает иформацию о файлах в хранилище и заносит ее в таблицу, для дальнейшей обработки парсером
-     * -------------------------------------------------------------------------------------------------------
-     * @return bool
-     */
-    private function fillTable(){
-        //Получаю имена файлов из хранилища
-        $files = $this->scanStorage();
-        //Если в хранилище присутсвуют файлы, очищаю сначала
-        if (isset($files)){
-            try{
-                //Если таблица с временными данными о хранящихся файлах очищена
-                if ($this->clearTable()){
-                    //Формирую полузапрос для вставки данных:
-                    $query = ("INSERT INTO `tarantula_temporary` (`file_name`, `is_correct`, `user`)
-                       VALUES ");
-                    //Далее формирую оставшуюся часть до полного запроса
-                    foreach ($files as $row){
-                        $query .= sprintf("(%s, %s, %s),",
-                            "'".$row['fileName']."'", //Не приводится к строчному виду потому выдает ошибку БД
-                            $row['isCorrect'],
-                            $_SESSION['user']['id']
-                        );
-                    }
-                    //Обрезаю в конце запроса запятую
-                    $query = rtrim($query, ',');
-                    //Выполняю запрос
-                    $result = $this->_db->prepare($query);
-                    //Верну ответ об успехе или наоборот
-                    return $result->execute() ? true : false;
-                }
-            }catch (\Exception $e){
-                echo 'DataBase Error';
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Возвращает в случае успеха массив с файлами требуемого типа (корректные/не корректные)
-     * array => [
-     * 0 => [id => 1, file_name => CloseSession_1, is_correct => 1, user => 1]
-     * 1 => [id => 1, file_name => CloseSession_2, is_correct => 1, user => 1]
-     * ];
-     * 1 - корректные файлы, 0 - некорректные файлы
-     * --------------------------------------------------------------------------------------
-     * @param int $is_correct
-     * @return array|null
-     */
-    public function scanDataBase(int $is_correct){
-        try{
-            //Если таблица временных файлов заполнена
-            if ($this->fillTable()){
-                //Считываю данные о файлах из БД
-                $query = ("SELECT * FROM `tarantula_temporary`
-                       WHERE `is_correct` = :is_correct AND `user` = :user_id");
-                $result = $this->_db->prepare($query);
-                $result->execute([
-                    'is_correct' => $is_correct,
-                    'user_id' => $_SESSION['user']['id']
-                ]);
-                if ($result->rowCount() > 0){
-                    $files = $result->fetchAll();
-                    return $files;
-                }
-            }
-            return null;
-        }catch (\Exception $e){
-            echo "Db Error";
-        }
-    }
-
-    /**
-     * Метод возвращает массив с объектами simpleXML для дальнейшей их обработки.
-     * ---------------------------------------------------------------
-     * @return array
-     */
-    public function loadCorrectXml(){
-        $files = $this->scanDataBase(1);
-        $simpleXmlElements = [];
-        for ($i = 0; $i < count($files); $i++){
-            $simpleXmlElements[$i]['record_id'] = $files[$i]['id']; //id файла в таблцие временных файлов
-            $simpleXmlElements[$i]['file_name'] = $files[$i]['file_name']; //имя файла в таблице временных файлов
-            $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_storage.'/'.$files[$i]['file_name']) ? simplexml_load_file($this->_storage.'/'.$files[$i]['file_name']) : null;
-        }
-        //Возвращаю обработку ошибок в стандартное положение.
-        libxml_use_internal_errors(false);
-        return $simpleXmlElements;
     }
 
 }

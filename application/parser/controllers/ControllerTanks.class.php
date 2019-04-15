@@ -11,7 +11,6 @@ namespace application\parser\controllers;
 
 use application\parser\base\ControllerParserBase;
 use application\parser\models\Tanks;
-use application\parser\models\XmlParser;
 
 class ControllerTanks extends ControllerParserBase
 {
