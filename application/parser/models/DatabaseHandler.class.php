@@ -49,31 +49,26 @@ class DatabaseHandler extends Model
     /**
      * @return array|null
      */
-    private function findExist(){
-        //Получаю имена файлов из хранилища
-        $files = $this->_handler->scanStorage();
-        //Если в хранилище присутсвуют файлы, очищаю сначала
-        if (isset($files)){
-            try{
-                //Получаю записи с именами файлов из БД
-                $query = ("SELECT `file_name` FROM `tarantula_temporary` WHERE `file_name` IN (");
-                foreach ($files as $file){
-                    $query .= sprintf("%s, ", "'".$file['fileName']."'");
-                }
-                //Обрезаю в конце запроса запятую
-                $query = rtrim($query, ' ,');
-                $query .= ')';
-                $result = $this->_db->prepare($query);
-                $result->execute();
-                if ($result->rowCount() > 0){
-                    while($row = $result->fetch()) {
-                        $records[] = $row['file_name'];
-                    }
-                    return $records;
-                }
-            }catch (\Exception $e){
-                echo 'DataBase Error';
+    private function findExist($files){
+        try{
+            //Получаю записи с именами файлов из БД
+            $query = ("SELECT `file_name` FROM `tarantula_temporary` WHERE `file_name` IN (");
+            foreach ($files as $file){
+                $query .= sprintf("%s, ", "'".$file['fileName']."'");
             }
+            //Обрезаю в конце запроса запятую
+            $query = rtrim($query, ' ,');
+            $query .= ')';
+            $result = $this->_db->prepare($query);
+            $result->execute();
+            if ($result->rowCount() > 0){
+                while($row = $result->fetch()) {
+                    $records[] = $row['file_name'];
+                }
+                return $records;
+            }
+        }catch (\Exception $e){
+            echo 'DataBase Error';
         }
         return null;
     }
@@ -90,7 +85,7 @@ class DatabaseHandler extends Model
         if (isset($files)){
             try{
                 //Ищу совпадения по именам файлов во временной таблице
-                $exist_files = $this->findExist();
+                $exist_files = $this->findExist($files);
                 //Если найдены совпадающие файлы в очереди на загрузку
                 if (isset($exist_files)){
 
