@@ -156,10 +156,11 @@ class DatabaseHandler extends Model
     public function loadCorrectXml(){
         $files = $this->scanDataBase(1);
         $simpleXmlElements = [];
+        $folder = $this->_handler->getStorage().'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login'];
         for ($i = 0; $i < count($files); $i++){
             $simpleXmlElements[$i]['record_id'] = $files[$i]['id']; //id файла в таблцие временных файлов
             $simpleXmlElements[$i]['file_name'] = $files[$i]['file_name']; //имя файла в таблице временных файлов
-            $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_handler->getStorage().'/'.$files[$i]['file_name']) ? simplexml_load_file($this->_handler->getStorage().'/'.$files[$i]['file_name']) : null;
+            $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($folder.'/'.$files[$i]['file_name']) ? simplexml_load_file($folder.'/'.$files[$i]['file_name']) : null;
         }
         //Возвращаю обработку ошибок в стандартное положение.
         libxml_use_internal_errors(false);

@@ -22,6 +22,7 @@ class ControllerParserBase extends ControllerApplication
     {
         parent::__construct();
         $this->_subdivisions = (new Subdivision())->getUserSubdivisions($this->_user->getId());
+        $this->_handler = new XmlReportsHandler($this->_storage);
     }
 
     /**
