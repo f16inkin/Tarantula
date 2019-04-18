@@ -23,10 +23,12 @@
 }
 .parser-nav-bar{
     width: 100%;
-    height: 38px;
+    height: 40px;
     border-bottom: solid 2px;
+    border-top: solid 2px;
     border-color: #dce1e5;
     margin-bottom: 5px;
+    padding-top: 2px;
 }
 .parser-nav-bar-container{
     float: left;
@@ -57,4 +59,20 @@
 }
 .nav-link{
     color: black !important;
+}
+/*
+ * Шаги исполнения
+ */
+.step-circle{
+    width: 50px;
+    height: 50px;
+    line-height: 44px;
+    border: solid 3px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    background-color: green;
+    color: white;
+    border-color: white;
 }

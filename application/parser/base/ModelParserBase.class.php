@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: Rain
- * Date: 29.03.2019
- * Time: 11:55
+ * Date: 18.04.2019
+ * Time: 10:05
  */
 
 namespace application\parser\base;
@@ -57,30 +57,4 @@ class ModelParserBase extends Model
         }
     }
 
-    /**
-     * Метод получает данные о смене, для которой будут собранны данные из XML
-     * -----------------------------------------------------------------------
-     * @param $simpleXmlElement
-     * @return array
-     */
-    protected function getSessionInformation($simpleXmlElement){
-        /*
-        * Собираю массив из данных о смене:
-        * - Номер смены,
-        * - Дата открытия смены,
-        * - Дата закрытиясмены,
-        * - Ф.И.О. Оператора
-        */
-        $sessionNumber = (string)$simpleXmlElement->Sessions->Session['SessionNum'];
-        $sessionStartDateTime = (string)$simpleXmlElement->Sessions->Session['StartDateTime'];
-        $sessionEndDateTime = (string)$simpleXmlElement->Sessions->Session['EndDateTime'];
-        $operator = (string)$simpleXmlElement->Sessions->Session['UserName'];
-        $SessionInformation = [
-            'Number' => $sessionNumber,
-            'StartDateTime' => $sessionStartDateTime,
-            'EndDateTime' => $sessionEndDateTime,
-            'Operator' => $operator
-        ];
-        return $SessionInformation;
-    }
 }

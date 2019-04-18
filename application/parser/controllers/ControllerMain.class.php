@@ -2,16 +2,15 @@
 /**
  * Created by PhpStorm.
  * User: Rain
- * Date: 29.03.2019
- * Time: 11:32
+ * Date: 18.04.2019
+ * Time: 10:20
  */
 
 namespace application\parser\controllers;
 
 
 use application\parser\base\ControllerParserBase;
-use application\parser\models\DatabaseHandler;
-use application\parser\models\XmlReportsHandler;
+use application\parser\models\StorageChecker;
 
 class ControllerMain extends ControllerParserBase
 {
@@ -21,16 +20,15 @@ class ControllerMain extends ControllerParserBase
     }
 
     public function actionIndex(){
-        $xml_handler = new XmlReportsHandler($this->_storage);
-        $db_handler = new DatabaseHandler($xml_handler);
-        $db_handler->fillTable();
-        $correct_files = count($db_handler->scanDataBase(1));
-        $incorrect_files = count($db_handler->scanDataBase(0));
-        $processed_files = $correct_files + $incorrect_files;
-        $content['files']['processed'] = $processed_files;
-        $content['files']['correct'] = $correct_files;
-        $content['files']['incorrect'] = $incorrect_files;
-        $this->loadPage('/parser/ajax/successed/main.page', $content);
+       $storageBuilder = new StorageChecker();
+       if($storageBuilder->checkFolder()){
+           $content = $storageBuilder->scanFolder();
+           if (!empty($content)){
+               $this->loadPage('/parser/ajax/successed/main/step-1-with-files.page', $content);
+           }else{
+               $this->loadPage('/parser/ajax/successed/main/step-1-without-files.page', $content);
+           }
+       }
     }
 
 }

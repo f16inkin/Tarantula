@@ -2,27 +2,20 @@
 /**
  * Created by PhpStorm.
  * User: Rain
- * Date: 29.03.2019
- * Time: 11:18
+ * Date: 18.04.2019
+ * Time: 10:00
  */
 
 namespace application\parser\base;
 
 
 use application\base\ControllerApplication;
-use application\parser\models\XmlReportsHandler;
-use core\models\Subdivision;
 
 class ControllerParserBase extends ControllerApplication
 {
-    protected $_subdivisions;
-    protected $_storage = ROOT.'/application/parser/storage';
-
     public function __construct()
     {
         parent::__construct();
-        $this->_subdivisions = (new Subdivision())->getUserSubdivisions($this->_user->getId());
-        $this->_handler = new XmlReportsHandler($this->_storage);
     }
 
     /**

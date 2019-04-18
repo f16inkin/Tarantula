@@ -91,10 +91,15 @@ function showMainData() {
         cache: false
     });
     request.done(function (response) {
-        //Подгружаю контент
-        $("#parser-content").html(response);
-        //Устанавливаю заголовок
-        $("#title").text("Parser");
+        //Очистить
+        $("div#parser-content").empty();
+        //Добавляю секцию куда выгружу контент
+        if ($("#parser-content").append('<div id="step-1"></div>')){
+            //Подгружаю контент
+            $("#step-1").html(response);
+            //Устанавливаю заголовок
+            $("#title").text("Parser");
+        }
     });
 }
 /**
