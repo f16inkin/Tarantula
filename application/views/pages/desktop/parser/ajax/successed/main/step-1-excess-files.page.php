@@ -10,8 +10,9 @@
     Шаг №1. Проверка директории и файлов
 </div>
 <div class="card">
-    <div class="alert alert-warning" role="alert">
-        В директории найдены файлы: <b><?=$content['files_count'];?> шт.</b>
+    <div class="alert alert-danger" role="alert">
+        Количество файлов в директории превышает допустимое. Найдено <b><?=$content['files_count'];?> шт.</b> из <b><?=$content['files_limit'];?> шт.</b> допустимых.
+        Для продолжения работы парсера, необходимо удалить <b><u>лишние файлы.</u></b>
     </div>
     <div class="card-header" id="headingOne">
         <h5 class="mb-0">
@@ -25,11 +26,11 @@
             <div class="parser-nav-bar">
                 <div class="parser-nav-bar-container">
                     <a href="" class="btn btn-danger btn-sm">
-                        <i class="fa fa-broom" aria-hidden="true"></i> Очистить</a>
+                        <i class="fa fa-broom" aria-hidden="true"></i> Очистить папку</a>
                 </div>
                 <div class="parser-nav-bar-container">
-                    <a href="" class="btn btn-primary btn-sm">
-                        <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Обработать</a>
+                    <a href="" class="btn btn-warning btn-sm" style="color: white">
+                        <i class="fa fa-trash" aria-hidden="true"></i> Удалить</a>
                 </div>
             </div>
             <table cellpadding="1" cellspacing="1" border="0" style="margin-bottom: 5px;" class="table-striped table-mine full-width box-shadow--2dp">
@@ -49,28 +50,9 @@
                 </tbody>
             </table>
         </div>
-        <!---->
-        <nav aria-label="...">
-            <ul class="pagination">
-                <li class="page-item disabled">
-                    <span class="page-link">Предыдущая</span>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item active">
-                <span class="page-link">
-                 2
-                 <span class="sr-only">(current)</span>
-                </span>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Следующая</a>
-                </li>
-            </ul>
-        </nav>
-        <!---->
     </div>
 </div>
+
 
 
 

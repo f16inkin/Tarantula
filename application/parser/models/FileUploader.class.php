@@ -11,7 +11,7 @@ namespace application\parser\models;
 
 class FileUploader
 {
-    private $_valid_types = ['xml', 'txt'];
+    private $_valid_types = ['xml', 'txt', 'json']; //Допустимые для обработки парсером форматы.
 
     public function uploadFiles(){
         //$files = array_filter($_FILES['upload']['name']); something like that to be used before processing files.

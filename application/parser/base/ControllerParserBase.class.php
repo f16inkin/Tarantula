@@ -10,12 +10,20 @@ namespace application\parser\base;
 
 
 use application\base\ControllerApplication;
+use application\parser\models\ParserSettings;
 
 class ControllerParserBase extends ControllerApplication
 {
+    protected $_settings;
+
     public function __construct()
     {
         parent::__construct();
+        /**
+         * Модель Settings для парсера в целом. Получение необходимых настроек для парсера напрямую из нее в любом
+         * контроллере наследующем данный
+         */
+        $this->_settings = new ParserSettings();
     }
 
     /**
@@ -24,7 +32,7 @@ class ControllerParserBase extends ControllerApplication
      * @param string $page
      * @param array $content
      */
-    protected function loadPage(string $page, array $content){
+    protected function loadPage(string $page, array $content = []){
         include $this->_view->returnPagePath('application', $this->_device.$page);
     }
 

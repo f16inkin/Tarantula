@@ -20,15 +20,26 @@ class ControllerMain extends ControllerParserBase
     }
 
     public function actionIndex(){
-       $storageBuilder = new StorageChecker();
-       if($storageBuilder->checkFolder()){
-           $content = $storageBuilder->scanFolder();
-           if (!empty($content)){
-               $this->loadPage('/parser/ajax/successed/main/step-1-with-files.page', $content);
-           }else{
-               $this->loadPage('/parser/ajax/successed/main/step-1-without-files.page', $content);
-           }
-       }
+        //Обозначаю хранилище
+        $storageBuilder = new StorageChecker($this->_settings->getStorage());
+        if($storageBuilder->checkFolder()){
+            $files = $storageBuilder->scanFolder();
+            if (!empty($files)){
+                //Временная переменная для обозначения лимита файлов в пользовательской директории
+                $files_limit = $this->_settings->getFilesLimit();
+                $files_count = count($files);
+                $content['files_array'] = $files;
+                $content['files_count'] = $files_count;
+                if ($files_count > $files_limit){
+                    $content['files_limit'] = $files_limit;
+                    $this->loadPage('/parser/ajax/successed/main/step-1-excess-files.page', $content);
+                }else{
+                    $this->loadPage('/parser/ajax/successed/main/step-1-with-files.page', $content);
+                }
+            }else{
+                $this->loadPage('/parser/ajax/successed/main/step-1-without-files.page');
+            }
+        }
     }
 
 }

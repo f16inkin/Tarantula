@@ -16,13 +16,16 @@ namespace application\parser\models;
  */
 class StorageChecker
 {
-    private $_storage;
     private $_folder;
 
-    public function __construct()
+    public function __construct(string $storage)
     {
-        $this->_storage = ROOT.'/application/parser/storage'; //Путь к хранилищу файлов
-        $this->_folder = $this->_storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login']; //Пользовательская папка
+        $this->_folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login']; //Пользовательская папка
+        //Если отсутсвует папка хранилище создаст ее. Пока пусть будет, но в планах удалить эту проверку
+        //При автоматической установке модуля создавать нужную директорию
+        if (!file_exists($storage)){
+            mkdir($storage);
+        }
     }
 
     /**
