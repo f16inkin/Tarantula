@@ -10,6 +10,7 @@ namespace application\parser\controllers;
 
 
 use application\parser\base\ControllerParserBase;
+use application\parser\models\Pagination;
 use application\parser\models\StorageChecker;
 
 class ControllerMain extends ControllerParserBase
@@ -34,6 +35,7 @@ class ControllerMain extends ControllerParserBase
                     $content['files_limit'] = $files_limit;
                     $this->loadPage('/parser/ajax/successed/main/step-1-excess-files.page', $content);
                 }else{
+                    $content['pagination'] = (new Pagination($storageBuilder))->build();
                     $this->loadPage('/parser/ajax/successed/main/step-1-with-files.page', $content);
                 }
             }else{

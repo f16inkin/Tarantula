@@ -55,17 +55,10 @@
                 <li class="page-item disabled">
                     <span class="page-link">Предыдущая</span>
                 </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item active">
-                <span class="page-link">
-                 2
-                 <span class="sr-only">(current)</span>
-                </span>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Следующая</a>
-                </li>
+                <?php for ($i = 1; $i< $content['pagination']+1; $i++) :?>
+                    <li class="page-item"><a class="page-link" href="#"><?=$i;?></a></li>
+                <?php endfor ;?>
+                <li class="page-item"><a class="page-link" href="#">Следующая</a></li>
             </ul>
         </nav>
         <!---->
