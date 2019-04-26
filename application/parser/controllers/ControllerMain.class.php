@@ -35,7 +35,9 @@ class ControllerMain extends ControllerParserBase
                     $content['files_limit'] = $files_limit;
                     $this->loadPage('/parser/ajax/successed/main/step-1-excess-files.page', $content);
                 }else{
-                    $content['pagination'] = (new Pagination($storageBuilder))->build();
+                    $pagination = new Pagination($storageBuilder);
+                    $pages = $pagination->getPage(1, 5);
+                    $content['pagination'] = $pagination->build(5);
                     $this->loadPage('/parser/ajax/successed/main/step-1-with-files.page', $content);
                 }
             }else{
