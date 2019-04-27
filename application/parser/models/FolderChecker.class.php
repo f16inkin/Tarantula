@@ -8,13 +8,15 @@
 
 namespace application\parser\models;
 
+use application\parser\interfaces\StorageChecker;
+
 /**
- * Класс занимается проверкой хранилища (storage)
+ * Класс занимается проверкой хранилища (папки: storage)
  * ----------------------------------------------
- * Class StorageChecker
+ * Class FolderChecker
  * @package application\parser\models
  */
-class StorageChecker
+class FolderChecker implements StorageChecker
 {
     private $_folder;
 
@@ -51,11 +53,11 @@ class StorageChecker
     }
 
     /**
-     * Возвращает список файлов в пользовательской директории либо пустой массив
-     * -------------------------------------------------------------------------
+     * Метод проверяет хранилище (папку/базу данных) и возвращает список файлов находящихся в нем в виде массива:
+     * array = [0 => file_1, 1 => file_2, 2 => file_3]
      * @return array
      */
-    public function scanFolder(){
+    public function scanStorage():array{
         $files = array_slice(scandir($this->_folder), 2);
         $converted_files = [];
         foreach ($files as $file){

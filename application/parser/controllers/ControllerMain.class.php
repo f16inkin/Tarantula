@@ -11,7 +11,7 @@ namespace application\parser\controllers;
 
 use application\parser\base\ControllerParserBase;
 use application\parser\models\Pagination;
-use application\parser\models\StorageChecker;
+use application\parser\models\FolderChecker;
 
 class ControllerMain extends ControllerParserBase
 {
@@ -22,22 +22,21 @@ class ControllerMain extends ControllerParserBase
 
     public function actionIndex(){
         //Обозначаю хранилище
-        $storageBuilder = new StorageChecker($this->_settings->getStorage());
+        $storageBuilder = new FolderChecker($this->_settings->getStorage());
         if($storageBuilder->checkFolder()){
-            $files = $storageBuilder->scanFolder();
+            $files = $storageBuilder->scanStorage();
             if (!empty($files)){
                 //Временная переменная для обозначения лимита файлов в пользовательской директории
                 $files_limit = $this->_settings->getFilesLimit();
                 $files_count = count($files);
+                $pagination = new Pagination($storageBuilder);
+                $content['pagination'] = $pagination->build();
                 $content['files_array'] = $files;
                 $content['files_count'] = $files_count;
                 if ($files_count > $files_limit){
                     $content['files_limit'] = $files_limit;
                     $this->loadPage('/parser/ajax/successed/main/step-1-excess-files.page', $content);
                 }else{
-                    $pagination = new Pagination($storageBuilder);
-                    $pages = $pagination->getPage(1, 5);
-                    $content['pagination'] = $pagination->build(5);
                     $this->loadPage('/parser/ajax/successed/main/step-1-with-files.page', $content);
                 }
             }else{

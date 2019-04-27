@@ -96,109 +96,28 @@ function showMainData() {
         //Добавляю секцию куда выгружу контент
         if ($("#parser-content").append('<div id="step-1"></div>')){
             //Подгружаю контент
-            $("#step-1").html(response);
+            if ($("#step-1").html(response)){
+                showPaginationPageData(1);
+            }
             //Устанавливаю заголовок
             $("#title").text("Parser");
         }
     });
 }
 /**
- * Подгружает панель навигации
+ * Подгружает контент
  */
-function showTanksPage() {
+function showPaginationPageData(current_page) {
     var request = $.ajax({
         type: "POST",
-        url: "/parser/tanks/",
+        url: "/parser/pagination/",
+        data: {"current_page": current_page},
         cache: false
     });
     request.done(function (response) {
-        //Подгружаю контент
-        $("#parser-content").html(response);
-        //Устанавливаю заголовок
-        $("#title").text("Емкости");
+        //Очистить
+        $("div#pagination-content").empty();
+        //Добавляю секцию куда выгружу контент
+        $("#pagination-content").html(response);
     });
 }
-/**
- * Очистка раздела с контентом емкостей
- */
-function cleanTanksPage() {
-    $("div#tanks-content").empty();
-    $('#hidden-button').attr('hidden', true);
-}
-/**
- * Подгружает AJAX контент с данными о топливе в емкостях
- */
-function showTanksData() {
-    var subdivision = $("#subdivisions").val();
-    if (subdivision == 0){
-        $('#tanksModalWindow').modal('show');
-        getSubdivisions();
-    }
-    else {
-        var request = $.ajax({
-            type: "POST",
-            url: "/parser/tanks/data/",
-            data:{"subdivision": subdivision},
-            cache: false
-        });
-        request.done(function (response) {
-            //Подгружаю контент
-            $("#tanks-content").html(response);
-            $('#hidden-button').attr('hidden', false);
-        });
-    }
-}
-/**
- * Вставляет данные в БД
- */
-function addTanksData() {
-    var subdivision = $("#subdivisions").val();
-    if (subdivision == 0){
-        $('#tanksModalWindow').modal('show');
-        getSubdivisions();
-    }
-    else {
-        var request = $.ajax({
-            type: "POST",
-            url: "/parser/tanks/insert/",
-            data:{"subdivision": subdivision},
-            cache: false
-        });
-        request.done(function (response) {
-            //Подгружаю контент
-            $("#tanks-content").html(response);
-            $('#hidden-button').attr('hidden', false);
-        });
-    }
-}
-/**
- * Подгружает combo box с доступными подразделеними в модальное окно
- */
-function getSubdivisions() {
-    var request = $.ajax({
-        type: "POST",
-        url: "/parser/tanks/subdivisions/",
-        cache: false
-    });
-    request.done(function (response) {
-        $("#modal-content").html(response)
-    });
-}
-/**
- * Слушатель нажатия на кнопку загрузки XML в модальном окне
- */
-$('#parser-content').on('click' , '#modalUploadXmlButton', function () {
-    var subdivision = $("#modal-subdivisions").val();
-    var request = $.ajax({
-        type: "POST",
-        url: "/parser/tanks/data/",
-        data:{"subdivision": subdivision}, //Временно указал явное значение подразделения
-        cache: false
-    });
-    request.done(function (response) {
-        //Подгружаю контент
-        $("#tanks-content").html(response);
-        $('#hidden-button').attr('hidden', false);
-        $('#tanksModalWindow').modal('hide');
-    });
-});

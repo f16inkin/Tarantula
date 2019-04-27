@@ -19,7 +19,15 @@ function __autoload($className)
     try {
         $fileName = str_replace('\\', '/', $className) . '.class.php';
         if (!file_exists($fileName)) {
-            throw new Exception('Class not found!'.$className);
+            //Если это не класс то скорее всего требуется интерфейс
+            $fileName = str_replace('\\', '/', $className) . '.interface.php';
+            if (!file_exists($fileName)) {
+                //Если это не класс и не интерфейс то скорее всего требуется трейт
+                $fileName = str_replace('\\', '/', $className) . '.trait.php';
+                if (!file_exists($fileName)) {
+                    throw new Exception('Искомая конструкция не найдена!'.$className);
+                }
+            }
         }
         require_once $fileName;
     }

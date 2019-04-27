@@ -65,19 +65,14 @@
 .nav-link{
     color: black !important;
 }
-/*
- * Шаги исполнения
+/**
+ * ПАГИНАЦИЯ
  */
-.step-circle{
-    width: 50px;
-    height: 50px;
-    line-height: 44px;
-    border: solid 3px;
-    border-radius: 50%;
-    text-align: center;
-    font-size: 16px;
-    font-weight: 700;
-    background-color: green;
-    color: white;
-    border-color: white;
+#pagination-content{
+    margin-bottom: 10px;
+}
+#pagination{
+    display: flex;
+    align-items: center;
+    justify-content: center
 }

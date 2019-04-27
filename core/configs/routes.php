@@ -145,4 +145,17 @@ return[
             'arguments' => 0
         ]
     ],
+    /**
+     * Пагинация
+     */
+    [
+        '^parser/pagination$' => [
+            'construct' => false,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerPagination',
+            'action' => 'OpenPage',
+            'arguments' => 0
+        ]
+    ]
 ];
