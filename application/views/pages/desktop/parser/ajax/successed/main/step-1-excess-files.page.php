@@ -36,13 +36,13 @@
             <div id="pagination-content"> </div>
             <div id="pagination">
                 <ul class="pagination">
-                    <li class="page-item disabled">
+                    <!--<li class="page-item disabled">
                         <span class="page-link">Предыдущая</span>
-                    </li>
+                    </li>-->
                     <?php for ($i = 1; $i< $content['pagination']+1; $i++) :?>
                         <li class="page-item"><a class="page-link" onclick="showPaginationPageData(<?=$i;?>); return false;"><?=$i;?></a></li>
                     <?php endfor ;?>
-                    <li class="page-item"><a class="page-link" href="#">Следующая</a></li>
+                    <!--<li class="page-item"><a class="page-link" href="#">Следующая</a></li>-->
                 </ul>
             </div>
         </div>

@@ -34,6 +34,16 @@ function __autoload($className)
     catch (Exception $e){
         echo 'Выброшено исключение: ',  $e->getMessage(), "\n";
     }
+    /*try {
+        $fileName = str_replace('\\', '/', $className) . '.class.php';
+        if (!file_exists($fileName)) {
+            throw new Exception('Class not found!'.$className);
+        }
+        require_once $fileName;
+    }
+    catch (Exception $e){
+        echo 'Выброшено исключение: ',  $e->getMessage(), "\n";
+    }*/
 }
 //Определяю маршруты
 $routes = Configurator::getRoutes();

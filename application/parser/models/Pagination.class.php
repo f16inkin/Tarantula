@@ -14,20 +14,20 @@ use application\parser\interfaces\StorageChecker;
 class Pagination
 {
     private $_storage_checker;
-    const limit = 5; //Количесво записей выводимы на странице
+    const LIMIT = 5; //Количесво записей выводимы на странице
 
     public function __construct(StorageChecker $storage_checker)
     {
         $this->_storage_checker = $storage_checker;
     }
 
-    public function build($per_page = self::limit){
+    public function build($per_page = self::LIMIT){
         $files_count = count($this->_storage_checker->scanStorage());
         $pages_count = ceil($files_count/$per_page);
         return $pages_count;
     }
 
-    public function getPageData(int $current_page = 1, int $per_page = self::limit){
+    public function getPageData(int $current_page = 1, int $per_page = self::LIMIT){
         //Получаю файлы из хранилища в массив
         $files = $this->_storage_checker->scanStorage();
         //Подсчитываю количество файлов
