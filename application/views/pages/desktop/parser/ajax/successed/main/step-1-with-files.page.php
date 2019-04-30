@@ -5,6 +5,8 @@
  * Date: 18.04.2019
  * Time: 11:25
  */
+use application\parser\controllers\ControllerPagination;
+
 ?>
 <div class="alert alert-primary" role="alert">
     Шаг №1. Проверка директории и файлов
@@ -35,15 +37,7 @@
             <div id="pagination-content"></div>
             <?php if ($content['files_count'] > 5) :?>
             <div id="pagination">
-                <ul class="pagination">
-                    <!--<li class="page-item disabled">
-                        <span class="page-link">Предыдущая</span>
-                    </li>-->
-                    <?php for ($i = 1; $i< $content['pagination']+1; $i++) :?>
-                        <li class="page-item"><a class="page-link" onclick="showPaginationPageData(<?=$i;?>); return false;"><?=$i;?></a></li>
-                    <?php endfor ;?>
-                    <!--<li class="page-item"><a class="page-link" href="#">Следующая</a></li>-->
-                </ul>
+               <?php (new ControllerPagination(1))->actionBuild($content['storage_checker']);?>
             </div>
             <?php endif; ?>
         </div>

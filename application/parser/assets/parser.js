@@ -6,6 +6,11 @@
  *                                      Public Variables и загрузка страницы
  * --------------------------------------------------------------------------------------------------------------------
  */
+/**
+ * Константы идентификаторы обработчиков хранилишь
+ */
+const FOLDER_CHECKER_ID = 1;
+const MYSQL_CHECKER_ID = 2;
 /*
  * Загрузка страницы
  * Каждый раз при перезагрузке страницы, браузер будет подгружать через AJAX именно ту часть которая была подгружена
@@ -22,7 +27,6 @@ $(function () {
         case "office": showOfficeData(); break;
         default: showMainData(); $("#parser-main").addClass('active'); break; //Если состояние еще не установлено, будет подгружаться заданная страница
     }
-    //$(".dropdown-toggle").dropdown();
 });
 /*
  * --------------------------------------------------------------------------------------------------------------------
@@ -75,6 +79,10 @@ $("#parser-office").on("click", function () {
     //Выполнение AJAX запроса, загрузка контента
     showOfficeData();
 });
+/**
+ *
+ */
+
 /*
  * --------------------------------------------------------------------------------------------------------------------
  *                                                  Функции AJAX
@@ -97,7 +105,7 @@ function showMainData() {
         if ($("#parser-content").append('<div id="step-1"></div>')){
             //Подгружаю контент
             if ($("#step-1").html(response)){
-                showPaginationPageData(1);
+                showPaginationPageData(1,FOLDER_CHECKER_ID);
             }
             //Устанавливаю заголовок
             $("#title").text("Parser");
@@ -107,16 +115,21 @@ function showMainData() {
 /**
  * Подгружает контент
  */
-function showPaginationPageData(current_page) {
+function showPaginationPageData(current_page, checker_id) {
     var request = $.ajax({
         type: "POST",
-        url: "/parser/pagination/",
+        url: "/parser/pagination/" + checker_id,
         data: {"current_page": current_page},
         cache: false
     });
     request.done(function (response) {
         //Очистить
         $("div#pagination-content").empty();
+        //Выделение кнопки при нажатии на нее
+        $(".page-item").on('click', function(){
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+        });
         //Добавляю секцию куда выгружу контент
         $("#pagination-content").html(response);
     });

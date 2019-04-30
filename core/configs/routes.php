@@ -149,13 +149,13 @@ return[
      * Пагинация
      */
     [
-        '^parser/pagination$' => [
-            'construct' => false,
+        '^parser/pagination/[0-9]$' => [
+            'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
             'controller' => 'ControllerPagination',
             'action' => 'OpenPage',
-            'arguments' => 0
+            'arguments' => 1
         ]
     ]
 ];
