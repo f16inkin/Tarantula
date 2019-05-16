@@ -106,6 +106,7 @@ function showMainData() {
             //Подгружаю контент
             if ($("#step-1").html(response)){
                 showPaginationPageData(1,FOLDER_CHECKER_ID);
+                $(".page-item:first").addClass('active');
             }
             //Устанавливаю заголовок
             $("#title").text("Parser");
