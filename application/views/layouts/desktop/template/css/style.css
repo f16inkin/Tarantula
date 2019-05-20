@@ -316,13 +316,13 @@ input {
 .transparent-inputs{
     border: none;
     text-align: center;
-    cursor: pointer;
+    cursor: auto;
     background-color: transparent;
 }
-.transparent-inputs:focus{
+/*.transparent-inputs:focus{
     border: 1px solid #37474F;
     background-color: #00a4a2;
-}
+}*/
 /*----------------------------------------------------------------------*/
                             /*РАЗНОЕ*/
 /*----------------------------------------------------------------------*/

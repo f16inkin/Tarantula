@@ -14,7 +14,7 @@ use application\parser\interfaces\StorageChecker;
 class Pagination
 {
     private $_storage_checker;
-    const LIMIT = 5; //Количесво записей выводимы на странице
+    const LIMIT = 10; //Количесво записей выводимы на странице
 
     public function __construct(StorageChecker $storage_checker)
     {
