@@ -6,11 +6,7 @@
  * Time: 12:35
  */
 ?>
-<div class="alert alert-primary" role="alert">
-    Шаг №1. Проверка директории и файлов
-</div>
 <div class="alert alert-danger" role="alert">В директории отсутствуют файлы</div>
-
 <input name="upload[]" type="file" multiple="multiple" />
 <div class="parser-nav-bar">
     <div class="parser-nav-bar-container">

@@ -12,20 +12,23 @@
             <div id="parser-menu">
                 <ul class="nav nav-pills nav-justified" id="pills-tab" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link"  id="parser-main" data-toggle="pill" href="" role="tab">Главная</a>
+                        <a class="nav-link"  id="parser-main" data-toggle="pill" href="" role="tab">
+                            <i class="fa fa-home" aria-hidden="true"></i> Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="parser-tanks" data-toggle="pill" href="" role="tab">Топливо в емкостях</a>
+                        <a class="nav-link" id="parser-reports" data-toggle="pill" href="" role="tab">
+                            <i class="fa fa-calendar" aria-hidden="true"></i> Отчеты</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link"  id="parser-outcomes" data-toggle="pill" href="" role="tab">Отпуск топлива</a>
+                   <li class="nav-item">
+                        <a class="nav-link"  id="parser-controls" data-toggle="pill" href="" role="tab">
+                            <i class="fa fa-cog" aria-hidden="true"></i> Управление</a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" id="parser-incomes" data-toggle="pill" href="" role="tab">Принятое топливо</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="parser-office" data-toggle="pill" href="" role="tab">Карты Top Don</a>
-                    </li>
+                    </li>-->
                 </ul>
             </div>
             <div id="parser-content">

@@ -99,15 +99,31 @@ function showMainData() {
         //Очистить
         $("div#parser-content").empty();
         //Добавляю секцию куда выгружу контент
-        if ($("#parser-content").append('<div id="step-1"></div>')){
-            //Подгружаю контент
-            if ($("#step-1").html(response)){
-                showPaginationPageData(1,FOLDER_CHECKER_ID);
-                $(".page-item:first").addClass('active');
-            }
-            //Устанавливаю заголовок
-            $("#title").text("Parser");
+        if ($("#parser-content").html(response)){
         }
+        $("#title").text("Parser");
+    });
+}
+function StartWork() {
+    $("div#parser-content").empty();
+    $("#parser-content").append('<div id="work"></div>');
+    showFirstStep();
+}
+function showFirstStep() {
+    var request = $.ajax({
+        type: "POST",
+        url: "/parser/first-step/",
+        cache: false
+    });
+    request.done(function (response) {
+        //Очистить
+        //$("div#parser-content").empty();
+        //Добавляю секцию куда выгружу контент
+        if ($("#work").html(response)){
+            showPaginationPageData(1,FOLDER_CHECKER_ID);
+            $(".page-item:first").addClass('active');
+        }
+        $("#title").text("Шаг-1");
     });
 }
 /**
@@ -118,7 +134,10 @@ function showPaginationPageData(current_page, checker_id) {
         type: "POST",
         url: "/parser/pagination/" + checker_id,
         data: {"current_page": current_page},
-        cache: false
+        cache: false,
+        beforeSend: function () {
+            $("#pagination-content").html('Загрузка...');
+        }
     });
     request.done(function (response) {
         //Очистить

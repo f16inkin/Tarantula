@@ -20,32 +20,36 @@ class ControllerMain extends ControllerParserBase
         parent::__construct();
     }
 
+    /**
+     *
+     */
     public function actionIndex(){
+        $this->loadPage('/parser/ajax/successed/main/main.page');
+
+    }
+
+    public function actionFirstStep(){
         //Обозначаю хранилище
-        $storageChecker = new FolderChecker($this->_settings->getStorage());
-        if($storageChecker->checkFolder()){
-            $files = $storageChecker->scanStorage();
+        $folderChecker = new FolderChecker($this->_settings->getStorage());
+        if($folderChecker->checkFolder()){
+            $files = $folderChecker->scanStorage();
             if (!empty($files)){
                 //Временная переменная для обозначения лимита файлов в пользовательской директории
                 $files_limit = $this->_settings->getFilesLimit();
                 $files_count = count($files);
-                $content['files_array'] = $files;
+                $files_per_page = $this->_settings->getFilesPerPage();
                 $content['files_count'] = $files_count;
-                /**
-                 * Везде где мне нужно вывести пагинацию, я параметром передаю чекер хранилища Folder/MySQL - checker
-                 * Теперь я могу на одной странице иметь два разных пагинатора, с разными источниками (хранилищами) данных
-                 */
-                $content['storage_checker'] = $storageChecker;
+                $content['allow_pagination'] = ($files_count > $files_per_page) ? true : false;
+                $content['storage_checker_id'] = 1;
+                $content['files_limit'] = $files_limit;
                 if ($files_count > $files_limit){
-                    $content['files_limit'] = $files_limit;
-                    $this->loadPage('/parser/ajax/successed/main/step-1-excess-files.page', $content);
+                    $this->loadPage('/parser/ajax/successed/main/step-1/step-1-excess-files.page', $content);
                 }else{
-                    $this->loadPage('/parser/ajax/successed/main/step-1-with-files.page', $content);
+                    $this->loadPage('/parser/ajax/successed/main/step-1/step-1-with-files.page', $content);
                 }
             }else{
-                $this->loadPage('/parser/ajax/successed/main/step-1-without-files.page');
+                $this->loadPage('/parser/ajax/successed/main/step-1/step-1-without-files.page');
             }
         }
     }
-
 }

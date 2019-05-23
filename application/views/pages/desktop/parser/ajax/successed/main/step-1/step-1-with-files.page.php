@@ -6,23 +6,19 @@
  * Time: 11:25
  */
 use application\parser\controllers\ControllerPagination;
-
 ?>
-<div class="alert alert-primary" role="alert">
-    Шаг №1. Проверка директории и файлов
-</div>
 <div class="card">
     <div class="alert alert-warning" role="alert">
-        В директории найдены файлы: <b><?=$content['files_count'];?> шт.</b>
+        В директории найдены файлы: <b><?=$content['files_count'].'/'. $content['files_limit'];?> шт.</b>
     </div>
-    <div class="card-header" id="headingOne">
+    <div class="card-header" id="headingOne" style="margin-top: -1rem;">
         <h5 class="mb-0">
-            <button class="btn btn-secondary btn-sm" data-toggle="collapse" data-target="#Step_1">
+            <button class="btn btn-secondary btn-sm" data-toggle="collapse" data-target="#files_collapse_container">
                 Показать файлы  <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
             </button>
         </h5>
     </div>
-    <div id="Step_1" class="collapse" aria-labelledby="headingOne" data-parent="#parser-content">
+    <div id="files_collapse_container" class="collapse" aria-labelledby="headingOne" data-parent="#parser-content">
         <div class="card-body">
             <div class="parser-nav-bar">
                 <div class="parser-nav-bar-container">
@@ -35,9 +31,9 @@ use application\parser\controllers\ControllerPagination;
                 </div>
             </div>
             <div id="pagination-content"></div>
-            <?php if ($content['files_count'] > 5) :?>
+            <?php if ($content['allow_pagination']) :?>
             <div id="pagination">
-               <?php (new ControllerPagination(1))->actionBuild($content['storage_checker']);?>
+               <?php (new ControllerPagination($content['storage_checker_id']))->actionBuild();?>
             </div>
             <?php endif; ?>
         </div>

@@ -135,6 +135,19 @@ return[
             'arguments' => 0
         ]
     ],
+    /**
+     * Шаги выполнения процесса загрузки XML файлов через парсер
+     */
+    [
+        '^parser/first-step$' => [
+            'construct' => false,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerMain',
+            'action' => 'FirstStep',
+            'arguments' => 0
+        ]
+    ],
     [
         '^parser/tanks/subdivisions$' => [
             'construct' => false,

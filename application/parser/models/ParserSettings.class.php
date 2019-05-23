@@ -15,6 +15,7 @@ class ParserSettings extends Model
 {
     private $_files_limit; //переменная отвечающая за максимально допустимое количество файлов в папке пользователя
     private $_storage; //Папка хранилизе для всех файлов парсера
+    private $_files_per_page; //Количество файлов выводимых на странице
 
     public function __construct()
     {
@@ -24,12 +25,13 @@ class ParserSettings extends Model
          */
         $this->_files_limit = 20;
         $this->_storage = ROOT.'/application/parser/storage';
+        $this->_files_per_page = 10;
     }
 
     /**
      * @return mixed
      */
-    public function getFilesLimit()
+    public function getFilesLimit(): int
     {
         return $this->_files_limit;
     }
@@ -40,6 +42,14 @@ class ParserSettings extends Model
     public function getStorage(): string
     {
         return $this->_storage;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFilesPerPage(): int
+    {
+        return $this->_files_per_page;
     }
 
 }

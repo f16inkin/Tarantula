@@ -16,7 +16,7 @@
     <tbody>
     <?php foreach ($content['page_data'] as $file) :?>
         <tr class="tr-table-content">
-            <td><input type="text" class="transparent-inputs" value="<?=$file;?>" style="width: 100%" readonly></td>
+            <td><input type="text" class="transparent-inputs full-width" value="<?=$file;?>" readonly></td>
             <td><a href="" class="btn btn-danger btn-sm">Удалить</a></td>
         </tr>
     <?php endforeach ;?>

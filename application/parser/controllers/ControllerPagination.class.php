@@ -20,6 +20,11 @@ class ControllerPagination extends ControllerParserBase
     private $_pagination;
     private $_storage_checker;
 
+    /**
+     * ControllerPagination constructor.
+     * --------------------------------
+     * @param int $storageCheckerId
+     */
     public function __construct(int $storageCheckerId)
     {
         parent::__construct();
@@ -27,18 +32,18 @@ class ControllerPagination extends ControllerParserBase
             case 1 : $this->_storage_checker = new  FolderChecker($this->_settings->getStorage()); break;
             case 2 : $this->_storage_checker = new  MySQLChecker(); break;
         }
-        $this->_pagination = new Pagination($this->_storage_checker);
+        $this->_pagination = new Pagination($this->_storage_checker, $this->_settings->getFilesPerPage());
     }
 
     public function actionOpenPage(){
         $current_page = $_POST['current_page']; //Текущая выбрана страница
         $content['page_data'] = $this->_pagination->getPageData($current_page); //файлы которые будут отображены
-        $this->loadPage('/parser/ajax/successed/main/pagination-content.page', $content);
+        $this->loadPage('/parser/ajax/successed/main/pagination/pagination-content.page', $content);
     }
 
-    public function actionBuild(StorageChecker $storageChecker){
-        $pagination = new Pagination($storageChecker);
-        $content['pagination'] = $pagination->build();
-        $this->loadPage('/parser/ajax/successed/main/pagination.page', $content);
+    public function actionBuild(){
+        //$pagination = new Pagination($this->_storage_checker);
+        $content['pagination'] = $this->_pagination->build();
+        $this->loadPage('/parser/ajax/successed/main/pagination/pagination.page', $content);
     }
 }
