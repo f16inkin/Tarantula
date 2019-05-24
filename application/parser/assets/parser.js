@@ -106,7 +106,6 @@ function showMainData() {
 }
 function StartWork() {
     $("div#parser-content").empty();
-    $("#parser-content").append('<div id="work"></div>');
     showFirstStep();
 }
 function showFirstStep() {
@@ -116,13 +115,9 @@ function showFirstStep() {
         cache: false
     });
     request.done(function (response) {
-        //Очистить
-        //$("div#parser-content").empty();
-        //Добавляю секцию куда выгружу контент
-        if ($("#work").html(response)){
+        $("#parser-content").html(response);
             showPaginationPageData(1,FOLDER_CHECKER_ID);
             $(".page-item:first").addClass('active');
-        }
         $("#title").text("Шаг-1");
     });
 }
