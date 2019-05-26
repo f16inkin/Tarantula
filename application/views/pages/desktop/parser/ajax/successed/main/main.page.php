@@ -8,11 +8,11 @@
 ?>
 <h3>Парсер</h3>
 <ul>
-    <li></li>
-    <li></li>
-    <li></li>
+    <li>Инфомация 1</li>
+    <li>Инфомация 2</li>
+    <li>Инфомация 3</li>
 </ul>
 <div class="parser-nav-bar-container">
-    <a href="" class="btn btn-primary btn-sm" onclick="StartWork(); return false;">
+    <a href="" class="btn btn-primary btn-sm" onclick="showFirstStep(); return false;">
         <i class="fa fa-broom" aria-hidden="true"></i> Начать</a>
 </div>

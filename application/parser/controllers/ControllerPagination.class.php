@@ -42,7 +42,6 @@ class ControllerPagination extends ControllerParserBase
     }
 
     public function actionBuild(){
-        //$pagination = new Pagination($this->_storage_checker);
         $content['pagination'] = $this->_pagination->build();
         $this->loadPage('/parser/ajax/successed/main/pagination/pagination.page', $content);
     }

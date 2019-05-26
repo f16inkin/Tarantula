@@ -20,16 +20,7 @@ class ControllerMain extends ControllerParserBase
         parent::__construct();
     }
 
-    /**
-     *
-     */
-    public function actionIndex(){
-        $this->loadPage('/parser/ajax/successed/main/main.page');
-
-    }
-
-    public function actionFirstStep(){
-        //Обозначаю хранилище
+    private function scanStorage(){
         $folderChecker = new FolderChecker($this->_settings->getStorage());
         if($folderChecker->checkFolder()){
             $files = $folderChecker->scanStorage();
@@ -42,14 +33,40 @@ class ControllerMain extends ControllerParserBase
                 $content['allow_pagination'] = ($files_count > $files_per_page) ? true : false;
                 $content['storage_checker_id'] = 1;
                 $content['files_limit'] = $files_limit;
-                if ($files_count > $files_limit){
-                    $this->loadPage('/parser/ajax/successed/main/step-1/step-1-excess-files.page', $content);
-                }else{
-                    $this->loadPage('/parser/ajax/successed/main/step-1/step-1-with-files.page', $content);
-                }
-            }else{
-                $this->loadPage('/parser/ajax/successed/main/step-1/step-1-without-files.page');
+                return $content; //success and data
             }
+            return null; //warning and message
+        }
+        return 'Ошибка создания папки пользователя'; //error and message
+    }
+
+    /**
+     *
+     */
+    public function actionIndex(){
+        $this->loadPage('/parser/ajax/successed/main/main.page');
+
+    }
+
+    public function actionFirstStep(){
+        $content = $this->scanStorage();
+        if (isset($content)){
+            if ($content['files_count'] > $content['files_limit']){
+                $this->loadPage('/parser/ajax/successed/main/step-1/step-1-excess-files.page', $content);
+            }else{
+                $this->loadPage('/parser/ajax/successed/main/step-1/step-1-with-files.page', $content);
+            }
+        }else{
+            $this->loadPage('/parser/ajax/successed/main/step-1/step-1-without-files.page');
+        }
+    }
+
+    public function actionDeleteFiles(){
+        $a = $_POST['files'];
+        $storage = $this->_settings->getStorage();
+        $folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login'];
+        foreach ($a as $singlefile){
+            unlink($folder.'/'.$singlefile);
         }
     }
 }

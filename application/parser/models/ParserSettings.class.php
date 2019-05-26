@@ -23,7 +23,7 @@ class ParserSettings extends Model
         /**
          * Пока некоторые натсройки будут добавлятся в ручную, но потом будут браться из базы данных
          */
-        $this->_files_limit = 20;
+        $this->_files_limit = 40;
         $this->_storage = ROOT.'/application/parser/storage';
         $this->_files_per_page = 10;
     }

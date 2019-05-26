@@ -23,12 +23,6 @@
                         <a class="nav-link"  id="parser-controls" data-toggle="pill" href="" role="tab">
                             <i class="fa fa-cog" aria-hidden="true"></i> Управление</a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" id="parser-incomes" data-toggle="pill" href="" role="tab">Принятое топливо</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="parser-office" data-toggle="pill" href="" role="tab">Карты Top Don</a>
-                    </li>-->
                 </ul>
             </div>
             <div id="parser-content">

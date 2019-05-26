@@ -21,10 +21,8 @@ $(function () {
     var state = localStorage.getItem("parserState");
     switch (state){
         case "main": showMainData(); $("#parser-main").addClass('active'); break;
-        case "tanks": showTanksPage(); $("#parser-tanks").addClass('active'); break;
-        case "outcomes": /*showOutcomesData();*/ $("#parser-outcomes").addClass('active'); break;
-        case "incomes": showIncomesData(); break;
-        case "office": showOfficeData(); break;
+        case "reports":  $("#parser-reports").addClass('active'); break;
+        case "controls": $("#parser-controls").addClass('active'); break;
         default: showMainData(); $("#parser-main").addClass('active'); break; //Если состояние еще не установлено, будет подгружаться заданная страница
     }
 });
@@ -46,38 +44,20 @@ $("#parser-main").on("click", function () {
 /**
  * Обрабатывает нажатие на вкладку "Топливо в емкостях".
  */
-$("#parser-tanks").on("click", function () {
+$("#parser-reports").on("click", function () {
     //Установка состояния
-    localStorage.setItem("parserState", "tanks");
+    localStorage.setItem("parserState", "reports");
     //Выполнение AJAX запроса, загрузка контента
-    showTanksPage();
+    alert('Отчеты');
 });
 /**
  * Обрабатывает нажатие на вкладку "Отпуск топлива".
  */
-$("#parser-outcomes").on("click", function () {
+$("#parser-controls").on("click", function () {
     //Установка состояния
-    localStorage.setItem("parserState", "outcomes");
+    localStorage.setItem("parserState", "controls");
     //Выполнение AJAX запроса, загрузка контента
-    showOutcomesData();
-});
-/**
- * Обрабатывает нажатие на вкладку "Принятое топливо".
- */
-$("#parser-incomes").on("click", function () {
-    //Установка состояния
-    localStorage.setItem("parserState", "incomes");
-    //Выполнение AJAX запроса, загрузка контента
-    showIncomesData();
-});
-/**
- * Обрабатывает нажатие на вкладку "Карты Top Don".
- */
-$("#parser-office").on("click", function () {
-    //Установка состояния
-    localStorage.setItem("parserState", "office");
-    //Выполнение AJAX запроса, загрузка контента
-    showOfficeData();
+    alert('Управление');
 });
 
 /*
@@ -104,21 +84,60 @@ function showMainData() {
         $("#title").text("Parser");
     });
 }
-function StartWork() {
-    $("div#parser-content").empty();
-    showFirstStep();
-}
+
 function showFirstStep() {
     var request = $.ajax({
         type: "POST",
         url: "/parser/first-step/",
-        cache: false
+        cache: false,
+        beforeSend: function () {
+            showFlashWindow('Загрузка...', 'success_flash_window');
+        },
+        complete: function () {
+            $('.success_flash_window').remove();
+        }
     });
     request.done(function (response) {
+        $("div#parser-content").empty();
         $("#parser-content").html(response);
             showPaginationPageData(1,FOLDER_CHECKER_ID);
             $(".page-item:first").addClass('active');
         $("#title").text("Шаг-1");
+    });
+}
+
+function deleteFilesFomDirectory() {
+    var files = [];
+    var strings = [];
+    var box = $('.hidden-checkbox');
+    var box1 = box.filter(':checked').each(function() {
+        files.push(this.value);
+        var box2 = $(this).parent().parent().attr("id");
+        //console.log(box2);
+        strings.push(box2);
+    });
+    var request = $.ajax({
+        type: "POST",
+        url: "/parser/delete-files/",
+        data: {"files": files},
+        cache: false,
+        beforeSend: function () {
+            showFlashWindow('Удаление...', 'success_flash_window');
+        },
+        complete: function () {
+            $('.success_flash_window').remove();
+        }
+    });
+    request.done(function () {
+        //
+        $.each(strings, function(index, value) {
+            $("#"+value).delay(500).fadeOut(500, function () {
+                if ($(this).remove()){
+                    showPaginationPageData(1, FOLDER_CHECKER_ID);
+                    buildPagination(FOLDER_CHECKER_ID);
+                }
+            });
+        });
     });
 }
 /**
@@ -129,10 +148,7 @@ function showPaginationPageData(current_page, checker_id) {
         type: "POST",
         url: "/parser/pagination/" + checker_id,
         data: {"current_page": current_page},
-        cache: false,
-        beforeSend: function () {
-            $("#pagination-content").html('Загрузка...');
-        }
+        cache: false
     });
     request.done(function (response) {
         //Очистить
@@ -144,5 +160,42 @@ function showPaginationPageData(current_page, checker_id) {
         });
         //Добавляю секцию куда выгружу контент
         $("#pagination-content").html(response);
+    });
+}
+
+/**
+ * Всплывающее окно "Загрузка"
+ */
+function showFlashWindow(message, window) {
+    $('#wrapper').prepend('<div class="'+window+'">'+message+'</div>');
+    //Плавно его убираю с глаз и! И! Удаляю его колбэк функцией
+    $("."+window).delay(1000).fadeOut(1000, function () {
+        $(this).remove();
+    });
+}
+
+/**
+ * Чекбоксы в таблице в первом шаге
+ */
+$("#parser-content").on('click', '#check_start', function () {
+//$("#check_start").on("click", function () {
+    $("input[type=checkbox]").prop('checked', $(this).prop('checked'));
+    console.log($(this).prop('checked'));
+});
+
+/*
+ * Пагинация
+ */
+function buildPagination(checker_id) {
+    var request = $.ajax({
+        type: "POST",
+        url: "/parser/pagination/build/" + checker_id,
+        cache: false
+    });
+    request.done(function (response) {
+        //Очистить
+        $("div#pagination").empty();
+        //Добавляю секцию куда выгружу контент
+        $("#pagination").html(response);
     });
 }
