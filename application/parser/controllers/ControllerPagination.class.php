@@ -37,7 +37,12 @@ class ControllerPagination extends ControllerParserBase
 
     public function actionOpenPage(){
         $current_page = $_POST['current_page']; //Текущая выбрана страница
-        $content['page_data'] = $this->_pagination->getPageData($current_page); //файлы которые будут отображены
+        $files = $this->_pagination->getPageData($current_page); //файлы которые будут отображены
+        $files_count = $this->_storage_checker->getFilesCount();
+        $files_limit = $this->_settings->getFilesLimit();
+        $content['page_data'] = $files;
+        $content['files_limit'] = $files_limit;
+        $content['files_count'] = $files_count;
         $this->loadPage('/parser/ajax/successed/main/pagination/pagination-content.page', $content);
     }
 

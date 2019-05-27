@@ -54,6 +54,7 @@ class FolderChecker implements StorageChecker
 
     /**
      * Метод проверяет хранилище (папку/базу данных) и возвращает список файлов находящихся в нем в виде массива:
+     * ----------------------------------------------------------------------------------------------------------
      * array = [0 => file_1, 1 => file_2, 2 => file_3]
      * @return array
      */
@@ -70,4 +71,13 @@ class FolderChecker implements StorageChecker
         return $converted_files;
     }
 
+    /**
+     * Метод вернет подсчитаное количество файлов находящихся в хранилище
+     * ------------------------------------------------------------------
+     * @return int
+     */
+    public function getFilesCount(): int
+    {
+        return count(array_slice(scandir($this->_folder), 2));
+    }
 }

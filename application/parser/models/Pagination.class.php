@@ -30,18 +30,13 @@ class Pagination
     }
 
     public function build(){
-        $files_count = count($this->_storage_checker->scanStorage());
-        $pages_count = ceil($files_count / $this->_files_per_page);
+        $pages_count = ceil($this->_storage_checker->getFilesCount() / $this->_files_per_page);
         return $pages_count;
     }
 
     public function getPageData(int $current_page = 1){
         //Получаю файлы из хранилища в массив
         $files = $this->_storage_checker->scanStorage();
-        //Подсчитываю количество файлов
-        $files_count = count($files);
-        //Вычисляю количество страниц
-        $pages_count = ceil($files_count / $this->_files_per_page);
         //Вычисляю первый файл в массиве
         $start_file = ($current_page - 1) * $this->_files_per_page;
         //Получаю массив файлов, которые будут выведены на страницу

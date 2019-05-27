@@ -35,7 +35,7 @@ use application\parser\controllers\ControllerPagination;
     <div style="text-align: center;">Шаг №1. проверка файлов.</div>
     <div class="card">
         <div class="alert alert-warning" style="padding: 5px;" role="alert">
-            В директории найдены файлы: <b><?=$content['files_count'].'/'. $content['files_limit'];?> шт.</b>
+            В директории найдены файлы: <b></b>
         </div>
         <div class="card-header" id="headingOne" style="margin-top: -1rem;">
             <h5 class="mb-0">
@@ -67,7 +67,6 @@ use application\parser\controllers\ControllerPagination;
     function initProgress(){
         var activeDist = $(".slide a.active").position();
         var activeDist1 = ($("#bullet1").position()).left;
-        console.log(activeDist1);
         activeDist = activeDist.left-activeDist1;
         $(".after").stop().animate({width: activeDist + "px"});
     }

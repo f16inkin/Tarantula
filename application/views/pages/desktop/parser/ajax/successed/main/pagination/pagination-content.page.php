@@ -32,3 +32,5 @@
     <?php endforeach ;?>
     </tbody>
 </table>
+<input name="files_count" value="<?=$content['files_count'];?>" readonly hidden>
+<input name="files_limit" value="<?=$content['files_limit'];?>" readonly hidden>

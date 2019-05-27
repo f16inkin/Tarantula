@@ -89,20 +89,14 @@ function showFirstStep() {
     var request = $.ajax({
         type: "POST",
         url: "/parser/first-step/",
-        cache: false,
-        beforeSend: function () {
-            showFlashWindow('Загрузка...', 'success_flash_window');
-        },
-        complete: function () {
-            $('.success_flash_window').remove();
-        }
+        cache: false
     });
     request.done(function (response) {
         $("div#parser-content").empty();
         $("#parser-content").html(response);
         showPaginationPageData(1,FOLDER_CHECKER_ID);
         $(".page-item:first").addClass('active');
-        $("#title").text("Шаг-1");
+        $("#title").text("Проверка хранилища. Шаг-1");
     });
 }
 
@@ -137,8 +131,9 @@ function deleteFilesFomDirectory() {
         var paginationData = function () {
            showPaginationPageData(1, FOLDER_CHECKER_ID);
         };
-        setTimeout(paginationData, 1500);
+        setTimeout(paginationData, 1500); //Здесь устанавливается задержка перед подгрузкой контента пагинации
         buildPagination(FOLDER_CHECKER_ID);
+
 
     });
 }
@@ -152,13 +147,10 @@ function showPaginationPageData(current_page, checker_id) {
         data: {"current_page": current_page},
         cache: false,
         beforeSend: function () {
-            //var func = function(){
-                //showFlashWindow('Загрузка...', 'success_flash_window');
-            //};
-            setTimeout(showFlashWindow('Загрузка...', 'success_flash_window'), 1000);
+            showFlashWindow('Загрузка...', 'success_flash_window');
         },
         complete: function () {
-            $('.success_flash_window').remove();
+            hideFlashWindow('success_flash_window');
         }
     });
     request.done(function (response) {
@@ -171,6 +163,10 @@ function showPaginationPageData(current_page, checker_id) {
         });
         //Добавляю секцию куда выгружу контент
         $("#pagination-content").html(response);
+        //Выставляю лимит и количн=ество файлов
+        var files_limit = $('input[name="files_limit"]').val();
+        var files_count = $('input[name="files_count"]').val();
+        $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
     });
 }
 
@@ -190,12 +186,10 @@ function hideFlashWindow(window) {
  * Чекбоксы в таблице в первом шаге
  */
 $("#parser-content").on('click', '#check_start', function () {
-//$("#check_start").on("click", function () {
     $("input[type=checkbox]").prop('checked', $(this).prop('checked'));
-    console.log($(this).prop('checked'));
 });
 
-/*
+/**
  * Пагинация
  */
 function buildPagination(checker_id) {
@@ -209,6 +203,7 @@ function buildPagination(checker_id) {
         $("div#pagination").empty();
         //Добавляю секцию куда выгружу контент
         $("#pagination").html(response);
+        //Выбеляю кнопку первой страницы
         $(".page-item:first").addClass('active');
     });
 }
