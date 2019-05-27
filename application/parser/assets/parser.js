@@ -100,8 +100,8 @@ function showFirstStep() {
     request.done(function (response) {
         $("div#parser-content").empty();
         $("#parser-content").html(response);
-            showPaginationPageData(1,FOLDER_CHECKER_ID);
-            $(".page-item:first").addClass('active');
+        showPaginationPageData(1,FOLDER_CHECKER_ID);
+        $(".page-item:first").addClass('active');
         $("#title").text("Шаг-1");
     });
 }
@@ -110,10 +110,9 @@ function deleteFilesFomDirectory() {
     var files = [];
     var strings = [];
     var box = $('.hidden-checkbox');
-    var box1 = box.filter(':checked').each(function() {
+    box.filter(':checked').each(function() {
         files.push(this.value);
         var box2 = $(this).parent().parent().attr("id");
-        //console.log(box2);
         strings.push(box2);
     });
     var request = $.ajax({
@@ -125,19 +124,22 @@ function deleteFilesFomDirectory() {
             showFlashWindow('Удаление...', 'success_flash_window');
         },
         complete: function () {
-            $('.success_flash_window').remove();
+            hideFlashWindow('success_flash_window');
         }
     });
     request.done(function () {
         //
         $.each(strings, function(index, value) {
             $("#"+value).delay(500).fadeOut(500, function () {
-                if ($(this).remove()){
-                    showPaginationPageData(1, FOLDER_CHECKER_ID);
-                    buildPagination(FOLDER_CHECKER_ID);
-                }
+                $(this).remove();
             });
         });
+        var paginationData = function () {
+           showPaginationPageData(1, FOLDER_CHECKER_ID);
+        };
+        setTimeout(paginationData, 1500);
+        buildPagination(FOLDER_CHECKER_ID);
+
     });
 }
 /**
@@ -148,7 +150,16 @@ function showPaginationPageData(current_page, checker_id) {
         type: "POST",
         url: "/parser/pagination/" + checker_id,
         data: {"current_page": current_page},
-        cache: false
+        cache: false,
+        beforeSend: function () {
+            //var func = function(){
+                //showFlashWindow('Загрузка...', 'success_flash_window');
+            //};
+            setTimeout(showFlashWindow('Загрузка...', 'success_flash_window'), 1000);
+        },
+        complete: function () {
+            $('.success_flash_window').remove();
+        }
     });
     request.done(function (response) {
         //Очистить
@@ -164,12 +175,13 @@ function showPaginationPageData(current_page, checker_id) {
 }
 
 /**
- * Всплывающее окно "Загрузка"
+ * Всплывающее окно. Показать / Убрать
  */
 function showFlashWindow(message, window) {
     $('#wrapper').prepend('<div class="'+window+'">'+message+'</div>');
-    //Плавно его убираю с глаз и! И! Удаляю его колбэк функцией
-    $("."+window).delay(1000).fadeOut(1000, function () {
+}
+function hideFlashWindow(window) {
+    $("."+window).delay(500).fadeOut(500, function () {
         $(this).remove();
     });
 }
@@ -197,5 +209,6 @@ function buildPagination(checker_id) {
         $("div#pagination").empty();
         //Добавляю секцию куда выгружу контент
         $("#pagination").html(response);
+        $(".page-item:first").addClass('active');
     });
 }
