@@ -124,6 +124,7 @@ function deleteFilesFomDirectory() {
     request.done(function () {
         //
         $.each(strings, function(index, value) {
+            $("#"+value).css({'backgroundColor' : 'red'});
             $("#"+value).delay(500).fadeOut(500, function () {
                 $(this).remove();
             });
@@ -140,7 +141,7 @@ function deleteFilesFomDirectory() {
 /**
  * Подгружает контент
  */
-function showPaginationPageData(current_page, checker_id) {
+/*function showPaginationPageData(current_page, checker_id) {
     var request = $.ajax({
         type: "POST",
         url: "/parser/pagination/" + checker_id,
@@ -168,7 +169,49 @@ function showPaginationPageData(current_page, checker_id) {
         var files_count = $('input[name="files_count"]').val();
         $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
     });
+}*/
+function showPaginationPageData(current_page, checker_id) {
+    var request = $.ajax({
+        type: "POST",
+        url: "/parser/pagination/" + checker_id,
+        data: {"current_page": current_page},
+        cache: false,
+        beforeSend: function () {
+            //showFlashWindow('Загрузка...', 'success_flash_window');
+        },
+        complete: function () {
+            //hideFlashWindow('success_flash_window');
+        }
+    });
+    request.done(function (response) {
+        //Очистить
+        $("#table-pagination-content").empty();
+        //Выделение кнопки при нажатии на нее
+        $(".page-item").on('click', function(){
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+        });
+        //Добавляю секцию куда выгружу контент
+        res = JSON.parse(response);
+        $.each(res.page_data, function(key, value) {
+            var line = '<tr id="table_line_'+key+'" class="tr-table-content">' +
+                    '<td>' +
+                        '<input id="check_'+key+'" class="hidden-checkbox" type="checkbox" value="'+value+'"/>' +
+                            ' <label for="check_'+key+'">' +
+                                ' <div><i class="fa fa-check"></i></div>' +
+                            '</label>' +
+                    '</td>' +
+                    '<td>'+value+'</td>' +
+                '</tr>';
+            $("#table-pagination-content").append(line);
+        });
+        //Выставляю лимит и количество файлов
+        var files_limit = res.files_limit;
+        var files_count = res.files_count;
+        $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
+    });
 }
+
 
 /**
  * Всплывающее окно. Показать / Убрать

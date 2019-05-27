@@ -43,7 +43,8 @@ class ControllerPagination extends ControllerParserBase
         $content['page_data'] = $files;
         $content['files_limit'] = $files_limit;
         $content['files_count'] = $files_count;
-        $this->loadPage('/parser/ajax/successed/main/pagination/pagination-content.page', $content);
+        //$this->loadPage('/parser/ajax/successed/main/pagination/pagination-content.page', $content);
+        echo json_encode($content);
     }
 
     public function actionBuild(){

@@ -52,7 +52,24 @@ use application\parser\controllers\ControllerPagination;
         </div>
         <div id="files_collapse_container" class="collapse" aria-labelledby="headingOne" data-parent="#parser-content">
             <div class="card-body" style="padding: 0.25rem;">
-                <div id="pagination-content"></div>
+                <!----->
+                <div id="pagination-content">
+                    <table cellpadding="1" cellspacing="1" border="0" style="margin-bottom: 5px;" class="table-striped table-mine full-width box-shadow--2dp">
+                        <thead>
+                        <tr class="tr-table-header">
+                            <th>
+                                <input id="check_start" class="hidden-checkbox" type="checkbox"/>
+                                <label for="check_start">
+                                    <div><i class="fa fa-check"></i></div>
+                                </label>
+                            </th>
+                            <th>Имя файла</th>
+                        </tr>
+                        </thead>
+                        <tbody id="table-pagination-content"></tbody>
+                    </table>
+                </div>
+                <!---->
                 <?php if ($content['allow_pagination']) :?>
                 <div id="pagination">
                    <?php (new ControllerPagination($content['storage_checker_id']))->actionBuild();?>
