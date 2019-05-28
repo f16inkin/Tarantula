@@ -205,6 +205,12 @@ function showPaginationPageData(current_page, checker_id) {
                 '</tr>';
             $("#table-pagination-content").append(line);
         });
+        func = function () {
+            var line2 = $(".tr-table-content");
+            //line2.css({'backgroundColor': 'yellow'});
+            line2.hide().fadeIn(1000);
+        };
+        setTimeout(func,5000);
         //Выставляю лимит и количество файлов
         var files_limit = res.files_limit;
         var files_count = res.files_count;
