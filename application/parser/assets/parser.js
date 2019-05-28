@@ -124,7 +124,7 @@ function deleteFilesFomDirectory() {
     request.done(function () {
         //
         $.each(strings, function(index, value) {
-            $("#"+value).css({'backgroundColor' : 'red'});
+            $("#"+value).css({'backgroundColor' : 'rgb(241, 186, 191)', 'border' : 'solid 1px', 'border-color' : '#f5c6cb'});
             $("#"+value).delay(500).fadeOut(500, function () {
                 $(this).remove();
             });
@@ -134,42 +134,13 @@ function deleteFilesFomDirectory() {
         };
         setTimeout(paginationData, 1500); //Здесь устанавливается задержка перед подгрузкой контента пагинации
         buildPagination(FOLDER_CHECKER_ID);
-
-
+        //Снимаю главный чекбокс
+        $("#check_start").prop('checked', false);
     });
 }
 /**
  * Подгружает контент
  */
-/*function showPaginationPageData(current_page, checker_id) {
-    var request = $.ajax({
-        type: "POST",
-        url: "/parser/pagination/" + checker_id,
-        data: {"current_page": current_page},
-        cache: false,
-        beforeSend: function () {
-            showFlashWindow('Загрузка...', 'success_flash_window');
-        },
-        complete: function () {
-            hideFlashWindow('success_flash_window');
-        }
-    });
-    request.done(function (response) {
-        //Очистить
-        $("div#pagination-content").empty();
-        //Выделение кнопки при нажатии на нее
-        $(".page-item").on('click', function(){
-            $(this).siblings().removeClass('active');
-            $(this).addClass('active');
-        });
-        //Добавляю секцию куда выгружу контент
-        $("#pagination-content").html(response);
-        //Выставляю лимит и количн=ество файлов
-        var files_limit = $('input[name="files_limit"]').val();
-        var files_count = $('input[name="files_count"]').val();
-        $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
-    });
-}*/
 function showPaginationPageData(current_page, checker_id) {
     var request = $.ajax({
         type: "POST",
@@ -194,7 +165,7 @@ function showPaginationPageData(current_page, checker_id) {
         //Добавляю секцию куда выгружу контент
         res = JSON.parse(response);
         $.each(res.page_data, function(key, value) {
-            var line = '<tr id="table_line_'+key+'" class="tr-table-content">' +
+            var line = $('<tr id="table_line_'+key+'" class="tr-table-content">' +
                     '<td>' +
                         '<input id="check_'+key+'" class="hidden-checkbox" type="checkbox" value="'+value+'"/>' +
                             ' <label for="check_'+key+'">' +
@@ -202,15 +173,9 @@ function showPaginationPageData(current_page, checker_id) {
                             '</label>' +
                     '</td>' +
                     '<td>'+value+'</td>' +
-                '</tr>';
+                '</tr>').css({'backgroundColor': 'rgb(241, 186, 191)', 'border' : 'solid 1px', 'border-color' : '#f5c6cb'}).hide().fadeIn(1000);
             $("#table-pagination-content").append(line);
         });
-        func = function () {
-            var line2 = $(".tr-table-content");
-            //line2.css({'backgroundColor': 'yellow'});
-            line2.hide().fadeIn(1000);
-        };
-        setTimeout(func,5000);
         //Выставляю лимит и количество файлов
         var files_limit = res.files_limit;
         var files_count = res.files_count;
