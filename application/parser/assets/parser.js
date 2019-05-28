@@ -69,7 +69,7 @@ $("#parser-controls").on("click", function () {
 /**
  * Подгружает AJAX контент с по главной странице
  */
-function showMainData() {
+const showMainData = () => {
     var request = $.ajax({
         type: "POST",
         url: "/parser/main/",
@@ -83,28 +83,33 @@ function showMainData() {
         }
         $("#title").text("Parser");
     });
-}
+};
 
-function showFirstStep() {
+const showFirstStep = () => {
     var request = $.ajax({
         type: "POST",
         url: "/parser/first-step/",
         cache: false
     });
     request.done(function (response) {
+        //Очистить рабочую оласть
         $("div#parser-content").empty();
+        //Загрузить разметку страницы
         $("#parser-content").html(response);
-        showPaginationPageData(1,FOLDER_CHECKER_ID);
+        //Загружаю строки файлов в таблицу
+        showPaginationPageData(1, FOLDER_CHECKER_ID);
+        //Делаю активным первую кнопку пагинатора
         $(".page-item:first").addClass('active');
+        //Установка титула старницы
         $("#title").text("Проверка хранилища. Шаг-1");
     });
-}
+};
 
-function deleteFilesFomDirectory() {
+const deleteFilesFomDirectory = function () {
     var files = [];
     var strings = [];
     var box = $('.hidden-checkbox');
-    box.filter(':checked').each(function() {
+    box.filter(':checked').each(function () {
         files.push(this.value);
         var box2 = $(this).parent().parent().attr("id");
         strings.push(box2);
@@ -123,21 +128,26 @@ function deleteFilesFomDirectory() {
     });
     request.done(function () {
         //
-        $.each(strings, function(index, value) {
-            $("#"+value).css({'backgroundColor' : 'rgb(241, 186, 191)', 'border' : 'solid 1px', 'border-color' : '#f5c6cb'});
-            $("#"+value).delay(500).fadeOut(500, function () {
+        $.each(strings, function (index, value) {
+            $("#" + value).css({
+                'backgroundColor': 'rgb(241, 186, 191)',
+                'border': 'solid 1px',
+                'border-color': 'rgb(251, 136, 148)'
+            });
+            $("#" + value).delay(500).fadeOut(500, function () {
                 $(this).remove();
             });
         });
         var paginationData = function () {
-           showPaginationPageData(1, FOLDER_CHECKER_ID);
+            showPaginationPageData(1, FOLDER_CHECKER_ID);
         };
         setTimeout(paginationData, 1500); //Здесь устанавливается задержка перед подгрузкой контента пагинации
         buildPagination(FOLDER_CHECKER_ID);
         //Снимаю главный чекбокс
         $("#check_start").prop('checked', false);
     });
-}
+};
+
 /**
  * Подгружает контент
  */
@@ -165,21 +175,28 @@ function showPaginationPageData(current_page, checker_id) {
         //Добавляю секцию куда выгружу контент
         res = JSON.parse(response);
         $.each(res.page_data, function(key, value) {
-            var line = $('<tr id="table_line_'+key+'" class="tr-table-content">' +
-                    '<td>' +
-                        '<input id="check_'+key+'" class="hidden-checkbox" type="checkbox" value="'+value+'"/>' +
-                            ' <label for="check_'+key+'">' +
-                                ' <div><i class="fa fa-check"></i></div>' +
-                            '</label>' +
-                    '</td>' +
-                    '<td>'+value+'</td>' +
-                '</tr>').css({'backgroundColor': 'rgb(241, 186, 191)', 'border' : 'solid 1px', 'border-color' : '#f5c6cb'}).hide().fadeIn(1000);
+            var line =
+                $(`<tr id='table_line_${key}' class="tr-table-content">` +
+                    `<td>` +
+                        `<input id='check_${key}' class='hidden-checkbox' type='checkbox' value='${value}'/>` +
+                            `<label for='check_${key}'>` +
+                                `<div><i class='fa fa-check'></i></div>` +
+                            `</label>` +
+                    `</td>` +
+                    `<td>${value}</td>` +
+                `</tr>`).css({'backgroundColor': 'rgb(197, 241, 186)', 'border' : 'solid 1px', 'border-color' : 'rgb(82, 249, 94)'}).hide().fadeIn(1000);
             $("#table-pagination-content").append(line);
         });
+
+        //const a = 'Hi, I\'m ' + fName + ' ' + sName + ', I\'m ' + age + ' and work as a ' + job + '.';
+        //const b = `Hi, I'm ${fName} ${sName}, I'm ${age} and work as a ${job}.`;
+
+
         //Выставляю лимит и количество файлов
         var files_limit = res.files_limit;
         var files_count = res.files_count;
         $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
+        $(".tr-table-content").animate({backgroundColor : 'rgba(0,0,0,.05)', 'border' : "0px" }, 1000 );
     });
 }
 

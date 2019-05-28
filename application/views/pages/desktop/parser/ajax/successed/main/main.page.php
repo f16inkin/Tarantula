@@ -16,3 +16,5 @@
     <a href="" class="btn btn-primary btn-sm" onclick="showFirstStep(); return false;">
         <i class="fa fa-broom" aria-hidden="true"></i> Начать</a>
 </div>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
