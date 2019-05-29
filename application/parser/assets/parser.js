@@ -139,6 +139,7 @@ const deleteFilesFromDirectory = function () {
             //Пошагово убираю удаленные строки из таблицы
             $.each(table_rows, function (index, value) {
                 let table_row = $("#" + value);
+                console.log(table_row);
                 table_row.css({
                     'backgroundColor': 'rgb(241, 186, 191)',
                     'border': 'solid 1px',
@@ -148,12 +149,14 @@ const deleteFilesFromDirectory = function () {
                     $(this).remove();
                 });
             });
-            //Какое то хитрое переопределение тут.
             /*const paginationData = function () {
                 showPaginationPageData(1, FOLDER_CHECKER_ID);
             };
             setTimeout(paginationData, 1500);*/ //ЗДЕСЬ УСТАНАВЛИВАЕТСЯ ЗАДЕРЖКА ПЕРЕД ПОДГРУЗКОЙ ПАГИНАЦИИ
-            filesUpload(file_names.length, FOLDER_CHECKER_ID);
+            const uploadFiles = function () {
+                filesUpload(file_names.length, FOLDER_CHECKER_ID)
+            };
+            setTimeout(uploadFiles, 1500);
             //Настройка пагинатора
             buildPagination(FOLDER_CHECKER_ID);
             //Снимаю главный чекбокс
@@ -291,4 +294,12 @@ function buildPagination(checker_id) {
         //Выбеляю кнопку первой страницы
         $(".page-item:first").addClass('active');
     });
+}
+
+/**
+ * Санитайзер
+ */
+function sanitizeString(str) {
+    return str.replace(/[^a-zA-Z ]/g, "");
+    //return str.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
 }
