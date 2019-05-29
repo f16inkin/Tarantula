@@ -44,4 +44,14 @@ class Pagination
         return $files_in_page;
     }
 
+    public function getCustomPageData(int $quantity, int $current_page = 1){
+        //Получаю файлы из хранилища в массив
+        $files = $this->_storage_checker->scanStorage();
+        //Вычисляю первый файл в массиве
+        $start_page_file = ($current_page - 1) * $this->_files_per_page;
+        $start_upload_file = $start_page_file + ($this->_files_per_page - $quantity);
+        $uploaded_files = array_slice($files, $start_upload_file, $quantity);
+        return $uploaded_files;
+    }
+
 }

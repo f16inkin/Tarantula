@@ -42,7 +42,7 @@ use application\parser\controllers\ControllerPagination;
                 <button class="btn btn-secondary btn-sm" data-toggle="collapse" data-target="#files_collapse_container">
                     Показать файлы  <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="deleteFilesFomDirectory(); return false;">
+                <button class="btn btn-danger btn-sm" onclick="deleteFilesFromDirectory(); return false;">
                     <i class="fa fa-trash" aria-hidden="true"></i> Удалить</a>
                 </button>
                 <button class="btn btn-primary btn-sm">

@@ -182,6 +182,16 @@ return[
         ]
     ],
     [
+        '^parser/pagination/upload/[0-9]$' => [
+            'construct' => true,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerPagination',
+            'action' => 'FilesUpload',
+            'arguments' => 1
+        ]
+    ],
+    [
         '^parser/pagination/build/[0-9]$' => [
             'construct' => true,
             'module' => 'parser',

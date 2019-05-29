@@ -62,11 +62,11 @@ class ControllerMain extends ControllerParserBase
     }
 
     public function actionDeleteFiles(){
-        $a = $_POST['files'];
+        $files = $_POST['file_names'];
         $storage = $this->_settings->getStorage();
         $folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login'];
-        foreach ($a as $singlefile){
-            unlink($folder.'/'.$singlefile);
+        foreach ($files as $singleFile){
+            unlink($folder.'/'.$singleFile);
         }
     }
 }

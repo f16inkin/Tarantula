@@ -7,7 +7,7 @@
  * --------------------------------------------------------------------------------------------------------------------
  */
 /**
- * Константы идентификаторы обработчиков хранилишь
+ * Константы идентификаторы обработчиков хранилищь
  */
 const FOLDER_CHECKER_ID = 1;
 const MYSQL_CHECKER_ID = 2;
@@ -70,7 +70,7 @@ $("#parser-controls").on("click", function () {
  * Подгружает AJAX контент с по главной странице
  */
 const showMainData = () => {
-    var request = $.ajax({
+    let request = $.ajax({
         type: "POST",
         url: "/parser/main/",
         cache: false
@@ -85,8 +85,11 @@ const showMainData = () => {
     });
 };
 
+/**
+ * Подгружает контент для первого шага
+ */
 const showFirstStep = () => {
-    var request = $.ajax({
+    let request = $.ajax({
         type: "POST",
         url: "/parser/first-step/",
         cache: false
@@ -104,55 +107,108 @@ const showFirstStep = () => {
         $("#title").text("Проверка хранилища. Шаг-1");
     });
 };
-
-const deleteFilesFomDirectory = function () {
-    var files = [];
-    var strings = [];
-    var box = $('.hidden-checkbox');
-    box.filter(':checked').each(function () {
-        files.push(this.value);
-        var box2 = $(this).parent().parent().attr("id");
-        strings.push(box2);
+/**
+ * Шаг №1. Удаляет строки/файлы из пользовательской директории/таблицы
+ */
+const deleteFilesFromDirectory = function () {
+    let file_names = [];    //Имена файлов из директории + расширение
+    let table_rows = [];    //Массив с id строк таблицы
+    let check_boxes = $('.hidden-checkbox');
+    check_boxes.filter(':checked').each(function () {
+        file_names.push(this.value);
+        let table_row_id = $(this).parent().parent().attr("id");
+        table_rows.push(table_row_id);
     });
-    var request = $.ajax({
+    if (file_names.length > 0) {
+        /**
+         * AJAX action
+         */
+        let request = $.ajax({
+            type: "POST",
+            url: "/parser/delete-files/",
+            data: {"file_names": file_names},
+            cache: false,
+            beforeSend: function () {
+                showFlashWindow('Удаление...', 'success_flash_window');
+            },
+            complete: function () {
+                hideFlashWindow('success_flash_window');
+            }
+        });
+        request.done(function () {
+            //Пошагово убираю удаленные строки из таблицы
+            $.each(table_rows, function (index, value) {
+                let table_row = $("#" + value);
+                table_row.css({
+                    'backgroundColor': 'rgb(241, 186, 191)',
+                    'border': 'solid 1px',
+                    'border-color': 'rgb(251, 136, 148)'
+                });
+                table_row.delay(500).fadeOut(500, function () {
+                    $(this).remove();
+                });
+            });
+            //Какое то хитрое переопределение тут.
+            /*const paginationData = function () {
+                showPaginationPageData(1, FOLDER_CHECKER_ID);
+            };
+            setTimeout(paginationData, 1500);*/ //ЗДЕСЬ УСТАНАВЛИВАЕТСЯ ЗАДЕРЖКА ПЕРЕД ПОДГРУЗКОЙ ПАГИНАЦИИ
+            filesUpload(file_names.length, FOLDER_CHECKER_ID);
+            //Настройка пагинатора
+            buildPagination(FOLDER_CHECKER_ID);
+            //Снимаю главный чекбокс
+            $("#check_start").prop('checked', false);
+        });
+    }else {
+        showFlashWindow('Выберите файлы для удаления', 'success_flash_window');
+        let func_hide = function () {
+            hideFlashWindow('success_flash_window')
+        };
+        setTimeout(func_hide,1000);
+    }
+};
+
+function filesUpload(quantity, checker_id) {
+    let request = $.ajax({
         type: "POST",
-        url: "/parser/delete-files/",
-        data: {"files": files},
+        url: "/parser/pagination/upload/" + checker_id,
+        data: {"quantity": quantity},
         cache: false,
         beforeSend: function () {
-            showFlashWindow('Удаление...', 'success_flash_window');
+            //showFlashWindow('Загрузка...', 'success_flash_window');
         },
         complete: function () {
-            hideFlashWindow('success_flash_window');
+            //hideFlashWindow('success_flash_window');
         }
     });
-    request.done(function () {
-        //
-        $.each(strings, function (index, value) {
-            $("#" + value).css({
-                'backgroundColor': 'rgb(241, 186, 191)',
-                'border': 'solid 1px',
-                'border-color': 'rgb(251, 136, 148)'
-            });
-            $("#" + value).delay(500).fadeOut(500, function () {
-                $(this).remove();
-            });
+    request.done(function (response) {
+        res = JSON.parse(response);
+        $.each(res.uploaded_files, function(key, value) {
+            let unique_id = value.replace('.',"");
+            let line =
+                $(`<tr id='table_line_${unique_id}' class="tr-table-content">` +
+                    `<td>` +
+                    `<input id='check_${unique_id}' class='hidden-checkbox' type='checkbox' value='${value}'/>` +
+                    `<label for='check_${unique_id}'>` +
+                    `<div><i class='fa fa-check'></i></div>` +
+                    `</label>` +
+                    `</td>` +
+                    `<td>${value}</td>` +
+                    `</tr>`).hide().fadeIn(1000);
+            $("#table-pagination-content").append(line);
         });
-        var paginationData = function () {
-            showPaginationPageData(1, FOLDER_CHECKER_ID);
-        };
-        setTimeout(paginationData, 1500); //Здесь устанавливается задержка перед подгрузкой контента пагинации
-        buildPagination(FOLDER_CHECKER_ID);
-        //Снимаю главный чекбокс
-        $("#check_start").prop('checked', false);
+        //Выставляю лимит и количество файлов
+        let files_limit = res.files_limit;
+        let files_count = res.files_count;
+        $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
     });
-};
+}
 
 /**
  * Подгружает контент
  */
 function showPaginationPageData(current_page, checker_id) {
-    var request = $.ajax({
+    let request = $.ajax({
         type: "POST",
         url: "/parser/pagination/" + checker_id,
         data: {"current_page": current_page},
@@ -172,31 +228,29 @@ function showPaginationPageData(current_page, checker_id) {
             $(this).siblings().removeClass('active');
             $(this).addClass('active');
         });
-        //Добавляю секцию куда выгружу контент
         res = JSON.parse(response);
         $.each(res.page_data, function(key, value) {
-            var line =
-                $(`<tr id='table_line_${key}' class="tr-table-content">` +
+            let unique_id = value.replace('.',"");
+            let line =
+                $(`<tr id='table_line_${unique_id}' class="tr-table-content">` +
                     `<td>` +
-                        `<input id='check_${key}' class='hidden-checkbox' type='checkbox' value='${value}'/>` +
-                            `<label for='check_${key}'>` +
+                        `<input id='check_${unique_id}' class='hidden-checkbox' type='checkbox' value='${value}'/>` +
+                            `<label for='check_${unique_id}'>` +
                                 `<div><i class='fa fa-check'></i></div>` +
                             `</label>` +
                     `</td>` +
                     `<td>${value}</td>` +
-                `</tr>`).css({'backgroundColor': 'rgb(197, 241, 186)', 'border' : 'solid 1px', 'border-color' : 'rgb(82, 249, 94)'}).hide().fadeIn(1000);
+                //Раскоментировать для анимации в зеленом цвете Шаг №1.
+                //`</tr>`).css({'backgroundColor': 'rgb(197, 241, 186)', 'border' : 'solid 1px', 'border-color' : 'rgb(82, 249, 94)'}).hide().fadeIn(1000);
+                `</tr>`).hide().fadeIn(1000);
             $("#table-pagination-content").append(line);
         });
-
-        //const a = 'Hi, I\'m ' + fName + ' ' + sName + ', I\'m ' + age + ' and work as a ' + job + '.';
-        //const b = `Hi, I'm ${fName} ${sName}, I'm ${age} and work as a ${job}.`;
-
-
         //Выставляю лимит и количество файлов
-        var files_limit = res.files_limit;
-        var files_count = res.files_count;
+        let files_limit = res.files_limit;
+        let files_count = res.files_count;
         $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
-        $(".tr-table-content").animate({backgroundColor : 'rgba(0,0,0,.05)', 'border' : "0px" }, 1000 );
+        //Раскоментировать для плавной анимации Шаг №2.
+        //$(".tr-table-content").animate({backgroundColor : 'rgba(0,0,0,.05)', 'border' : "0px" }, 1000 );
     });
 }
 
