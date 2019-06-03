@@ -47,10 +47,23 @@ class Pagination
     public function getCustomPageData(int $quantity, int $current_page = 1){
         //Получаю файлы из хранилища в массив
         $files = $this->_storage_checker->scanStorage();
-        //Вычисляю первый файл в массиве
-        $start_page_file = ($current_page - 1) * $this->_files_per_page;
-        $start_upload_file = $start_page_file + ($this->_files_per_page - $quantity);
-        $uploaded_files = array_slice($files, $start_upload_file, $quantity);
+        //Формирую массив разбитый по страницам
+        $stack = array_chunk($files, 10);
+        //
+        $p = $current_page - 1;
+        //Выбираю нужную страницу
+        @$page = $stack[$p];
+        if (isset($page)){
+            $start_file_index = count($page) - $quantity;
+        }else{
+            $p = $current_page - 2;
+            $page = $stack[$p];
+            $start_file_index = 0;
+            $quantity = 9;
+        }
+        //Выбираю страницу с которой нужно подгрузить файлы, это следующая страница
+        $uploaded_files = array_slice($page, $start_file_index, $quantity);
+        //Загрузка
         return $uploaded_files;
     }
 

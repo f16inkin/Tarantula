@@ -53,7 +53,7 @@ class ControllerPagination extends ControllerParserBase
     }
 
     public function actionFilesUpload(){
-        $current_page = 1;//$_POST['current_page'];
+        $current_page = $_POST['current_page'];
         $quantity = $_POST['quantity'];
         $files = $this->_pagination->getCustomPageData($quantity, $current_page);
         $files_count = $this->_storage_checker->getFilesCount();

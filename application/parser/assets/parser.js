@@ -115,8 +115,10 @@ const deleteFilesFromDirectory = function() {
     let file_names = [];    //Имена файлов из директории + расширение
     let table_rows = [];    //Массив с id строк таблицы
     let check_boxes = $('.checkable');
-    //let current_page = $("li.active").text();
-    //console.log(current_page);
+    /*------------------------*/
+    let current_page = $("li.active").text();
+    console.log(current_page);
+    /*------------------------*/
     check_boxes.filter(':checked').each(function () {
         file_names.push(this.value);
         let table_row_id = $(this).parent().parent().attr("id");
@@ -152,7 +154,7 @@ const deleteFilesFromDirectory = function() {
                 });
             });
             const uploadFiles = function () {
-                filesUpload(file_names.length, FOLDER_CHECKER_ID)
+                filesUpload(file_names.length, current_page, FOLDER_CHECKER_ID)
             };
             setTimeout(uploadFiles, 1500);
             //Настройка пагинатора
@@ -175,11 +177,11 @@ const deleteFilesFromDirectory = function() {
  * @param quantity
  * @param checker_id
  */
-function filesUpload(quantity, checker_id) {
+function filesUpload(quantity, current_page, checker_id) {
     let request = $.ajax({
         type: "POST",
         url: "/parser/pagination/upload/" + checker_id,
-        data: {"quantity": quantity},
+        data: {"quantity": quantity, "current_page": current_page},
         cache: false,
         beforeSend: function () {
             //showFlashWindow('Загрузка...', 'success_flash_window');
