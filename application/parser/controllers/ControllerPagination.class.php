@@ -48,12 +48,12 @@ class ControllerPagination extends ControllerParserBase
     }
 
     public function actionBuild(){
-        $content['pagination'] = $this->_pagination->build();
-        $this->loadPage('/parser/ajax/successed/main/pagination/pagination.page', $content);
+        $pages = $this->_pagination->build();
+        echo json_encode($pages);
     }
 
     public function actionFilesUpload(){
-        $current_page = 1;
+        $current_page = 1;//$_POST['current_page'];
         $quantity = $_POST['quantity'];
         $files = $this->_pagination->getCustomPageData($quantity, $current_page);
         $files_count = $this->_storage_checker->getFilesCount();

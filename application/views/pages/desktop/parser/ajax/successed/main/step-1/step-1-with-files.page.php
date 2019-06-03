@@ -70,11 +70,9 @@ use application\parser\controllers\ControllerPagination;
                     </table>
                 </div>
                 <!---->
-                <?php if ($content['allow_pagination']) :?>
                 <div id="pagination">
-                   <?php (new ControllerPagination($content['storage_checker_id']))->actionBuild();?>
+                    <ul id="pagination-list" class="pagination"></ul>
                 </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>

@@ -101,8 +101,9 @@ const showFirstStep = () => {
         $("#parser-content").html(response);
         //Загружаю строки файлов в таблицу
         showPaginationPageData(1, FOLDER_CHECKER_ID);
+        buildPagination(FOLDER_CHECKER_ID);
         //Делаю активным первую кнопку пагинатора
-        $(".page-item:first").addClass('active');
+        //$(".page-item:first").addClass('active');
         //Установка титула старницы
         $("#title").text("Проверка хранилища. Шаг-1");
     });
@@ -110,10 +111,12 @@ const showFirstStep = () => {
 /**
  * Шаг №1. Удаляет строки/файлы из пользовательской директории/таблицы
  */
-const deleteFilesFromDirectory = function () {
+const deleteFilesFromDirectory = function() {
     let file_names = [];    //Имена файлов из директории + расширение
     let table_rows = [];    //Массив с id строк таблицы
-    let check_boxes = $('.hidden-checkbox');
+    let check_boxes = $('.checkable');
+    //let current_page = $("li.active").text();
+    //console.log(current_page);
     check_boxes.filter(':checked').each(function () {
         file_names.push(this.value);
         let table_row_id = $(this).parent().parent().attr("id");
@@ -139,7 +142,6 @@ const deleteFilesFromDirectory = function () {
             //Пошагово убираю удаленные строки из таблицы
             $.each(table_rows, function (index, value) {
                 let table_row = $("#" + value);
-                console.log(table_row);
                 table_row.css({
                     'backgroundColor': 'rgb(241, 186, 191)',
                     'border': 'solid 1px',
@@ -149,10 +151,6 @@ const deleteFilesFromDirectory = function () {
                     $(this).remove();
                 });
             });
-            /*const paginationData = function () {
-                showPaginationPageData(1, FOLDER_CHECKER_ID);
-            };
-            setTimeout(paginationData, 1500);*/ //ЗДЕСЬ УСТАНАВЛИВАЕТСЯ ЗАДЕРЖКА ПЕРЕД ПОДГРУЗКОЙ ПАГИНАЦИИ
             const uploadFiles = function () {
                 filesUpload(file_names.length, FOLDER_CHECKER_ID)
             };
@@ -171,6 +169,12 @@ const deleteFilesFromDirectory = function () {
     }
 };
 
+/**
+ * Подгружает строки файлов
+ * ------------------------
+ * @param quantity
+ * @param checker_id
+ */
 function filesUpload(quantity, checker_id) {
     let request = $.ajax({
         type: "POST",
@@ -191,7 +195,7 @@ function filesUpload(quantity, checker_id) {
             let line =
                 $(`<tr id='table_line_${unique_id}' class="tr-table-content">` +
                     `<td>` +
-                    `<input id='check_${unique_id}' class='hidden-checkbox' type='checkbox' value='${value}'/>` +
+                    `<input id='check_${unique_id}' class='hidden-checkbox checkable' type='checkbox' value='${value}'/>` +
                     `<label for='check_${unique_id}'>` +
                     `<div><i class='fa fa-check'></i></div>` +
                     `</label>` +
@@ -208,20 +212,17 @@ function filesUpload(quantity, checker_id) {
 }
 
 /**
- * Подгружает контент
+ * Загружает полную страницу файлов
+ * --------------------------------
+ * @param current_page
+ * @param checker_id
  */
 function showPaginationPageData(current_page, checker_id) {
     let request = $.ajax({
         type: "POST",
         url: "/parser/pagination/" + checker_id,
         data: {"current_page": current_page},
-        cache: false,
-        beforeSend: function () {
-            //showFlashWindow('Загрузка...', 'success_flash_window');
-        },
-        complete: function () {
-            //hideFlashWindow('success_flash_window');
-        }
+        cache: false
     });
     request.done(function (response) {
         //Очистить
@@ -237,14 +238,12 @@ function showPaginationPageData(current_page, checker_id) {
             let line =
                 $(`<tr id='table_line_${unique_id}' class="tr-table-content">` +
                     `<td>` +
-                        `<input id='check_${unique_id}' class='hidden-checkbox' type='checkbox' value='${value}'/>` +
+                        `<input id='check_${unique_id}' class='hidden-checkbox checkable' type='checkbox' value='${value}'/>` +
                             `<label for='check_${unique_id}'>` +
                                 `<div><i class='fa fa-check'></i></div>` +
                             `</label>` +
                     `</td>` +
                     `<td>${value}</td>` +
-                //Раскоментировать для анимации в зеленом цвете Шаг №1.
-                //`</tr>`).css({'backgroundColor': 'rgb(197, 241, 186)', 'border' : 'solid 1px', 'border-color' : 'rgb(82, 249, 94)'}).hide().fadeIn(1000);
                 `</tr>`).hide().fadeIn(1000);
             $("#table-pagination-content").append(line);
         });
@@ -252,18 +251,24 @@ function showPaginationPageData(current_page, checker_id) {
         let files_limit = res.files_limit;
         let files_count = res.files_count;
         $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
-        //Раскоментировать для плавной анимации Шаг №2.
-        //$(".tr-table-content").animate({backgroundColor : 'rgba(0,0,0,.05)', 'border' : "0px" }, 1000 );
     });
 }
 
-
 /**
- * Всплывающее окно. Показать / Убрать
+ * Показывает всплывающее окно
+ * ---------------------------
+ * @param message
+ * @param window
  */
 function showFlashWindow(message, window) {
     $('#wrapper').prepend('<div class="'+window+'">'+message+'</div>');
 }
+
+/**
+ * Скрывает всплывающее окно
+ * -------------------------
+ * @param window
+ */
 function hideFlashWindow(window) {
     $("."+window).delay(500).fadeOut(500, function () {
         $(this).remove();
@@ -278,28 +283,30 @@ $("#parser-content").on('click', '#check_start', function () {
 });
 
 /**
+ *
+ */
+$("#parser-content").on('click', '.page-item', function () {
+   let page = $(this).text();
+   showPaginationPageData(page, FOLDER_CHECKER_ID);
+});
+
+/**
  * Пагинация
  */
 function buildPagination(checker_id) {
-    var request = $.ajax({
+    let request = $.ajax({
         type: "POST",
         url: "/parser/pagination/build/" + checker_id,
         cache: false
     });
     request.done(function (response) {
         //Очистить
-        $("div#pagination").empty();
+        $("ul#pagination-list").empty();
         //Добавляю секцию куда выгружу контент
-        $("#pagination").html(response);
-        //Выбеляю кнопку первой страницы
+        for (let i = 1; i < +response+1 ; i++) {
+            let line = ' <li class="page-item"><a class="page-link">'+i+'</a></li>';
+            $("#pagination-list").append(line);
+        }
         $(".page-item:first").addClass('active');
     });
-}
-
-/**
- * Санитайзер
- */
-function sanitizeString(str) {
-    return str.replace(/[^a-zA-Z ]/g, "");
-    //return str.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
 }
