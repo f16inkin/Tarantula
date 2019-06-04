@@ -69,7 +69,7 @@ $("#parser-controls").on("click", function () {
 /**
  * Подгружает AJAX контент с по главной странице
  */
-const showMainData = () => {
+const showMainData = function () {
     let request = $.ajax({
         type: "POST",
         url: "/parser/main",
@@ -79,7 +79,7 @@ const showMainData = () => {
         //Очистить
         $("div#parser-content").empty();
         //Добавляю секцию куда выгружу контент
-        if ($("#parser-content").html(response)){
+        if ($("#parser-content").html(response)) {
         }
         $("#title").text("Parser");
     });
@@ -88,7 +88,7 @@ const showMainData = () => {
 /**
  * Подгружает контент для первого шага
  */
-const showFirstStep = () => {
+const showFirstStep = function () {
     let request = $.ajax({
         type: "POST",
         url: "/parser/first-step",
@@ -100,8 +100,8 @@ const showFirstStep = () => {
         //Загрузить разметку страницы
         $("#parser-content").html(response);
         //Загружаю строки файлов в таблицу
-        //showPaginationPageData(1, FOLDER_CHECKER_ID);
-        filesUpload(0, 1, FOLDER_CHECKER_ID);
+        showPaginationPageData(1, FOLDER_CHECKER_ID);
+        //filesUpload(0, 1, FOLDER_CHECKER_ID);
         buildPagination(FOLDER_CHECKER_ID);
         //Делаю активным первую кнопку пагинатора
         //$(".page-item:first").addClass('active');
@@ -109,10 +109,11 @@ const showFirstStep = () => {
         $("#title").text("Проверка хранилища. Шаг-1");
     });
 };
+
 /**
  * Шаг №1. Удаляет строки/файлы из пользовательской директории/таблицы
  */
-const deleteFilesFromDirectory = function() {
+const deleteFilesFromDirectory = function (){
     let file_names = [];    //Имена файлов из директории + расширение
     let table_rows = [];    //Массив с id строк таблицы
     let check_boxes = $('.checkable');
@@ -163,12 +164,12 @@ const deleteFilesFromDirectory = function() {
             //Снимаю главный чекбокс
             $("#check_start").prop('checked', false);
         });
-    }else {
+    } else {
         showFlashWindow('Выберите файлы для удаления', 'success_flash_window');
         let func_hide = function () {
             hideFlashWindow('success_flash_window')
         };
-        setTimeout(func_hide,1000);
+        setTimeout(func_hide, 1000);
     }
 };
 
@@ -184,13 +185,7 @@ function filesUpload(quantity, current_page, checker_id) {
         type: "POST",
         url: "/parser/pagination/upload/" + checker_id,
         data: {"quantity": quantity, "current_page": current_page},
-        cache: false,
-        beforeSend: function () {
-            //showFlashWindow('Загрузка...', 'success_flash_window');
-        },
-        complete: function () {
-            //hideFlashWindow('success_flash_window');
-        }
+        cache: false
     });
     request.done(function (response) {
         res = JSON.parse(response);

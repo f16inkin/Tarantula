@@ -44,11 +44,31 @@ class Pagination
         return $files_in_page;
     }
 
-    //Определенно нужно переписать метод, чет дохуя условий. Можно в виде стейтов сделать. Каждый стейт одлеьная функция.
-    //Определяю какой стейт должен сейчас отработать и через switch case вызываю приватную функцию
-    public function getCustomPageData(int $quantity, int $current_page = 1){
-        //Считаю важным убрать функцию getPageData и оставить только эту
+    public function getCustomPageData(int $quantity, int $current_page) : array {
+        //Приравниваю количество требуемых к подгрузке файлов к текущему лимиту на странице, если оно равно 0.
         if ($quantity == 0){$quantity = $this->_files_per_page;}
+        //Массив с именами подгружаемых файлов
+        $uploaded_files = [];
+        //Сканирую хранилище на наличие файлов
+        $files = $this->_storage_checker->scanStorage();
+        /**
+         * Разбиваю массив файлов, на страницы
+         * $stack = [0 => [file1, file2, file3], 1 => [file4, file5, file6]];
+         */
+        $stack = array_chunk($files, $this->_files_per_page);
+        /**
+         * Ключи для формирования новых индексов массива в соответсвии со страницами
+         * $stack = [1 => [file1, file2, file3], 2 => [file4, file5, file6];
+         */
+        $keys = range(1, count($stack));
+        //Переиндексирую ключи
+        $stack = array_combine($keys, $stack);
+        //Нахожу последний инлекс в массиве равный последней странице
+        end($stack);
+        $last_page = key($stack);
+
+
+        /*if ($quantity == 0){$quantity = $this->_files_per_page;}
         //Получаю файлы из хранилища в массив
         $files = $this->_storage_checker->scanStorage();
         //Формирую массив разбитый по страницам
@@ -89,7 +109,7 @@ class Pagination
             }
             $uploaded_files = array_slice($page, $start_file_index, $quantity);
             return $uploaded_files;
-        }
+        }*/
     }
 
 }
