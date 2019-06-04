@@ -172,7 +172,7 @@ return[
      * Пагинация
      */
     [
-        '^parser/pagination/[0-9]$' => [
+        '^parser/pagination/([a-z]+)' => [
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
@@ -182,7 +182,7 @@ return[
         ]
     ],
     [
-        '^parser/pagination/upload/[0-9]$' => [
+        '^parser/pagination/upload/([a-z]+)' => [
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
@@ -192,12 +192,12 @@ return[
         ]
     ],
     [
-        '^parser/pagination/build/[0-9]$' => [
+        '^parser/pagination/get-pages-count/([a-z]+)' => [
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
             'controller' => 'ControllerPagination',
-            'action' => 'Build',
+            'action' => 'GetPagesCount',
             'arguments' => 1
         ]
     ]

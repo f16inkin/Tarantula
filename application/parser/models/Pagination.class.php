@@ -29,7 +29,7 @@ class Pagination
         $this->_files_per_page = $files_per_page;   //Количество выводимых на страницу файлов
     }
 
-    public function build(){
+    public function getPagesCount(){
         $pages_count = ceil($this->_storage_checker->getFilesCount() / $this->_files_per_page);
         return $pages_count;
     }
@@ -46,7 +46,7 @@ class Pagination
 
     //Определенно нужно переписать метод, чет дохуя условий. Можно в виде стейтов сделать. Каждый стейт одлеьная функция.
     //Определяю какой стейт должен сейчас отработать и через switch case вызываю приватную функцию
-    public function getCustomPageData(int $quantity = 0, int $current_page = 1){
+    public function getCustomPageData(int $quantity, int $current_page = 1){
         //Считаю важным убрать функцию getPageData и оставить только эту
         if ($quantity == 0){$quantity = $this->_files_per_page;}
         //Получаю файлы из хранилища в массив

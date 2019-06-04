@@ -9,8 +9,8 @@
 /**
  * Константы идентификаторы обработчиков хранилищь
  */
-const FOLDER_CHECKER_ID = 1;
-const MYSQL_CHECKER_ID = 2;
+const FOLDER_CHECKER_ID = 'folder';
+const MYSQL_CHECKER_ID = 'mysql';
 /*
  * Загрузка страницы
  * Каждый раз при перезагрузке страницы, браузер будет подгружать через AJAX именно ту часть которая была подгружена
@@ -18,7 +18,7 @@ const MYSQL_CHECKER_ID = 2;
  * localStorage браузера.
  */
 $(function () {
-    var state = localStorage.getItem("parserState");
+    let state = localStorage.getItem("parserState");
     switch (state){
         case "main": showMainData(); $("#parser-main").addClass('active'); break;
         case "reports":  $("#parser-reports").addClass('active'); break;
@@ -72,7 +72,7 @@ $("#parser-controls").on("click", function () {
 const showMainData = () => {
     let request = $.ajax({
         type: "POST",
-        url: "/parser/main/",
+        url: "/parser/main",
         cache: false
     });
     request.done(function (response) {
@@ -91,7 +91,7 @@ const showMainData = () => {
 const showFirstStep = () => {
     let request = $.ajax({
         type: "POST",
-        url: "/parser/first-step/",
+        url: "/parser/first-step",
         cache: false
     });
     request.done(function (response) {
@@ -131,7 +131,7 @@ const deleteFilesFromDirectory = function() {
          */
         let request = $.ajax({
             type: "POST",
-            url: "/parser/delete-files/",
+            url: "/parser/delete-files",
             data: {"file_names": file_names},
             cache: false,
             beforeSend: function () {
@@ -231,11 +231,6 @@ function showPaginationPageData(current_page, checker_id) {
     request.done(function (response) {
         //Очистить
         $("#table-pagination-content").empty();
-        //Выделение кнопки при нажатии на нее
-        $(".page-item").on('click', function(){
-            $(this).siblings().removeClass('active');
-            $(this).addClass('active');
-        });
         res = JSON.parse(response);
         $.each(res.page_data, function(key, value) {
             let unique_id = value.replace('.',"");
@@ -287,10 +282,12 @@ $("#parser-content").on('click', '#check_start', function () {
 });
 
 /**
- *
+ * Обрабатывает нажатия на кнопки постраничной навигации
  */
 $("#parser-content").on('click', '.page-item', function () {
    let page = $(this).text();
+    $(this).siblings().removeClass('active');
+    $(this).addClass('active');
    showPaginationPageData(page, FOLDER_CHECKER_ID);
 });
 
@@ -300,7 +297,7 @@ $("#parser-content").on('click', '.page-item', function () {
 function buildPagination(checker_id) {
     let request = $.ajax({
         type: "POST",
-        url: "/parser/pagination/build/" + checker_id,
+        url: "/parser/pagination/get-pages-count/" + checker_id,
         cache: false
     });
     request.done(function (response) {
