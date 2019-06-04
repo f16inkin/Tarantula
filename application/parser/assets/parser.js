@@ -100,7 +100,8 @@ const showFirstStep = () => {
         //Загрузить разметку страницы
         $("#parser-content").html(response);
         //Загружаю строки файлов в таблицу
-        showPaginationPageData(1, FOLDER_CHECKER_ID);
+        //showPaginationPageData(1, FOLDER_CHECKER_ID);
+        filesUpload(0, 1, FOLDER_CHECKER_ID);
         buildPagination(FOLDER_CHECKER_ID);
         //Делаю активным первую кнопку пагинатора
         //$(".page-item:first").addClass('active');
@@ -175,6 +176,7 @@ const deleteFilesFromDirectory = function() {
  * Подгружает строки файлов
  * ------------------------
  * @param quantity
+ * @param current_page
  * @param checker_id
  */
 function filesUpload(quantity, current_page, checker_id) {

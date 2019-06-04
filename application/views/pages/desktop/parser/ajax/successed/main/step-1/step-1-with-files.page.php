@@ -46,7 +46,7 @@ use application\parser\controllers\ControllerPagination;
                     <i class="fa fa-trash" aria-hidden="true"></i> Удалить</a>
                 </button>
                 <button class="btn btn-primary btn-sm">
-                    <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Обработать</a>
+                    <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Обработать все</a>
                 </button>
             </h5>
         </div>
