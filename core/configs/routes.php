@@ -182,12 +182,12 @@ return[
         ]
     ],
     [
-        '^parser/pagination/upload/([a-z]+)' => [
+        '^parser/pagination/delete-and-upload/([a-z]+)' => [
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
             'controller' => 'ControllerPagination',
-            'action' => 'FilesUpload',
+            'action' => 'DeleteAndUpload',
             'arguments' => 1
         ]
     ],

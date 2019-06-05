@@ -50,13 +50,38 @@ class ControllerPagination extends ControllerParserBase
         echo json_encode($pages);
     }
 
-    public function actionFilesUpload(){
+    /*public function actionFilesUpload(){
         $current_page = $_POST['current_page'];
         $quantity = $_POST['quantity'];
         $files = $this->_pagination->getCustomPageData($quantity, $current_page);
         $files_count = $this->_storage_checker->getFilesCount();
         $files_limit = $this->_settings->getFilesLimit();
         $content['uploaded_files'] = $files;
+        $content['files_limit'] = $files_limit;
+        $content['files_count'] = $files_count;
+        echo json_encode($content);
+    }*/
+
+    public function actionDeleteAndUpload(){
+        $files = $_POST['file_names'];
+        if (!empty($files)){
+            //Тут вся движуха по удалению и подгрузке
+        }
+
+        $current_page = $_POST['current_page'];
+        $quantity = $_POST['quantity'];
+        $uploaded_files = $this->_pagination->getCustomPageData($quantity, $current_page);
+
+
+        //Если файлы для подгрузки определены, то должен удалить указанные файлы
+        $storage = $this->_settings->getStorage();
+        $folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login'];
+        foreach ($files as $singleFile){
+            unlink($folder.'/'.$singleFile);
+        }
+        $files_count = $this->_storage_checker->getFilesCount();
+        $files_limit = $this->_settings->getFilesLimit();
+        $content['uploaded_files'] = $uploaded_files;
         $content['files_limit'] = $files_limit;
         $content['files_count'] = $files_count;
         echo json_encode($content);

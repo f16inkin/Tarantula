@@ -45,8 +45,6 @@ class Pagination
     }
 
     public function getCustomPageData(int $quantity, int $current_page) : array {
-        //Приравниваю количество требуемых к подгрузке файлов к текущему лимиту на странице, если оно равно 0.
-        if ($quantity == 0){$quantity = $this->_files_per_page;}
         //Массив с именами подгружаемых файлов
         $uploaded_files = [];
         //Сканирую хранилище на наличие файлов
@@ -66,50 +64,26 @@ class Pagination
         //Нахожу последний инлекс в массиве равный последней странице
         end($stack);
         $last_page = key($stack);
+        if ($current_page == $last_page){
+            if ($quantity == count($stack[$last_page])){
+                $next_page_number = $current_page-1;
+                if ($next_page_number >0){
+                    $next_page = $stack[$next_page_number];
+                    $uploaded_files = array_slice($next_page, 0, count($next_page));
+                    //return $uploaded_files;
+                }//else{
+                 //   return $uploaded_files = [];
+                //}
+            }//else{
+                //return $uploaded_files = [];
+            //}
 
-
-        /*if ($quantity == 0){$quantity = $this->_files_per_page;}
-        //Получаю файлы из хранилища в массив
-        $files = $this->_storage_checker->scanStorage();
-        //Формирую массив разбитый по страницам
-        $stack = array_chunk($files, $this->_files_per_page);
-        //Если в папке нету файлов, то стэк будет пустым, а значит загружать на страницу нечего
-        if (empty($stack)){
-            return $uploaded_files = [];
         }else{
-            //Формирую ключи для массива начиная с 1. $keys = [1, 2, ...., N];
-            $keys = range(1, count($stack));
-            //Обновляю ключи
-            $stack = array_combine($keys, $stack);
-            //Нахожу последний инлекс в массиве равный последней странице
-            end($stack);
-            //Нахожу последнюю страницу в стеке
-            $last_page = key($stack);
-            //Если текущая страница существует после удаления файлов
-            if(array_key_exists($current_page, $stack)){
-                //Выбираю ее из стека
-                $page = $stack[$current_page];
-                //Если текущая страница и есть последняя
-                if ($current_page == $last_page){
-                   //Здесь я доложен определить нету ли еще файлов для подгрузки
-                    if ($current_page == 1){
-                        $start_file_index = count($page) - $quantity;
-                    }else{
-                        return $uploaded_files = [];
-                    }
-                }else{
-                    $start_file_index = count($page) - $quantity;
-                }
-            }
-            //Если файлов для подгрузки нет, так как была очещена полностью страница
-            else{
-                $page = $stack[$current_page-1];
-                $start_file_index = 0;
-                $quantity = $this->_files_per_page;
-            }
-            $uploaded_files = array_slice($page, $start_file_index, $quantity);
-            return $uploaded_files;
-        }*/
+            $previous_page = $stack[$current_page+1];
+            $uploaded_files = array_slice($previous_page, 0, $quantity);
+            //return $uploaded_files;
+        }
+        return$uploaded_files;
     }
 
 }

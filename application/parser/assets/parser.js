@@ -132,8 +132,8 @@ const deleteFilesFromDirectory = function (){
          */
         let request = $.ajax({
             type: "POST",
-            url: "/parser/delete-files",
-            data: {"file_names": file_names},
+            url: "/parser/pagination/delete-and-upload/" + FOLDER_CHECKER_ID,
+            data: {"file_names": file_names, "quantity": file_names.length, "current_page": current_page},
             cache: false,
             beforeSend: function () {
                 showFlashWindow('Удаление...', 'success_flash_window');
@@ -142,7 +142,8 @@ const deleteFilesFromDirectory = function (){
                 hideFlashWindow('success_flash_window');
             }
         });
-        request.done(function () {
+        request.done(function (response) {
+            console.log(response);
             //Пошагово убираю удаленные строки из таблицы
             $.each(table_rows, function (index, value) {
                 let table_row = $("#" + value);
@@ -156,7 +157,7 @@ const deleteFilesFromDirectory = function (){
                 });
             });
             const uploadFiles = function () {
-                filesUpload(file_names.length, current_page, FOLDER_CHECKER_ID)
+                filesUpload(response)
             };
             setTimeout(uploadFiles, 1500);
             //Настройка пагинатора
@@ -176,38 +177,28 @@ const deleteFilesFromDirectory = function (){
 /**
  * Подгружает строки файлов
  * ------------------------
- * @param quantity
- * @param current_page
- * @param checker_id
+ * @param response
  */
-function filesUpload(quantity, current_page, checker_id) {
-    let request = $.ajax({
-        type: "POST",
-        url: "/parser/pagination/upload/" + checker_id,
-        data: {"quantity": quantity, "current_page": current_page},
-        cache: false
+function filesUpload(response) {
+    res = JSON.parse(response);
+    $.each(res.uploaded_files, function(key, value) {
+        let unique_id = value.replace('.',"");
+        let line =
+            $(`<tr id='table_line_${unique_id}' class="tr-table-content">` +
+                `<td>` +
+                `<input id='check_${unique_id}' class='hidden-checkbox checkable' type='checkbox' value='${value}'/>` +
+                `<label for='check_${unique_id}'>` +
+                `<div><i class='fa fa-check'></i></div>` +
+                `</label>` +
+                `</td>` +
+                `<td>${value}</td>` +
+                `</tr>`).hide().fadeIn(1000);
+        $("#table-pagination-content").append(line);
     });
-    request.done(function (response) {
-        res = JSON.parse(response);
-        $.each(res.uploaded_files, function(key, value) {
-            let unique_id = value.replace('.',"");
-            let line =
-                $(`<tr id='table_line_${unique_id}' class="tr-table-content">` +
-                    `<td>` +
-                    `<input id='check_${unique_id}' class='hidden-checkbox checkable' type='checkbox' value='${value}'/>` +
-                    `<label for='check_${unique_id}'>` +
-                    `<div><i class='fa fa-check'></i></div>` +
-                    `</label>` +
-                    `</td>` +
-                    `<td>${value}</td>` +
-                    `</tr>`).hide().fadeIn(1000);
-            $("#table-pagination-content").append(line);
-        });
-        //Выставляю лимит и количество файлов
-        let files_limit = res.files_limit;
-        let files_count = res.files_count;
-        $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
-    });
+    //Выставляю лимит и количество файлов
+    let files_limit = res.files_limit;
+    let files_count = res.files_count;
+    $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
 }
 
 /**

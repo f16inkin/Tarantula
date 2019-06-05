@@ -60,13 +60,4 @@ class ControllerMain extends ControllerParserBase
             $this->loadPage('/parser/ajax/successed/main/step-1/step-1-without-files.page');
         }
     }
-
-    public function actionDeleteFiles(){
-        $files = $_POST['file_names'];
-        $storage = $this->_settings->getStorage();
-        $folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login'];
-        foreach ($files as $singleFile){
-            unlink($folder.'/'.$singleFile);
-        }
-    }
 }
