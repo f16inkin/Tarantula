@@ -108,6 +108,7 @@ const showFirstStep = function () {
         //Установка титула старницы
         $("#title").text("Проверка хранилища. Шаг-1");
     });
+
 };
 
 /**
@@ -143,7 +144,6 @@ const deleteFilesFromDirectory = function (){
             }
         });
         request.done(function (response) {
-            console.log(response);
             //Пошагово убираю удаленные строки из таблицы
             $.each(table_rows, function (index, value) {
                 let table_row = $("#" + value);
@@ -157,7 +157,7 @@ const deleteFilesFromDirectory = function (){
                 });
             });
             const uploadFiles = function () {
-                filesUpload(response)
+                filesUpload(response);
             };
             setTimeout(uploadFiles, 1500);
             //Настройка пагинатора
@@ -181,7 +181,7 @@ const deleteFilesFromDirectory = function (){
  */
 function filesUpload(response) {
     res = JSON.parse(response);
-    $.each(res.uploaded_files, function(key, value) {
+    $.each(res.uploaded_files.data, function(key, value) {
         let unique_id = value.replace('.',"");
         let line =
             $(`<tr id='table_line_${unique_id}' class="tr-table-content">` +
@@ -199,6 +199,9 @@ function filesUpload(response) {
     let files_limit = res.files_limit;
     let files_count = res.files_count;
     $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
+    //Выделение страницы
+    let page = res.uploaded_files.page;
+    $("#page_"+page).addClass('active');
 }
 
 /**
@@ -291,9 +294,9 @@ function buildPagination(checker_id) {
         $("ul#pagination-list").empty();
         //Добавляю секцию куда выгружу контент
         for (let i = 1; i < +response+1 ; i++) {
-            let line = ' <li class="page-item"><a class="page-link">'+i+'</a></li>';
+            let line = ' <li id="page_'+i+'" class="page-item"><a class="page-link">'+i+'</a></li>';
             $("#pagination-list").append(line);
         }
-        $(".page-item:first").addClass('active');
+        //$(".page-item:first").addClass('active');
     });
 }

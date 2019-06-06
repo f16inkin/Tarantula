@@ -158,18 +158,12 @@ return[
             'arguments' => 0
         ]
     ],
-    [
-        '^parser/delete-files$' => [
-            'construct' => false,
-            'module' => 'parser',
-            'folder' => 'application',
-            'controller' => 'ControllerMain',
-            'action' => 'DeleteFiles',
-            'arguments' => 0
-        ]
-    ],
     /**
      * Пагинация
+     * -----------------------------------------------------------------
+     * 1) Открытие выбранной страницы
+     * 2) Удаление файлов с последующей подгрузкой на страницу имеющихся
+     * 3) Вернет количество страниц для построения навигатора
      */
     [
         '^parser/pagination/([a-z]+)' => [

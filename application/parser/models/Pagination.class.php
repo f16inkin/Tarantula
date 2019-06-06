@@ -64,26 +64,30 @@ class Pagination
         //Нахожу последний инлекс в массиве равный последней странице
         end($stack);
         $last_page = key($stack);
+        //Если файлы удаляются с последней страницы
         if ($current_page == $last_page){
+            //Если количество удаляемых файлов = количеству имеющихся на странице / полная очистка страницы
             if ($quantity == count($stack[$last_page])){
                 $next_page_number = $current_page-1;
-                if ($next_page_number >0){
+                //И если страница не первая, так как 1 - 1 = 0
+                if ($next_page_number > 0){
                     $next_page = $stack[$next_page_number];
-                    $uploaded_files = array_slice($next_page, 0, count($next_page));
-                    //return $uploaded_files;
-                }//else{
-                 //   return $uploaded_files = [];
-                //}
-            }//else{
-                //return $uploaded_files = [];
-            //}
-
-        }else{
-            $previous_page = $stack[$current_page+1];
-            $uploaded_files = array_slice($previous_page, 0, $quantity);
-            //return $uploaded_files;
+                    $uploaded_files['data'] = array_slice($next_page, 0, count($next_page));
+                    $uploaded_files['page'] = $next_page_number;//
+                }
+            }
+            //Если удаляются не все файлы со страницы, а лишь часть, то остаюсь на этой же странице
+            else{
+                $uploaded_files['page'] = $current_page;
+            }
         }
-        return$uploaded_files;
+        //Удаление с любой не первой и последней страницы
+        else{
+            $previous_page = $stack[$current_page+1];
+            $uploaded_files['data'] = array_slice($previous_page, 0, $quantity);
+            $uploaded_files['page'] = $current_page;
+        }
+        return $uploaded_files;
     }
 
 }
