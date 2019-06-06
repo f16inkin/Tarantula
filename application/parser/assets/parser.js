@@ -14,7 +14,11 @@ const MYSQL_CHECKER_ID = 'mysql';
 /**
  * Часто используемые в обращении статические элементы
  */
-const parser_content = $("#parser-content");
+const parser_content = $('#parser-content');        //рабочая область парсера
+const parser_main = $('#parser-main');              //кнопка "Главная"
+const parser_reports = $('#parser-reports');        //кнопка "Отчеты
+const parser_controls = $('#parser-controls');      //кнопка "Управление"
+const title = $('#title');                          //заголовок
 /*
  * Загрузка страницы
  * Каждый раз при перезагрузке страницы, браузер будет подгружать через AJAX именно ту часть которая была подгружена
@@ -24,10 +28,10 @@ const parser_content = $("#parser-content");
 $(function () {
     let state = localStorage.getItem("parserState");
     switch (state){
-        case "main": showMainData(); $("#parser-main").addClass('active'); break;
-        case "reports":  $("#parser-reports").addClass('active'); break;
-        case "controls": $("#parser-controls").addClass('active'); break;
-        default: showMainData(); $("#parser-main").addClass('active'); break; //Если состояние еще не установлено, будет подгружаться заданная страница
+        case "main": showMainData(); parser_main.addClass('active'); break;
+        case "reports":  parser_reports.addClass('active'); break;
+        case "controls": parser_controls.addClass('active'); break;
+        default: showMainData(); parser_main.addClass('active'); break; //Если состояние еще не установлено, будет подгружаться заданная страница
     }
 });
 /*
@@ -37,29 +41,29 @@ $(function () {
  */
 
 /**
- * Обрабатывает нажатие на вкладку "Главная".
+ * Обрабатывает нажатие на вкладку "Главная"
  */
-$("#parser-main").on("click", function () {
+parser_main.on('click', function () {
     //Установка состояния
-    localStorage.setItem("parserState", "main");
+    localStorage.setItem('parserState', 'main');
     //Выполнение AJAX запроса, загрузка контента
     showMainData();
 });
 /**
- * Обрабатывает нажатие на вкладку "Топливо в емкостях".
+ * Обрабатывает нажатие на вкладку "Отчеты"
  */
-$("#parser-reports").on("click", function () {
+parser_reports.on('click', function () {
     //Установка состояния
-    localStorage.setItem("parserState", "reports");
+    localStorage.setItem('parserState', 'reports');
     //Выполнение AJAX запроса, загрузка контента
     alert('Отчеты');
 });
 /**
- * Обрабатывает нажатие на вкладку "Отпуск топлива".
+ * Обрабатывает нажатие на вкладку "Управление"
  */
-$("#parser-controls").on("click", function () {
+parser_controls.on('click', function () {
     //Установка состояния
-    localStorage.setItem("parserState", "controls");
+    localStorage.setItem('parserState', 'controls');
     //Выполнение AJAX запроса, загрузка контента
     alert('Управление');
 });
@@ -80,12 +84,12 @@ const showMainData = function () {
         cache: false
     });
     request.done(function (response) {
-        //Очистить
-        $("div#parser-content").empty();
+        //Очистить. Можно и не очищать так как html заного рисует страницу
+        parser_content.empty();
         //Добавляю секцию куда выгружу контент
-        if ($("#parser-content").html(response)) {
-        }
-        $("#title").text("Parser");
+        parser_content.html(response);
+        //Устанавливаю заголовок
+        title.text('Parser');
     });
 };
 
@@ -99,21 +103,21 @@ const showFirstStep = function () {
         cache: false
     });
     request.done(function (response) {
-        //Очистить рабочую оласть
-        $("div#parser-content").empty();
+        //Очистить рабочую оласть, работает и без очистки
+        parser_content.empty();
         //Загрузить разметку страницы
-        $("#parser-content").html(response);
+        parser_content.html(response);
         //Загружаю строки файлов в таблицу
         showPaginationPageData(1, FOLDER_CHECKER_ID);
         //Активирую первую кнопку навигатора
         const setUpPagination = function(){
             buildPagination(FOLDER_CHECKER_ID), setTimeout(function () {
-                $(".page-item:first").addClass('active');
+                $('.page-item:first').addClass('active');
             }, 500);
         };
         setUpPagination();
         //Установка титула старницы
-        $("#title").text("Проверка хранилища. Шаг-1");
+        title.text('Проверка хранилища. Шаг-1');
     });
 
 };
@@ -126,11 +130,11 @@ const deleteFilesFromDirectory = function (){
     let table_rows = [];    //Массив с id строк таблицы
     let check_boxes = $('.checkable');
     /*------------------------*/
-    let current_page = $("li.active").text();
+    let current_page = $('li.active').text();
     /*------------------------*/
     check_boxes.filter(':checked').each(function () {
         file_names.push(this.value);
-        let table_row_id = $(this).parent().parent().attr("id");
+        let table_row_id = $(this).parent().parent().attr('id');
         table_rows.push(table_row_id);
     });
     if (file_names.length > 0) {
@@ -152,7 +156,7 @@ const deleteFilesFromDirectory = function (){
         request.done(function (response) {
             //Пошагово убираю удаленные строки из таблицы
             $.each(table_rows, function (index, value) {
-                let table_row = $("#" + value);
+                let table_row = $('#' + value);
                 table_row.css({
                     'backgroundColor': 'rgb(241, 186, 191)',
                     'border': 'solid 1px',
@@ -180,7 +184,7 @@ const deleteFilesFromDirectory = function (){
             }
 
             //Снимаю главный чекбокс
-            $("#check_start").prop('checked', false);
+            $('#check_start').prop('checked', false);
         });
     } else {
         showFlashWindow('Выберите файлы для удаления', 'success_flash_window');
@@ -194,13 +198,16 @@ const deleteFilesFromDirectory = function (){
 /**
  * Подгружает строки файлов
  * ------------------------
- * @param response
+ * @param files
+ * @param files_count
+ * @param files_limit
+ * @param page
  */
 function filesUpload(files, files_count, files_limit, page) {
     $.each(files, function(key, value) {
-        let unique_id = value.replace('.',"");
+        let unique_id = value.replace('.','');
         let line =
-            $(`<tr id='table_line_${unique_id}' class="tr-table-content">` +
+            $(`<tr id='table_line_${unique_id}' class='tr-table-content'>` +
                 `<td>` +
                 `<input id='check_${unique_id}' class='hidden-checkbox checkable' type='checkbox' value='${value}'/>` +
                 `<label for='check_${unique_id}'>` +
@@ -209,12 +216,12 @@ function filesUpload(files, files_count, files_limit, page) {
                 `</td>` +
                 `<td>${value}</td>` +
                 `</tr>`).hide().fadeIn(1000);
-        $("#table-pagination-content").append(line);
+        $('#table-pagination-content').append(line);
     });
     //Выставляю лимит и количество файлов
-    $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
+    $('.alert-warning > b').text(files_count+'/'+files_limit+' шт.');
     //Выделение страницы
-    $("#page_"+page).addClass('active');
+    $('#page_'+page).addClass('active');
 }
 
 /**
@@ -235,9 +242,9 @@ function showPaginationPageData(current_page, checker_id) {
         $('#table-pagination-content').empty();
         res = JSON.parse(response);
         $.each(res.page_data, function(key, value) {
-            let unique_id = value.replace('.',"");
+            let unique_id = value.replace('.','');
             let line =
-                $(`<tr id='table_line_${unique_id}' class="tr-table-content">` +
+                $(`<tr id='table_line_${unique_id}' class='tr-table-content'>` +
                     `<td>` +
                         `<input id='check_${unique_id}' class='hidden-checkbox checkable' type='checkbox' value='${value}'/>` +
                             `<label for='check_${unique_id}'>` +
@@ -246,32 +253,32 @@ function showPaginationPageData(current_page, checker_id) {
                     `</td>` +
                     `<td>${value}</td>` +
                 `</tr>`).hide().fadeIn(1000);
-            $("#table-pagination-content").append(line);
+            $('#table-pagination-content').append(line);
         });
         //Выставляю лимит и количество файлов
         let files_limit = res.files_limit;
         let files_count = res.files_count;
-        $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
+        $('.alert-warning > b').text(files_count+'/'+files_limit+' шт.');
     });
 }
 
 /**
  * Показывает всплывающее окно
  * ---------------------------
- * @param message
- * @param window
+ * @param {string} message
+ * @param {string} window
  */
 function showFlashWindow(message, window) {
-    $('#wrapper').prepend('<div class="'+window+'">'+message+'</div>');
+    $('#wrapper').prepend(`<div class=${window}>${message}</div>`);
 }
 
 /**
  * Скрывает всплывающее окно
  * -------------------------
- * @param window
+ * @param {string} window
  */
 function hideFlashWindow(window) {
-    $("."+window).delay(500).fadeOut(500, function () {
+    $('.'+window).delay(500).fadeOut(500, function () {
         $(this).remove();
     });
 }
@@ -280,7 +287,7 @@ function hideFlashWindow(window) {
  * Чекбоксы в таблице в первом шаге
  */
 parser_content.on('click', '#check_start', function () {
-    $("input[type=checkbox]").prop('checked', $(this).prop('checked'));
+    $('input[type=checkbox]').prop('checked', $(this).prop('checked'));
 });
 
 /**
@@ -293,7 +300,6 @@ parser_content.on('click', '.page-item', function () {
    showPaginationPageData(page, FOLDER_CHECKER_ID);
 });
 
-
 /**
  * Пагинация
  */
@@ -305,11 +311,11 @@ function buildPagination(checker_id) {
     });
     request.done(function (response) {
         //Очистить
-        $("ul#pagination-list").empty();
+        $('ul#pagination-list').empty();
         //Добавляю секцию куда выгружу контент
         for (let i = 1; i < +response + 1; i++) {
-            let line = ' <li id="page_' + i + '" class="page-item"><a class="page-link">' + i + '</a></li>';
-            $("#pagination-list").append(line);
+            let line = `<li id='page_${i}' class='page-item'><a class='page-link'>${i}</a></li>`;
+            $('#pagination-list').append(line);
         }
     });
 }
