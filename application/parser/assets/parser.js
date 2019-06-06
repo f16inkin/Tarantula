@@ -11,6 +11,10 @@
  */
 const FOLDER_CHECKER_ID = 'folder';
 const MYSQL_CHECKER_ID = 'mysql';
+/**
+ * Часто используемые в обращении статические элементы
+ */
+const parser_content = $("#parser-content");
 /*
  * Загрузка страницы
  * Каждый раз при перезагрузке страницы, браузер будет подгружать через AJAX именно ту часть которая была подгружена
@@ -101,10 +105,13 @@ const showFirstStep = function () {
         $("#parser-content").html(response);
         //Загружаю строки файлов в таблицу
         showPaginationPageData(1, FOLDER_CHECKER_ID);
-        //filesUpload(0, 1, FOLDER_CHECKER_ID);
-        buildPagination(FOLDER_CHECKER_ID);
-        //Делаю активным первую кнопку пагинатора
-        //$(".page-item:first").addClass('active');
+        //Активирую первую кнопку навигатора
+        const setUpPagination = function(){
+            buildPagination(FOLDER_CHECKER_ID), setTimeout(function () {
+                $(".page-item:first").addClass('active');
+            }, 500);
+        };
+        setUpPagination();
         //Установка титула старницы
         $("#title").text("Проверка хранилища. Шаг-1");
     });
@@ -225,7 +232,7 @@ function showPaginationPageData(current_page, checker_id) {
     });
     request.done(function (response) {
         //Очистить
-        $("#table-pagination-content").empty();
+        $('#table-pagination-content').empty();
         res = JSON.parse(response);
         $.each(res.page_data, function(key, value) {
             let unique_id = value.replace('.',"");
@@ -272,19 +279,20 @@ function hideFlashWindow(window) {
 /**
  * Чекбоксы в таблице в первом шаге
  */
-$("#parser-content").on('click', '#check_start', function () {
+parser_content.on('click', '#check_start', function () {
     $("input[type=checkbox]").prop('checked', $(this).prop('checked'));
 });
 
 /**
  * Обрабатывает нажатия на кнопки постраничной навигации
  */
-$("#parser-content").on('click', '.page-item', function () {
+parser_content.on('click', '.page-item', function () {
    let page = $(this).text();
     $(this).siblings().removeClass('active');
     $(this).addClass('active');
    showPaginationPageData(page, FOLDER_CHECKER_ID);
 });
+
 
 /**
  * Пагинация
@@ -299,10 +307,9 @@ function buildPagination(checker_id) {
         //Очистить
         $("ul#pagination-list").empty();
         //Добавляю секцию куда выгружу контент
-        for (let i = 1; i < +response+1 ; i++) {
-            let line = ' <li id="page_'+i+'" class="page-item"><a class="page-link">'+i+'</a></li>';
+        for (let i = 1; i < +response + 1; i++) {
+            let line = ' <li id="page_' + i + '" class="page-item"><a class="page-link">' + i + '</a></li>';
             $("#pagination-list").append(line);
         }
-        //$(".page-item:first").addClass('active');
     });
 }
