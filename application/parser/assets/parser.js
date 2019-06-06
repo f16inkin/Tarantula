@@ -120,7 +120,6 @@ const deleteFilesFromDirectory = function (){
     let check_boxes = $('.checkable');
     /*------------------------*/
     let current_page = $("li.active").text();
-    console.log(current_page);
     /*------------------------*/
     check_boxes.filter(':checked').each(function () {
         file_names.push(this.value);
@@ -156,12 +155,23 @@ const deleteFilesFromDirectory = function (){
                     $(this).remove();
                 });
             });
+            res = JSON.parse(response);
+            let files = res.uploaded_files.data;
+            let files_limit = res.files_limit;
+            let files_count = res.files_count;
+            let page = res.uploaded_files.page;
+            let build_pagination = res.uploaded_files.build;
             const uploadFiles = function () {
-                filesUpload(response);
+                filesUpload(files, files_count, files_limit, page);
             };
             setTimeout(uploadFiles, 1500);
-            //Настройка пагинатора
-            buildPagination(FOLDER_CHECKER_ID);
+            //Если в ответе есть команда строить заного навигатор, то выполняю функцию, которая требует еще один
+            //запрос к серверу
+            if (build_pagination){
+                //Настройка пагинатора
+                buildPagination(FOLDER_CHECKER_ID);
+            }
+
             //Снимаю главный чекбокс
             $("#check_start").prop('checked', false);
         });
@@ -179,9 +189,8 @@ const deleteFilesFromDirectory = function (){
  * ------------------------
  * @param response
  */
-function filesUpload(response) {
-    res = JSON.parse(response);
-    $.each(res.uploaded_files.data, function(key, value) {
+function filesUpload(files, files_count, files_limit, page) {
+    $.each(files, function(key, value) {
         let unique_id = value.replace('.',"");
         let line =
             $(`<tr id='table_line_${unique_id}' class="tr-table-content">` +
@@ -196,11 +205,8 @@ function filesUpload(response) {
         $("#table-pagination-content").append(line);
     });
     //Выставляю лимит и количество файлов
-    let files_limit = res.files_limit;
-    let files_count = res.files_count;
     $(".alert-warning > b").text(files_count+'/'+files_limit+' шт.');
     //Выделение страницы
-    let page = res.uploaded_files.page;
     $("#page_"+page).addClass('active');
 }
 

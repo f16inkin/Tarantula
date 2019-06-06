@@ -74,6 +74,7 @@ class Pagination
                     $next_page = $stack[$next_page_number];
                     $uploaded_files['data'] = array_slice($next_page, 0, count($next_page));
                     $uploaded_files['page'] = $next_page_number;//
+                    $uploaded_files['build'] = true;
                 }
             }
             //Если удаляются не все файлы со страницы, а лишь часть, то остаюсь на этой же странице
@@ -84,6 +85,11 @@ class Pagination
         //Удаление с любой не первой и последней страницы
         else{
             $previous_page = $stack[$current_page+1];
+            //Если осталось на предэдущей странице 3 файла, а я удаляю 4, тоесть больше чем может подгрузиться.
+            // То навигатор нужн оперестроить
+            if (count($previous_page) <= $quantity ){
+                $uploaded_files['build'] = true;
+            }
             $uploaded_files['data'] = array_slice($previous_page, 0, $quantity);
             $uploaded_files['page'] = $current_page;
         }
