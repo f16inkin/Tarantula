@@ -110,7 +110,6 @@ const showFirstStep = function () {
         //Загружаю строки файлов в таблицу
         showPaginationPageData(1, FOLDER_CHECKER_ID);
         //Активирую первую кнопку навигатора
-        //setUpPagination(1, 500);
         buildPagination(FOLDER_CHECKER_ID, 1);
         //Установка титула старницы
         title.text('Проверка хранилища. Шаг-1');
@@ -163,20 +162,18 @@ const deleteFilesFromDirectory = function (){
                 });
             });
             res = JSON.parse(response);
-            let files = res.uploaded_files.data;
-            let files_limit = res.files_limit;
-            let files_count = res.files_count;
-            let page = res.uploaded_files.page;
-            let build_pagination = res.uploaded_files.build;
+            let files = res.data.uploaded_files.data;
+            let files_limit = res.data.files_limit;
+            let files_count = res.data.files_count;
+            let page = res.data.uploaded_files.page;
+            let build_pagination = res.data.uploaded_files.build;
             const uploadFiles = function () {
-                filesUpload(files, files_count, files_limit, page);
+                filesUpload(files, files_count, files_limit);
             };
             setTimeout(uploadFiles, 1500);
             //Если в ответе есть команда строить заного навигатор, то выполняю функцию, которая требует еще один
             //запрос к серверу
             if (build_pagination){
-                //Настройка пагинатора
-                //setUpPagination(page, 500);
                 buildPagination(FOLDER_CHECKER_ID, page);
             }
 
@@ -319,16 +316,3 @@ function buildPagination(checker_id, page) {
         $('#page_'+page).addClass('active');
     });
 }
-
-/**
- * Активирует кнопку навигатора, через установленное timeout время, сразу после его построения. buildPagination.
- * -------------------------------------------------------------------------------------------------------------
- * @param {number} page
- * @param {number} timeout
- */
-const setUpPagination = function(page, timeout){
-    buildPagination(FOLDER_CHECKER_ID);
-    setTimeout(function () {
-        $('#page_'+page).addClass('active');
-    }, timeout);
-};

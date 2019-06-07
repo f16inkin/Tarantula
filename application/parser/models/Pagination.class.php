@@ -96,4 +96,16 @@ class Pagination
         return $uploaded_files;
     }
 
+    public function deleteFiles(string $storage, array $files){
+        //Если файлы для подгрузки определены, то должен удалить указанные файлы
+        $folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login'];
+        if ($folder){
+            foreach ($files as $singleFile){
+                unlink($folder.'/'.$singleFile);
+            }
+            return true;
+        }
+        return false;
+    }
+
 }

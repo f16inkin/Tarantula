@@ -52,32 +52,45 @@ class ControllerPagination extends ControllerParserBase
 
     public function actionDeleteAndUpload(){
         $files = $_POST['file_names'];
+        //Если известны удаляемые файлы
         if (!empty($files)){
-            //Тут вся движуха по удалению и подгрузке
-        }
-        //Определяю количество страниц до удаления
-        $pages_count_before = $this->_pagination->getPagesCount();
-        $current_page = $_POST['current_page'];
-        $quantity = $_POST['quantity'];
-        $uploaded_files = $this->_pagination->getCustomPageData($quantity, $current_page);
+            //Определяю количество страниц до удаления
+            $pages_count_before = $this->_pagination->getPagesCount();
+            $current_page = $_POST['current_page'];
+            $quantity = $_POST['quantity'];
+            //Вычисляю файлы которые нужно загрузить на страницу, номер страницы, а так же макрер для построения навигатора
+            $uploaded_files = $this->_pagination->getCustomPageData($quantity, $current_page);
+            //Если все файлы успешно удалены с хранилища
+            if ($this->_pagination->deleteFiles($this->_settings->getStorage(), $files)){
+                //Определяю количество страниц после удаления и в случае если их стало меньще посылаю маркер о том,
+                // что нужно перегрузить навигатор
+                $pages_count_after = $this->_pagination->getPagesCount();
+                if ($pages_count_after < $pages_count_before){
+                    $uploaded_files['build'] = true;
+                }
+                //Определяю количество страниц после удаления
 
+                $files_count = $this->_storage_checker->getFilesCount();
+                $files_limit = $this->_settings->getFilesLimit();
+                $content['status'] = 'success';
+                $content['message'] = 'Удаление прошло успешно';
+                $content['data']['uploaded_files'] = $uploaded_files;
+                $content['data']['files_limit'] = $files_limit;
+                $content['data']['files_count'] = $files_count;
 
-        //Если файлы для подгрузки определены, то должен удалить указанные файлы
-        $storage = $this->_settings->getStorage();
-        $folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login'];
-        foreach ($files as $singleFile){
-            unlink($folder.'/'.$singleFile);
+            }else{
+                //Примерный вид ответа
+                $content['status'] = 'failed';
+                $content['message'] = 'Не удалось удалить файлы';
+                $content['data'] = [];
+            }
+        }else{
+            //Примерный вид ответа
+            $content['status'] = 'failed';
+            $content['message'] = 'Ошибка при обработке хранилища. Файлы не найдены';
+            $content['data'] = [];
         }
-        //Опредлеяю количество страниц после удаления
-        $pages_count_after = $this->_pagination->getPagesCount();
-        if ($pages_count_after < $pages_count_before){
-            $uploaded_files['build'] = true;
-        }
-        $files_count = $this->_storage_checker->getFilesCount();
-        $files_limit = $this->_settings->getFilesLimit();
-        $content['uploaded_files'] = $uploaded_files;
-        $content['files_limit'] = $files_limit;
-        $content['files_count'] = $files_count;
+        //В итоге верну такой ответ в виде JSON
         echo json_encode($content);
     }
 }
