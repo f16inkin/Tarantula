@@ -55,7 +55,8 @@ class ControllerPagination extends ControllerParserBase
         if (!empty($files)){
             //Тут вся движуха по удалению и подгрузке
         }
-
+        //Определяю количество страниц до удаления
+        $pages_count_before = $this->_pagination->getPagesCount();
         $current_page = $_POST['current_page'];
         $quantity = $_POST['quantity'];
         $uploaded_files = $this->_pagination->getCustomPageData($quantity, $current_page);
@@ -66,6 +67,11 @@ class ControllerPagination extends ControllerParserBase
         $folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login'];
         foreach ($files as $singleFile){
             unlink($folder.'/'.$singleFile);
+        }
+        //Опредлеяю количество страниц после удаления
+        $pages_count_after = $this->_pagination->getPagesCount();
+        if ($pages_count_after < $pages_count_before){
+            $uploaded_files['build'] = true;
         }
         $files_count = $this->_storage_checker->getFilesCount();
         $files_limit = $this->_settings->getFilesLimit();

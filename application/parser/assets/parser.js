@@ -110,12 +110,8 @@ const showFirstStep = function () {
         //Загружаю строки файлов в таблицу
         showPaginationPageData(1, FOLDER_CHECKER_ID);
         //Активирую первую кнопку навигатора
-        const setUpPagination = function(){
-            buildPagination(FOLDER_CHECKER_ID), setTimeout(function () {
-                $('.page-item:first').addClass('active');
-            }, 500);
-        };
-        setUpPagination();
+        //setUpPagination(1, 500);
+        buildPagination(FOLDER_CHECKER_ID, 1);
         //Установка титула старницы
         title.text('Проверка хранилища. Шаг-1');
     });
@@ -180,7 +176,8 @@ const deleteFilesFromDirectory = function (){
             //запрос к серверу
             if (build_pagination){
                 //Настройка пагинатора
-                buildPagination(FOLDER_CHECKER_ID);
+                //setUpPagination(page, 500);
+                buildPagination(FOLDER_CHECKER_ID, page);
             }
 
             //Снимаю главный чекбокс
@@ -201,9 +198,8 @@ const deleteFilesFromDirectory = function (){
  * @param files
  * @param files_count
  * @param files_limit
- * @param page
  */
-function filesUpload(files, files_count, files_limit, page) {
+function filesUpload(files, files_count, files_limit) {
     $.each(files, function(key, value) {
         let unique_id = value.replace('.','');
         let line =
@@ -220,8 +216,6 @@ function filesUpload(files, files_count, files_limit, page) {
     });
     //Выставляю лимит и количество файлов
     $('.alert-warning > b').text(files_count+'/'+files_limit+' шт.');
-    //Выделение страницы
-    $('#page_'+page).addClass('active');
 }
 
 /**
@@ -259,6 +253,8 @@ function showPaginationPageData(current_page, checker_id) {
         let files_limit = res.files_limit;
         let files_count = res.files_count;
         $('.alert-warning > b').text(files_count+'/'+files_limit+' шт.');
+        //При переходе по страницам выделяет элементы, если выделен главный чекюокс
+        $('input[type=checkbox]').prop('checked', $('#check_start').prop('checked'));
     });
 }
 
@@ -301,9 +297,12 @@ parser_content.on('click', '.page-item', function () {
 });
 
 /**
- * Пагинация
+ * Создает навигатор. И активирует выбранную кнопку
+ * ------------------------------------------------
+ * @param {string} checker_id
+ * @param {number} page
  */
-function buildPagination(checker_id) {
+function buildPagination(checker_id, page) {
     let request = $.ajax({
         type: "POST",
         url: "/parser/pagination/get-pages-count/" + checker_id,
@@ -317,5 +316,19 @@ function buildPagination(checker_id) {
             let line = `<li id='page_${i}' class='page-item'><a class='page-link'>${i}</a></li>`;
             $('#pagination-list').append(line);
         }
+        $('#page_'+page).addClass('active');
     });
 }
+
+/**
+ * Активирует кнопку навигатора, через установленное timeout время, сразу после его построения. buildPagination.
+ * -------------------------------------------------------------------------------------------------------------
+ * @param {number} page
+ * @param {number} timeout
+ */
+const setUpPagination = function(page, timeout){
+    buildPagination(FOLDER_CHECKER_ID);
+    setTimeout(function () {
+        $('#page_'+page).addClass('active');
+    }, timeout);
+};
