@@ -10,7 +10,6 @@ namespace application\parser\controllers;
 
 
 use application\parser\base\ControllerParserBase;
-use application\parser\models\Pagination;
 use application\parser\models\FolderChecker;
 
 class ControllerMain extends ControllerParserBase

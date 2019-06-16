@@ -29,12 +29,17 @@ class Pagination
         $this->_files_per_page = $files_per_page;   //Количество выводимых на страницу файлов
     }
 
-    public function getPagesCount(){
+    /**
+     * Вычисляет количество страниц для навигации, с учетом количества файлов и их лимита на страницу
+     * ----------------------------------------------------------------------------------------------
+     * @return int
+     */
+    public function getPagesCount() : int {
         $pages_count = ceil($this->_storage_checker->getFilesCount() / $this->_files_per_page);
         return $pages_count;
     }
 
-    public function getPageData(int $current_page = 1){
+    public function getPageData(int $current_page) : array {
         //Получаю файлы из хранилища в массив
         $files = $this->_storage_checker->scanStorage();
         //Вычисляю первый файл в массиве
@@ -96,7 +101,14 @@ class Pagination
         return $uploaded_files;
     }
 
-    public function deleteFiles(string $storage, array $files){
+    /**
+     * Удаляет выбранные файлы из указанной директории
+     * -----------------------------------------------
+     * @param string $storage
+     * @param array $files
+     * @return bool
+     */
+    public function deleteFiles(string $storage, array $files) : bool {
         //Если файлы для подгрузки определены, то должен удалить указанные файлы
         $folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login'];
         if ($folder){

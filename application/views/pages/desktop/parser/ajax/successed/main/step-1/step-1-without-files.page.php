@@ -7,10 +7,13 @@
  */
 ?>
 <div class="alert alert-danger" role="alert">В директории отсутствуют файлы</div>
-<input name="upload[]" type="file" multiple="multiple" />
-<div class="parser-nav-bar">
-    <div class="parser-nav-bar-container">
-        <a href="" class="btn btn-success btn-sm" onclick="">
-            <i class="fa fa-upload" aria-hidden="true"></i> Загрузить</a>
+
+<form id="upload-reports-form" method="POST" enctype="multipart/form-data">
+    <input id="upload-reports" type="file" name="reports[]" multiple="multiple"/>
+    <div class="parser-nav-bar">
+        <div class="parser-nav-bar-container">
+            <button class="btn btn-success btn-sm" onclick="reportsUpload(); return false;">
+                <i class="fa fa-upload" aria-hidden="true"></i> Загрузить</button>
+        </div>
     </div>
-</div>
+</form>

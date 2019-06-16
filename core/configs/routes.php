@@ -194,5 +194,19 @@ return[
             'action' => 'GetPagesCount',
             'arguments' => 1
         ]
+    ],
+    /**
+     * Загрузка файлов отчетов
+     * --------------------------
+     */
+    [
+        '^parser/uploader/upload$' => [
+            'construct' => false,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerReportsUploader',
+            'action' => 'UploadReports',
+            'arguments' => 0
+        ]
     ]
 ];

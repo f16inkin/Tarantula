@@ -167,10 +167,10 @@ const deleteFilesFromDirectory = function (){
             let files_count = res.data.files_count;
             let page = res.data.uploaded_files.page;
             let build_pagination = res.data.uploaded_files.build;
-            const uploadFiles = function () {
-                filesUpload(files, files_count, files_limit);
+            const loadFiles = function () {
+                filesLoad(files, files_count, files_limit);
             };
-            setTimeout(uploadFiles, 1500);
+            setTimeout(loadFiles, 1500);
             //Если в ответе есть команда строить заного навигатор, то выполняю функцию, которая требует еще один
             //запрос к серверу
             if (build_pagination){
@@ -193,12 +193,12 @@ const deleteFilesFromDirectory = function (){
  * Подгружает строки файлов
  * ------------------------
  * @param files
- * @param files_count
- * @param files_limit
+ * @param {int} files_count
+ * @param {int} files_limit
  */
-function filesUpload(files, files_count, files_limit) {
-    $.each(files, function(key, value) {
-        let unique_id = value.replace('.','');
+const filesLoad = function (files, files_count, files_limit) {
+    $.each(files, function (key, value) {
+        let unique_id = value.replace('.', '');
         let line =
             $(`<tr id='table_line_${unique_id}' class='tr-table-content'>` +
                 `<td>` +
@@ -212,14 +212,14 @@ function filesUpload(files, files_count, files_limit) {
         $('#table-pagination-content').append(line);
     });
     //Выставляю лимит и количество файлов
-    $('.alert-warning > b').text(files_count+'/'+files_limit+' шт.');
-}
+    $('.alert-warning > b').text(files_count + '/' + files_limit + ' шт.');
+};
 
 /**
  * Загружает полную страницу файлов
  * --------------------------------
- * @param current_page
- * @param checker_id
+ * @param {int} current_page
+ * @param {string} checker_id
  */
 function showPaginationPageData(current_page, checker_id) {
     let request = $.ajax({
@@ -297,7 +297,7 @@ parser_content.on('click', '.page-item', function () {
  * Создает навигатор. И активирует выбранную кнопку
  * ------------------------------------------------
  * @param {string} checker_id
- * @param {number} page
+ * @param {int} page
  */
 function buildPagination(checker_id, page) {
     let request = $.ajax({
@@ -314,5 +314,40 @@ function buildPagination(checker_id, page) {
             $('#pagination-list').append(line);
         }
         $('#page_'+page).addClass('active');
+    });
+}
+
+function reportsUpload() {
+    let form = $('#upload-reports-form');
+    let formData = new FormData();
+    let input = form.find('input');
+    let button = form.find('button');
+    if(($('#upload-reports')[0].files).length != 0) {
+        $.each($('#upload-reports')[0].files, function (i, file) {
+            formData.append(`file[${i}]`, file);
+        });
+    }
+    let request = $.ajax({
+        url: '/parser/uploader/upload',
+        type: 'POST',
+        data: formData,
+        cache: false,
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        beforeSend: function () {
+            input.prop('disabled', true);
+            button.attr('disabled', true);
+        },
+        complete: function () {
+            input.prop('disabled', false);
+            button.attr('disabled', false);
+            input.val('');
+        }
+    });
+    request.done(function (response) {
+        //let res = JSON.parse(response);
+       console.log(response);
+
     });
 }
