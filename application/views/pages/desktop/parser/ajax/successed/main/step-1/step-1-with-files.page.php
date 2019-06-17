@@ -34,7 +34,7 @@ use application\parser\controllers\ControllerPagination;
 <div id="parser-workplace">
     <div style="text-align: center;">Шаг №1. проверка файлов.</div>
     <div class="card">
-        <div class="alert alert-warning" style="padding: 5px;" role="alert">
+        <div class="alert alert-primary" style="padding: 5px;" role="alert">
             В директории найдены файлы: <b></b>
         </div>
         <div class="card-header" id="headingOne" style="margin-top: -1rem;">
@@ -43,10 +43,10 @@ use application\parser\controllers\ControllerPagination;
                     Показать файлы  <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
                 </button>
                 <button class="btn btn-danger btn-sm" onclick="deleteFilesFromDirectory(); return false;">
-                    <i class="fa fa-trash" aria-hidden="true"></i> Удалить</a>
+                    <i class="fa fa-trash" aria-hidden="true"></i> Удалить
                 </button>
                 <button class="btn btn-primary btn-sm">
-                    <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Обработать все</a>
+                    <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Обработать все
                 </button>
             </h5>
         </div>

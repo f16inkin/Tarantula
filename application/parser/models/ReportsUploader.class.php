@@ -23,7 +23,7 @@ class ReportsUploader
     }
 
     private function isValidSize(int $size) : bool {
-        if ($size > $this->_file_size_limit){
+        if ($size < $this->_file_size_limit){
             return true;
         }
         return false;
@@ -32,37 +32,55 @@ class ReportsUploader
 
 
     public function upload(array $files_array){
+        $data = [];
+        $executionResult = [];
         if (empty($files_array)){
-            return false;
+            $executionResult['status'] = 'fail';
+            $executionResult['message'] = 'Файлы для загрузки отсутсвуют';
         }
         //Подсчет количества файлов
         $totalFiles = count($files_array['file']['name']);
         //Прохожу по каждому файлу из массива и провожу его валидацию
-        for ($i=0; $i< $totalFiles; $i++){
+        for ($i = 0; $i < $totalFiles; $i ++){
             $tmpFilePath = $_FILES['file']['tmp_name'][$i];
             $fullFileName = $_FILES['file']['name'][$i];
             $fileSize = $_FILES['file']['size'][$i];
             //Если размер файла превышает текущий лимит
-            if ($this->isValidSize($fileSize)){
 
-            }
             //Получаю расширение файла, полный путь к файлу
+            $fileName = pathinfo($fullFileName, PATHINFO_FILENAME);
             $fileExtension = pathinfo($fullFileName, PATHINFO_EXTENSION);
-            $serverFilePath =$this->_upload_folder.'/'.$fullFileName;
+            $fullFilePath =$this->_upload_folder.'/'.$fullFileName;
             //Если расширение файла есть в белом списке
             if ($this->isValidExtension($fileExtension)){
-                //Если каким то образом, происходит загрузка файла уже имеющегося в папке, то я затираю предыдущий
-                $j = 0;
-                while (file_exists($serverFilePath)){
-                    unlink($serverFilePath);
-                    $j++;
+                if ($this->isValidSize($fileSize)){
+                    //Если каким то образом, происходит загрузка файла уже имеющегося в папке, то я затираю предыдущий
+                    $j = 0;
+                    while (file_exists($fullFilePath)){
+                        unlink($fullFilePath);
+                        $executionResult['status'] = 'warning';
+                        $executionResult['message'] = 'Файл - двойник '.$fileName.' земенен новым';
+                        $j++;
+                    }
+                    //Если загрузка прошла успешно
+                    if (@move_uploaded_file($tmpFilePath, $fullFilePath)){
+                        if (empty($executionResult['status'])){
+                            $executionResult['status'] = 'success';
+                            $executionResult['message'] = 'Файл '.$fileName.' загружен';
+                        }
+                    }
+                }else{
+                    $executionResult['status'] = 'fail';
+                    $executionResult['message'] = 'Файл размера больше допустимого';
                 }
-                //Если загрузка прошла успешно
-                if (@move_uploaded_file($tmpFilePath, $serverFilePath)){
-
-                }
+            }else{
+                $executionResult['status'] = 'fail';
+                $executionResult['message'] = 'Файл имеет не верное расширение';
             }
+            $data['executionResult'][$i] = $executionResult;
+            $executionResult = [];
         }
+        return $data;
     }
 
 }

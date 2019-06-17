@@ -19,6 +19,7 @@ const parser_main = $('#parser-main');              //кнопка "Главна
 const parser_reports = $('#parser-reports');        //кнопка "Отчеты
 const parser_controls = $('#parser-controls');      //кнопка "Управление"
 const title = $('#title');                          //заголовок
+const parser_workplace = $('#parser-workplace');    //рабочая зона парсера
 /*
  * Загрузка страницы
  * Каждый раз при перезагрузке страницы, браузер будет подгружать через AJAX именно ту часть которая была подгружена
@@ -212,7 +213,11 @@ const filesLoad = function (files, files_count, files_limit) {
         $('#table-pagination-content').append(line);
     });
     //Выставляю лимит и количество файлов
-    $('.alert-warning > b').text(files_count + '/' + files_limit + ' шт.');
+    $('.alert-primary > b').text(files_count + '/' + files_limit + ' шт.');
+    //Добавляю кнопку загрузки файлов если файлов 0
+    if (files_count === 0){
+        setTimeout(showFirstStep, 1500);
+    }
 };
 
 /**
@@ -249,7 +254,7 @@ function showPaginationPageData(current_page, checker_id) {
         //Выставляю лимит и количество файлов
         let files_limit = res.files_limit;
         let files_count = res.files_count;
-        $('.alert-warning > b').text(files_count+'/'+files_limit+' шт.');
+        $('.alert-primary > b').text(files_count+'/'+files_limit+' шт.');
         //При переходе по страницам выделяет элементы, если выделен главный чекюокс
         $('input[type=checkbox]').prop('checked', $('#check_start').prop('checked'));
     });
@@ -326,6 +331,12 @@ function reportsUpload() {
         $.each($('#upload-reports')[0].files, function (i, file) {
             formData.append(`file[${i}]`, file);
         });
+    }else {
+        let card = parser_content.find($('.card'));
+        card.empty();
+        let information = `<div class='alert alert-danger'  role='alert'>Выберите файлы для загрузки</div>`;
+        card.prepend(information);
+        return false;
     }
     let request = $.ajax({
         type: 'POST',
@@ -338,6 +349,22 @@ function reportsUpload() {
             input.prop('disabled', true);
             button.attr('disabled', true);
         },
+        success: function(){
+            let parser_nav_bar = parser_content.find($('.parser-nav-bar'));
+            parser_nav_bar.empty();
+            let handle_button =
+                `<div class="parser-nav-bar-container">`+
+                    `<button class='btn btn-primary btn-sm' onclick='showFirstStep(); return false;'>` +
+                    `<i class='fa fa-chevron-circle-right' aria-hidden='true'></i> Обработать</button>`+
+                `</div>`;
+            let upload_button =
+                `<div class="parser-nav-bar-container">`+
+                    `<button class='btn btn-success btn-sm' onclick='reportsUpload(); return false;'>` +
+                    `<i class='fa fa-upload' aria-hidden='true'></i> Загрузить</button>` +
+                `</div>`;
+            parser_nav_bar.append(upload_button);
+            parser_nav_bar.append(handle_button);
+        },
         complete: function () {
             input.prop('disabled', false);
             button.attr('disabled', false);
@@ -345,15 +372,28 @@ function reportsUpload() {
         }
     });
     request.done(function (response) {
-        //Очистить рабочую оласть, работает и без очистки
-        parser_content.empty();
-        //Загрузить разметку страницы
-        parser_content.html(response);
-        //Загружаю строки файлов в таблицу
-        showPaginationPageData(1, FOLDER_CHECKER_ID);
-        //Активирую первую кнопку навигатора
-        buildPagination(FOLDER_CHECKER_ID, 1);
-        //Установка титула старницы
-        title.text('Проверка хранилища. Шаг-1');
+        //Очистить рабочую область
+        let card = parser_content.find($('.card'));
+        card.empty();
+        let res = JSON.parse(response);
+        //Для каждого сообщения пришедшего в респонсе
+        $.each(res.executionResult, function(key, value){
+            switch (value.status) {
+                case 'success' : alert_type = 'success'; break;
+                case 'warning' : alert_type = 'warning'; break;
+                case 'fail' : alert_type = 'danger'; break;
+                default : alert_type = 'success';
+            }
+            //Вывожу алерт сообщение с результатом
+            let line = `<div class='alert alert-${alert_type}' style='padding: 5px;' role='alert'>${value.message}</div>`;
+            card.append(line);
+
+        });
+        //Информационный алерт
+        let files_count = res.executionResult.length;
+        let information = `<div class='alert alert-primary' role='alert'><b>Обработано ${files_count} файлов</b></div>`;
+        card.prepend(information);
+        //Заголовок
+        title.text('Загрузка файлов. Шаг-1');
     });
 }
