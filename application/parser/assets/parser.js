@@ -328,11 +328,10 @@ function reportsUpload() {
         });
     }
     let request = $.ajax({
-        url: '/parser/uploader/upload',
         type: 'POST',
+        url: '/parser/uploader/upload',
         data: formData,
         cache: false,
-        dataType: 'json',
         contentType: false,
         processData: false,
         beforeSend: function () {
@@ -346,8 +345,15 @@ function reportsUpload() {
         }
     });
     request.done(function (response) {
-        //let res = JSON.parse(response);
-       console.log(response);
-
+        //Очистить рабочую оласть, работает и без очистки
+        parser_content.empty();
+        //Загрузить разметку страницы
+        parser_content.html(response);
+        //Загружаю строки файлов в таблицу
+        showPaginationPageData(1, FOLDER_CHECKER_ID);
+        //Активирую первую кнопку навигатора
+        buildPagination(FOLDER_CHECKER_ID, 1);
+        //Установка титула старницы
+        title.text('Проверка хранилища. Шаг-1');
     });
 }
