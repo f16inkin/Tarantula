@@ -337,6 +337,7 @@ function reportsUpload() {
     let formData = new FormData();
     let input = form.find('input');
     let button = form.find('button');
+    let files_container = parser_content.find($('#files_container'));
     /**
      * Если загружаются файлы, то каждый загружается в массв
      */
@@ -350,6 +351,7 @@ function reportsUpload() {
     }else {
         let card = parser_content.find($('.card'));
         card.empty();
+        files_container.empty();
         let information = `<div class='alert alert-danger'  role='alert'>Выберите файлы для загрузки</div>`;
         card.prepend(information);
         return false;
@@ -377,18 +379,27 @@ function reportsUpload() {
         success: function(){
             let parser_nav_bar = parser_content.find($('.parser-nav-bar'));
             parser_nav_bar.empty();
+            files_container.empty();
+            let select_button =
+                `<div class="parser-nav-bar-container">
+                    <label for='upload-reports' class='btn btn-warning btn-sm'>
+                    <span class='fa fa-folder-open'></span> Выбрать файлы</label>
+                    <input id='upload-reports' type='file' name='reports[]' multiple='multiple' onchange='fillFileContainer(); return false;'/>
+                </div>`;
             let handle_button =
-                `<div class="parser-nav-bar-container">`+
-                    `<button class='btn btn-primary btn-sm' onclick='showFirstStep(); return false;'>` +
-                    `<i class='fa fa-chevron-circle-right' aria-hidden='true'></i> Обработать</button>`+
-                `</div>`;
+                `<div class="parser-nav-bar-container">
+                    <button class='btn btn-primary btn-sm' onclick='showFirstStep(); return false;'>
+                    <i class='fa fa-chevron-circle-right' aria-hidden='true'></i> Обработать</button>
+                </div>`;
             let upload_button =
-                `<div class="parser-nav-bar-container">`+
-                    `<button class='btn btn-success btn-sm' onclick='reportsUpload(); return false;'>` +
-                    `<i class='fa fa-upload' aria-hidden='true'></i> Загрузить</button>` +
-                `</div>`;
+                `<div class="parser-nav-bar-container">
+                    <button class='btn btn-success btn-sm' onclick='reportsUpload(); return false;'>
+                    <i class='fa fa-upload' aria-hidden='true'></i> Загрузить</button>
+                </div>`;
+            parser_nav_bar.prepend(select_button);
             parser_nav_bar.append(upload_button);
             parser_nav_bar.append(handle_button);
+
         },
         /**
          * После выполнения ajax запроса (с любым результатом success / error) разблокирую кнопки загрузки и выбора файлов
@@ -422,14 +433,14 @@ function reportsUpload() {
         });
         //Информационный алерт
         let files_count = res.executionResult.length;
-        let information = `<div class='alert alert-primary' role='alert'><b>Обработано ${files_count} файлов</b></div>`;
+        let information = `<div class='alert alert-primary' role='alert'><b>Обработано <span class="badge badge-light">${files_count}</span> файлов</b></div>`;
         card.prepend(information);
         //Заголовок
         title.text('Загрузка файлов. Шаг-1');
     });
 }
 
-function showname () {
+function fillFileContainer() {
     let form = $('#upload-reports-form');
     let input = form.find('input');
     let files_place = $('#parser-content').find($('#files_container'));
@@ -439,7 +450,7 @@ function showname () {
        let file_name = value.name;
        let file_extension = file_name.split(".").pop();
        let single_file =
-           `<div class='single_file'>
+           `<div class='single_file' title='${file_name}'>
                 <i class="fa fa-folder"></i> ${file_name}
             </div>`;
        files_place.append(single_file);

@@ -153,8 +153,8 @@ input:checked+label div{ background: #d3d2d9; }
 /*Загрузка файлов*/
 .single_file{
     float: left;
-    min-height: 100px;
-    max-width: 120px;
+    min-height: 70px;
+    min-width: 70px;
     border: solid 1px;
     border-radius: 5px;
     background-color: #cce5ff;
@@ -163,6 +163,9 @@ input:checked+label div{ background: #d3d2d9; }
     text-align: center;
     font-size: 12px;
     padding: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .single_file i{
     font-size: 20px;
@@ -170,6 +173,16 @@ input:checked+label div{ background: #d3d2d9; }
     color: #004085;
 }
 #files_container{
-    display: flow-root;
+    display: flex;
     width: 100%;
+}
+input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    border-radius: 5px;
+    padding: 6px 12px;
+    cursor: pointer;
 }

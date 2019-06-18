@@ -31,17 +31,24 @@
     </div>
 </div>
 <form id="upload-reports-form" method="POST" enctype="multipart/form-data">
-    <input id="upload-reports" type="file" name="reports[]" multiple="multiple" onchange="showname(); return false;"/>
     <div class="parser-nav-bar">
+        <div class="parser-nav-bar-container">
+            <label for="upload-reports" class=" btn btn-warning btn-sm">
+                <span class="fa fa-folder-open"></span> Выбрать файлы</label>
+            <input id="upload-reports" type="file" name="reports[]" multiple="multiple" onchange="fillFileContainer(); return false;"/>
+        </div>
         <div class="parser-nav-bar-container">
             <button class="btn btn-success btn-sm" onclick="reportsUpload(); return false;">
                 <i class="fa fa-upload" aria-hidden="true"></i> Загрузить</button>
         </div>
     </div>
 </form>
-<div id="files_container">
+<div id="files_container" title="CloseSession_2019-05-03_09-00-59.xml">
     <div class='single_file'>
-        <i class="fa fa-folder"></i>Имя
+        <i class="fa fa-folder" ></i>CloseSession_2019-05-03_09-00-59.xml
+    </div>
+    <div class='single_file'>
+        <i class="fa fa-folder"></i>c.txt
     </div>
 </div>
 <div id="parser-workplace">
