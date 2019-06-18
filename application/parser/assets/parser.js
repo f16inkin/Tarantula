@@ -214,7 +214,12 @@ const filesLoad = function (files, files_count, files_limit) {
     });
     //Выставляю лимит и количество файлов
     $('.alert-primary > b').text(files_count + '/' + files_limit + ' шт.');
-    //Добавляю кнопку загрузки файлов если файлов 0
+    /**
+     * Если вернулось после подгрузки 0 файлов, то тогда отображаю элементы загрузки файлов.
+     * Делаю через функцию firstStep, как дополнительная проверка того, что в промежутке между нажатием на кнопку, в
+     * директории не появились файлы. Если так, то парсер снова подгрузит страницу обработки файлов
+     */
+
     if (files_count === 0){
         setTimeout(showFirstStep, 1500);
     }
@@ -322,15 +327,26 @@ function buildPagination(checker_id, page) {
     });
 }
 
+/**
+ * Загружает файлы в папку пользователя
+ * ------------------------------------
+ * @returns {boolean}
+ */
 function reportsUpload() {
     let form = $('#upload-reports-form');
     let formData = new FormData();
     let input = form.find('input');
     let button = form.find('button');
-    if(($('#upload-reports')[0].files).length != 0) {
-        $.each($('#upload-reports')[0].files, function (i, file) {
+    /**
+     * Если загружаются файлы, то каждый загружается в массв
+     */
+    if((input[0].files).length != 0) {
+        $.each(input[0].files, function (i, file) {
             formData.append(`file[${i}]`, file);
         });
+    /**
+     * Овопевещние о том, что не выбраны файлы для загрузки
+     */
     }else {
         let card = parser_content.find($('.card'));
         card.empty();
@@ -338,6 +354,9 @@ function reportsUpload() {
         card.prepend(information);
         return false;
     }
+    /**
+     * AJAX action
+     */
     let request = $.ajax({
         type: 'POST',
         url: '/parser/uploader/upload',
@@ -345,10 +364,16 @@ function reportsUpload() {
         cache: false,
         contentType: false,
         processData: false,
+        /**
+         * Блокирую кнопки загрузки и выбора файлов, до того как запрос начал выполнятся. Защита от дабл клика и тд.
+         */
         beforeSend: function () {
             input.prop('disabled', true);
             button.attr('disabled', true);
         },
+        /**
+         * При удачном выполнении ajax запроса, добавляю кнопки Обработать и Загрузить в навигацию
+         */
         success: function(){
             let parser_nav_bar = parser_content.find($('.parser-nav-bar'));
             parser_nav_bar.empty();
@@ -365,12 +390,18 @@ function reportsUpload() {
             parser_nav_bar.append(upload_button);
             parser_nav_bar.append(handle_button);
         },
+        /**
+         * После выполнения ajax запроса (с любым результатом success / error) разблокирую кнопки загрузки и выбора файлов
+         */
         complete: function () {
             input.prop('disabled', false);
             button.attr('disabled', false);
             input.val('');
         }
     });
+    /**
+     * После того как запрос отработал. Обрабатываю сообщение о каждом файле и вывожу алерты с результатом выполнения.
+     */
     request.done(function (response) {
         //Очистить рабочую область
         let card = parser_content.find($('.card'));
@@ -395,5 +426,22 @@ function reportsUpload() {
         card.prepend(information);
         //Заголовок
         title.text('Загрузка файлов. Шаг-1');
+    });
+}
+
+function showname () {
+    let form = $('#upload-reports-form');
+    let input = form.find('input');
+    let files_place = $('#parser-content').find($('#files_container'));
+    files_place.empty();
+    console.log(input);
+    $.each(input[0].files, function(key, value){
+       let file_name = value.name;
+       let file_extension = file_name.split(".").pop();
+       let single_file =
+           `<div class='single_file'>
+                <i class="fa fa-folder"></i> ${file_name}
+            </div>`;
+       files_place.append(single_file);
     });
 }

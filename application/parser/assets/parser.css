@@ -150,3 +150,26 @@ label i{ font-size:16px; opacity:0; }
 label:hover div{ background: #e4dfdd; }
 input:checked+label i{ opacity:1; }
 input:checked+label div{ background: #d3d2d9; }
+/*Загрузка файлов*/
+.single_file{
+    float: left;
+    min-height: 100px;
+    max-width: 120px;
+    border: solid 1px;
+    border-radius: 5px;
+    background-color: #cce5ff;
+    border-color: #b8daff;
+    margin: 3px;
+    text-align: center;
+    font-size: 12px;
+    padding: 10px;
+}
+.single_file i{
+    font-size: 20px;
+    line-height: 45px;
+    color: #004085;
+}
+#files_container{
+    display: flow-root;
+    width: 100%;
+}
