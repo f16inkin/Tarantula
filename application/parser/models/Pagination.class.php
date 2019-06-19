@@ -35,23 +35,36 @@ class Pagination
      * @return int
      */
     public function getPagesCount() : int {
-        $pages_count = ceil($this->_storage_checker->getFilesCount() / $this->_files_per_page);
-        return $pages_count;
+        $pagesCount = ceil($this->_storage_checker->getFilesCount() / $this->_files_per_page);
+        return $pagesCount;
     }
 
-    public function getPageData(int $current_page) : array {
+    /**
+     * Загружает файлы указанной страницы.
+     * @param int $current_page
+     * @return array
+     */
+    public function loadPage(int $current_page) : array {
         //Получаю файлы из хранилища в массив
         $files = $this->_storage_checker->scanStorage();
         //Вычисляю первый файл в массиве
-        $start_file = ($current_page - 1) * $this->_files_per_page;
+        $startFile = ($current_page - 1) * $this->_files_per_page;
         //Получаю массив файлов, которые будут выведены на страницу
-        $files_in_page = array_slice($files, $start_file, $this->_files_per_page);
-        return $files_in_page;
+        $page = array_slice($files, $startFile, $this->_files_per_page);
+        return $page;
     }
 
-    public function getCustomPageData(int $quantity, int $current_page) : array {
+    /**
+     * Метод получает файлы которые нужно подгрузить. Расчет происходит исходя из количества удаляемых файлов и текущей
+     * страницы, с которой происодит удаление
+     * ----------------------------------------------------------------------------------------------------------------
+     * @param int $quantity - количество удаленных файлов
+     * @param int $current_page - страница с которой удалялись файлы
+     * @return array
+     */
+    public function loadFiles(int $quantity, int $current_page) : array {
         //Массив с именами подгружаемых файлов
-        $uploaded_files = [];
+        $loadedFiles = [];
         //Сканирую хранилище на наличие файлов
         $files = $this->_storage_checker->scanStorage();
         /**
@@ -68,37 +81,37 @@ class Pagination
         $stack = array_combine($keys, $stack);
         //Нахожу последний инлекс в массиве равный последней странице
         end($stack);
-        $last_page = key($stack);
+        $lastPage = key($stack);
         //Если файлы удаляются с последней страницы
-        if ($current_page == $last_page){
+        if ($current_page == $lastPage){
             //Если количество удаляемых файлов = количеству имеющихся на странице / полная очистка страницы
-            if ($quantity == count($stack[$last_page])){
-                $next_page_number = $current_page-1;
+            if ($quantity == count($stack[$lastPage])){
+                $nextPageNumber = $current_page-1;
                 //И если страница не первая, так как 1 - 1 = 0
-                if ($next_page_number > 0){
-                    $next_page = $stack[$next_page_number];
-                    $uploaded_files['data'] = array_slice($next_page, 0, count($next_page));
-                    $uploaded_files['page'] = $next_page_number;//
-                    $uploaded_files['build'] = true;
+                if ($nextPageNumber > 0){
+                    $next_page = $stack[$nextPageNumber];
+                    $loadedFiles['data'] = array_slice($next_page, 0, count($next_page));
+                    $loadedFiles['page'] = $nextPageNumber;//
+                    $loadedFiles['build'] = true;
                 }
             }
             //Если удаляются не все файлы со страницы, а лишь часть, то остаюсь на этой же странице
             else{
-                $uploaded_files['page'] = $current_page;
+                $loadedFiles['page'] = $current_page;
             }
         }
         //Удаление с любой не первой и последней страницы
         else{
-            $previous_page = $stack[$current_page+1];
+            $previousPage = $stack[$current_page+1];
             //Если осталось на предэдущей странице 3 файла, а я удаляю 4, тоесть больше чем может подгрузиться.
             // То навигатор нужн оперестроить
-            if (count($previous_page) <= $quantity ){
-                $uploaded_files['build'] = true;
+            if (count($previousPage) <= $quantity ){
+                $loadedFiles['build'] = true;
             }
-            $uploaded_files['data'] = array_slice($previous_page, 0, $quantity);
-            $uploaded_files['page'] = $current_page;
+            $loadedFiles['data'] = array_slice($previousPage, 0, $quantity);
+            $loadedFiles['page'] = $current_page;
         }
-        return $uploaded_files;
+        return $loadedFiles;
     }
 
     /**

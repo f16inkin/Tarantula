@@ -7,25 +7,25 @@
  */
 ?>
 <div id="parser-timeline">
-    <div style="text-align: center;">Этапы исполнения: Шаг №1. Проверка пользовательской директории.</div>
+    <div style="text-align: center;">Загрузка файлов</div>
     <div class="bulletWrap">
         <!--<div class="before"></div>-->
         <div class="after"></div>
         <div class="bulletTrack table">
             <div  class="slide tableCell">
-                <a id="bullet1" class="active" href=""><i class="fa fa-folder"></i></a>
+                <span id="stage_1" class="active"><i class="fa fa-folder"></i></span>
             </div>
             <div class="slide tableCell">
-                <a class="" href=""><i class="fa fa-file-code"></i></a>
+                <span id="stage_2"><i class="fa fa-file-code"></i></span>
             </div>
             <div class="slide tableCell">
-                <a class="" href=""><i class="fa fa-database"></i></a>
+                <span id="stage_3"><i class="fa fa-database"></i></span>
             </div>
             <div class="slide tableCell">
-                <a class="" href=""><i class="fa fa-user"></i></a>
+                <span id="stage_4"><i class="fa fa-user"></i></span>
             </div>
             <div class="slide tableCell">
-                <a class="" href=""><i class="fa fa-check-circle"></i></a>
+                <span id="stage_5"><i class="fa fa-check-circle"></i></span>
             </div>
         </div>
     </div>
@@ -43,8 +43,8 @@
         </div>
     </div>
 </form>
-<div id="files_container" title="CloseSession_2019-05-03_09-00-59.xml">
-    <div class='single_file'>
+<div id="files_container">
+    <div class='single_file' title="CloseSession_2019-05-03_09-00-59.xml">
         <i class="fa fa-folder" ></i>CloseSession_2019-05-03_09-00-59.xml
     </div>
     <div class='single_file'>
@@ -58,20 +58,13 @@
     </div>
 </div>
 
-
 <script>
-    function initProgress(){
-        var activeDist = $(".slide a.active").position();
-        var activeDist1 = ($("#bullet1").position()).left;
-        activeDist = activeDist.left-activeDist1;
-        $(".after").stop().animate({width: activeDist + "px"});
-    }
-    initProgress();
-    $(".slide a").click(function(e){
-        e.preventDefault();
-        var slide = $(".slide a");
-        slide.removeClass("active").siblings().addClass("inactive");
-        $(this).removeClass("inactive").addClass("active");
-        initProgress();
-    });
+    /**
+     * Текущие функции будут работать только при загрузке этой страницы.
+     * -----------------------------------------------------------------
+     */
+    //Установка титула старницы
+    title.text('Загрузка файлов');
+    //Переключаю состояния этапов
+    toggleStage('stage_1');
 </script>

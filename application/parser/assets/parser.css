@@ -108,7 +108,7 @@
     width: 100%;
 }
 .bulletWrap .after { width: 0; background: red; }
-.slide a {
+.slide span {
     width: 50px;
     height: 50px;
     background: #1c1c1c;
@@ -119,15 +119,15 @@
     transition: 0.3s all ease;
     position: relative;
 }
-.slide a.active, .slide a:hover {
+.slide span.active, .slide span.inactive:hover {
     background: #e23a18;
     border-color: #e23a18;
 }
-.slide a.inactive {
+.slide span.inactive {
     background: #605f60;
     border-color: #8a8b8b;
 }
-.slide a i {
+.slide span i {
     font-size: 25px;
     line-height: 40px;
 }

@@ -171,17 +171,17 @@ return[
             'module' => 'parser',
             'folder' => 'application',
             'controller' => 'ControllerPagination',
-            'action' => 'OpenPage',
+            'action' => 'LoadPage',
             'arguments' => 1
         ]
     ],
     [
-        '^parser/pagination/delete-and-upload/([a-z]+)' => [
+        '^parser/pagination/displace/([a-z]+)' => [
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
             'controller' => 'ControllerPagination',
-            'action' => 'DeleteAndUpload',
+            'action' => 'DisplaceFiles',
             'arguments' => 1
         ]
     ],

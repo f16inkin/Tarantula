@@ -19,7 +19,6 @@ const parser_main = $('#parser-main');              //кнопка "Главна
 const parser_reports = $('#parser-reports');        //кнопка "Отчеты
 const parser_controls = $('#parser-controls');      //кнопка "Управление"
 const title = $('#title');                          //заголовок
-const parser_workplace = $('#parser-workplace');    //рабочая зона парсера
 /*
  * Загрузка страницы
  * Каждый раз при перезагрузке страницы, браузер будет подгружать через AJAX именно ту часть которая была подгружена
@@ -95,7 +94,9 @@ const showMainData = function () {
 };
 
 /**
- * Подгружает контент для первого шага
+ * Подгружает контент для первого шага. Только основную разметку без внутреннего содержимого.
+ * Содержание определаяется в контроллере и подгружается в респонсе. Дальнейшие действия определяются скриптом
+ * подгруженной страницы
  */
 const showFirstStep = function () {
     let request = $.ajax({
@@ -108,12 +109,6 @@ const showFirstStep = function () {
         parser_content.empty();
         //Загрузить разметку страницы
         parser_content.html(response);
-        //Загружаю строки файлов в таблицу
-        showPaginationPageData(1, FOLDER_CHECKER_ID);
-        //Активирую первую кнопку навигатора
-        buildPagination(FOLDER_CHECKER_ID, 1);
-        //Установка титула старницы
-        title.text('Проверка хранилища. Шаг-1');
     });
 
 };
@@ -121,7 +116,7 @@ const showFirstStep = function () {
 /**
  * Шаг №1. Удаляет строки/файлы из пользовательской директории/таблицы
  */
-const deleteFilesFromDirectory = function (){
+const deleteFiles = function (){
     let file_names = [];    //Имена файлов из директории + расширение
     let table_rows = [];    //Массив с id строк таблицы
     let check_boxes = $('.checkable');
@@ -139,7 +134,7 @@ const deleteFilesFromDirectory = function (){
          */
         let request = $.ajax({
             type: "POST",
-            url: "/parser/pagination/delete-and-upload/" + FOLDER_CHECKER_ID,
+            url: "/parser/pagination/displace/" + FOLDER_CHECKER_ID,
             data: {"file_names": file_names, "quantity": file_names.length, "current_page": current_page},
             cache: false,
             beforeSend: function () {
@@ -226,12 +221,12 @@ const filesLoad = function (files, files_count, files_limit) {
 };
 
 /**
- * Загружает полную страницу файлов
+ * Загружает страницу с файлами
  * --------------------------------
  * @param {int} current_page
  * @param {string} checker_id
  */
-function showPaginationPageData(current_page, checker_id) {
+function loadPage(current_page, checker_id) {
     let request = $.ajax({
         type: "POST",
         url: "/parser/pagination/" + checker_id,
@@ -300,7 +295,7 @@ parser_content.on('click', '.page-item', function () {
    let page = $(this).text();
     $(this).siblings().removeClass('active');
     $(this).addClass('active');
-   showPaginationPageData(page, FOLDER_CHECKER_ID);
+   loadPage(page, FOLDER_CHECKER_ID);
 });
 
 /**
@@ -352,8 +347,8 @@ function reportsUpload() {
         let card = parser_content.find($('.card'));
         card.empty();
         files_container.empty();
-        let information = `<div class='alert alert-danger'  role='alert'>Выберите файлы для загрузки</div>`;
-        card.prepend(information);
+        let alert = `<div class='alert alert-danger'  role='alert'>Выберите файлы для загрузки</div>`;
+        card.prepend(alert);
         return false;
     }
     /**
@@ -370,8 +365,8 @@ function reportsUpload() {
          * Блокирую кнопки загрузки и выбора файлов, до того как запрос начал выполнятся. Защита от дабл клика и тд.
          */
         beforeSend: function () {
-            input.prop('disabled', true);
-            button.attr('disabled', true);
+            //input.prop('disabled', true);
+            //button.attr('disabled', true);
         },
         /**
          * При удачном выполнении ajax запроса, добавляю кнопки Обработать и Загрузить в навигацию
@@ -405,9 +400,9 @@ function reportsUpload() {
          * После выполнения ajax запроса (с любым результатом success / error) разблокирую кнопки загрузки и выбора файлов
          */
         complete: function () {
-            input.prop('disabled', false);
-            button.attr('disabled', false);
-            input.val('');
+            //input.prop('disabled', false);
+            //button.attr('disabled', false);
+            //input.val('');
         }
     });
     /**
@@ -440,13 +435,18 @@ function reportsUpload() {
     });
 }
 
+/**
+ * Заполняет контейнер файлами которые готовятся к загрузке
+ */
 function fillFileContainer() {
     let form = $('#upload-reports-form');
     let input = form.find('input');
     let files_place = $('#parser-content').find($('#files_container'));
+    let card = parser_content.find($('.card'));
+    let files = input[0].files;
     files_place.empty();
-    console.log(input);
-    $.each(input[0].files, function(key, value){
+    card.empty();
+    $.each(files, function(key, value){
        let file_name = value.name;
        let file_extension = file_name.split(".").pop();
        let single_file =
@@ -455,4 +455,27 @@ function fillFileContainer() {
             </div>`;
        files_place.append(single_file);
     });
+    let alert =`<div class='alert alert-primary'  role='alert'><b>Выбрано</b> <span class="badge badge-light">${files.length}</span> <b>файлов</b></div>`;
+    card.append(alert);
+}
+
+/**
+ * Инициализирует линию прогресса.
+ * -------------------------------
+ * @param {string} stage - уровень на таблице прогресса
+ */
+function initProgressLine(){
+    let activePosition = $('.slide span.active').position();
+    let currentPosition = ($('#stage_1').position()).left;
+    activePosition = activePosition.left-currentPosition;
+    $(".after").stop().animate({width: activePosition + "px"});
+}
+
+function toggleStage(stage) {
+    let slides = parser_content.find($('.slide span'));
+    $.each(slides, function () {
+        $(this).addClass('inactive');
+    });
+    $('.slide span').removeClass('active').siblings().addClass('inactive');
+    $('#'+stage).removeClass('inactive').addClass('active');
 }

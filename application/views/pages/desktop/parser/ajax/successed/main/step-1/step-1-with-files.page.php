@@ -5,34 +5,35 @@
  * Date: 18.04.2019
  * Time: 11:25
  */
-use application\parser\controllers\ControllerPagination;
 ?>
 <div id="parser-timeline">
-    <div style="text-align: center;">Этапы исполнения: Шаг №1. Проверка пользовательской директории.</div>
+    <div style="text-align: center;">Просмотр загруженных файлов. Подтверждение на обработку</div>
     <div class="bulletWrap">
        <!--<div class="before"></div>-->
         <div class="after"></div>
         <div class="bulletTrack table">
             <div  class="slide tableCell">
-                <a id="bullet1" class="active" href=""><i class="fa fa-folder"></i></a>
+                <span id="stage_1" class="active" href=""><i class="fa fa-folder"></i></span>
             </div>
             <div class="slide tableCell">
-                <a class="" href=""><i class="fa fa-file-code"></i></a>
+                <span id="stage_2"><i class="fa fa-file-code"></i></span>
             </div>
             <div class="slide tableCell">
-                <a class="" href=""><i class="fa fa-database"></i></a>
+                <span id="stage_3"><i class="fa fa-database"></i></span>
             </div>
             <div class="slide tableCell">
-                <a class="" href=""><i class="fa fa-user"></i></a>
+                <span id="stage_4"><i class="fa fa-user"></i></span>
             </div>
             <div class="slide tableCell">
-                <a class="" href=""><i class="fa fa-check-circle"></i></a>
+                <span id="stage_5"><i class="fa fa-check-circle"></i></span>
             </div>
         </div>
     </div>
 </div>
 <div id="parser-workplace">
-    <div style="text-align: center;">Шаг №1. проверка файлов.</div>
+    <div style="text-align: center;">
+        Внимательно посмотрите на загруженные файлы. Если какие либо на ваш взгляд являются лишними. Их можно удалить
+    </div>
     <div class="card">
         <div class="alert alert-primary" style="padding: 5px;" role="alert">
             В директории найдены файлы: <b></b>
@@ -42,7 +43,7 @@ use application\parser\controllers\ControllerPagination;
                 <button class="btn btn-secondary btn-sm" data-toggle="collapse" data-target="#files_collapse_container">
                     Показать файлы  <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="deleteFilesFromDirectory(); return false;">
+                <button class="btn btn-danger btn-sm" onclick="deleteFiles(); return false;">
                     <i class="fa fa-trash" aria-hidden="true"></i> Удалить
                 </button>
                 <button class="btn btn-primary btn-sm">
@@ -79,19 +80,23 @@ use application\parser\controllers\ControllerPagination;
 </div>
 
 <script>
-    function initProgress(){
-        var activeDist = $(".slide a.active").position();
-        var activeDist1 = ($("#bullet1").position()).left;
-        activeDist = activeDist.left-activeDist1;
-        $(".after").stop().animate({width: activeDist + "px"});
-    }
-    initProgress();
-    $(".slide a").click(function(e){
-        e.preventDefault();
-        var slide = $(".slide a");
-        slide.removeClass("active").siblings().addClass("inactive");
-        $(this).removeClass("inactive").addClass("active");
-        initProgress();
-    });
+    /**
+     * Текущие функции будут работать только при загрузке этой страницы.
+     * -----------------------------------------------------------------
+     */
+     //Загружаю строки файлов в таблицу
+     loadPage(1, FOLDER_CHECKER_ID);
+     //Активирую первую кнопку навигатора
+     buildPagination(FOLDER_CHECKER_ID, 1);
+     //Установка титула старницы
+     title.text('Проверка хранилища');
+    /**
+     * Работа с линией прогресса.
+     * --------------------------
+     */
+    //Переключаю состояния этапов
+    toggleStage('stage_2');
+    //Инициализирую линию прогресса
+    initProgressLine();
 </script>
 

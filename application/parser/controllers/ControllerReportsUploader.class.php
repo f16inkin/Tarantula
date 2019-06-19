@@ -9,14 +9,18 @@ use application\parser\models\ReportsUploader;
 
 class ControllerReportsUploader extends ControllerParserBase
 {
-    private $_reports_uploader;
+    private $_reports_uploader; //модель загрузчика отчетов
 
+    /**
+     * Создает объект загрузчика отчетов. Используется как единственная модель по работе с загрузкой отчетов.
+     * ------------------------------------------------------------------------------------------------------
+     * ControllerReportsUploader constructor.
+     */
     public function __construct()
     {
         parent::__construct();
         $this->_reports_uploader = new ReportsUploader($this->_settings->getStorage());
     }
-
 
     /**
      * Обработчик загрузки файлов на сервер
