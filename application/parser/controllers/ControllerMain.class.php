@@ -47,16 +47,13 @@ class ControllerMain extends ControllerParserBase
 
     }
 
-    public function actionFirstStep(){
+    public function actionFirstStep() : void{
         $content = $this->scanStorage();
         if (isset($content)){
-            if ($content['files_count'] > $content['files_limit']){
-                $this->loadPage('/parser/ajax/successed/main/step-1/step-1-excess-files.page', $content);
-            }else{
-                $this->loadPage('/parser/ajax/successed/main/step-1/step-1-with-files.page', $content);
-            }
+            $this->loadPage('/parser/ajax/successed/main/step-2/step-2.page', $content);
         }else{
-            $this->loadPage('/parser/ajax/successed/main/step-1/step-1-without-files.page');
+            $content['upload_limit'] = ini_get('max_file_uploads');
+            $this->loadPage('/parser/ajax/successed/main/step-1/step-1.page', $content);
         }
     }
 }

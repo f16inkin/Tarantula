@@ -13,9 +13,9 @@ use core\base\Model;
 
 class ParserSettings extends Model
 {
-    private $_files_limit; //переменная отвечающая за максимально допустимое количество файлов в папке пользователя
-    private $_storage; //Папка хранилизе для всех файлов парсера
-    private $_files_per_page; //Количество файлов выводимых на странице
+    private $_files_limit; //переменная отвечающая за максимально допустимое количество файлов для обработки за 1 раз.
+    private $_storage; //Папка хранилище для всех файлов парсера
+    private $_files_per_page; //Количество файлов выводимых на странице в навигаторе
 
     public function __construct()
     {

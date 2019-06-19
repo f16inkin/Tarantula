@@ -208,7 +208,7 @@ const filesLoad = function (files, files_count, files_limit) {
         $('#table-pagination-content').append(line);
     });
     //Выставляю лимит и количество файлов
-    $('.alert-primary > b').text(files_count + '/' + files_limit + ' шт.');
+    $('.alert-primary > b').text(`${files_count} - доступно / ${files_limit} - лимит разовой обработки.`);
     /**
      * Если вернулось после подгрузки 0 файлов, то тогда отображаю элементы загрузки файлов.
      * Делаю через функцию firstStep, как дополнительная проверка того, что в промежутке между нажатием на кнопку, в
@@ -216,7 +216,7 @@ const filesLoad = function (files, files_count, files_limit) {
      */
 
     if (files_count === 0){
-        setTimeout(showFirstStep, 1500);
+        setTimeout(showFirstStep, 1000);
     }
 };
 
@@ -331,7 +331,6 @@ function reportsUpload() {
     let form = $('#upload-reports-form');
     let formData = new FormData();
     let input = form.find('input');
-    let button = form.find('button');
     let files_container = parser_content.find($('#files_container'));
     /**
      * Если загружаются файлы, то каждый загружается в массв
@@ -461,8 +460,6 @@ function fillFileContainer() {
 
 /**
  * Инициализирует линию прогресса.
- * -------------------------------
- * @param {string} stage - уровень на таблице прогресса
  */
 function initProgressLine(){
     let activePosition = $('.slide span.active').position();
@@ -471,11 +468,19 @@ function initProgressLine(){
     $(".after").stop().animate({width: activePosition + "px"});
 }
 
+/**
+ * Переключает классы на значках этапво active/inactive
+ * ----------------------------------------------------
+ * @param {string} stage
+ */
 function toggleStage(stage) {
     let slides = parser_content.find($('.slide span'));
+    //Добавляю класс неактивного эатапа на каждый значек
     $.each(slides, function () {
         $(this).addClass('inactive');
     });
+    //Чтобы работала линия прогрузки. Переделать потом
     $('.slide span').removeClass('active').siblings().addClass('inactive');
+    //Активирую указанный значек
     $('#'+stage).removeClass('inactive').addClass('active');
 }

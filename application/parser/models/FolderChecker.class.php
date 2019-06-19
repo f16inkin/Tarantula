@@ -11,7 +11,10 @@ namespace application\parser\models;
 use application\parser\interfaces\StorageChecker;
 
 /**
- * Класс занимается проверкой хранилища (папки: storage)
+ * Класс занимается проверкой хранилища (папки: storage):
+ * - Проверяет наличие пользовательской директории.
+ * - Сканирует пользовательскую директорию на наличие файлов. Возвращает конвертированныев UTF-8 файлы.
+ * - Возвращает количество файлов в директории.
  * ----------------------------------------------
  * Class FolderChecker
  * @package application\parser\models
@@ -53,22 +56,22 @@ class FolderChecker implements StorageChecker
     }
 
     /**
-     * Метод проверяет хранилище (папку/базу данных) и возвращает список файлов находящихся в нем в виде массива:
+     * Метод проверяет хранилище (папку/базу данных) и возвращает массив конвертированных в UTF-8 файлов:
      * ----------------------------------------------------------------------------------------------------------
      * array = [0 => file_1, 1 => file_2, 2 => file_3]
      * @return array
      */
     public function scanStorage():array{
         $files = array_slice(scandir($this->_folder), 2);
-        $converted_files = [];
+        $convertedFiles = [];
         foreach ($files as $file){
             if (is_file($this->_folder.'/'.$file)){
-                $converted_files[] = mb_convert_encoding($file, "UTF8", "Windows-1251");
+                $convertedFiles[] = mb_convert_encoding($file, "UTF8", "Windows-1251");
             }else{
                 rmdir($this->_folder.'/'.$file);
             }
         }
-        return $converted_files;
+        return $convertedFiles;
     }
 
     /**

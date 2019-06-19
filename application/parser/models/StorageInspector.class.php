@@ -11,7 +11,7 @@ namespace application\parser\models;
 
 use application\parser\interfaces\StorageChecker;
 
-class Pagination
+class StorageInspector
 {
     private $_storage_checker;
     private $_files_per_page;

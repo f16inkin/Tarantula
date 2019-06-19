@@ -54,7 +54,9 @@
 <div id="parser-workplace">
     <div style="text-align: center;">Шаг №1. Загрузка файлов.</div>
     <div class="card" style="padding: 5px;">
-        <div class="alert alert-danger" role="alert">В директории отсутствуют файлы</div>
+        <div class="alert alert-danger" role="alert">
+            В директории отсутствуют файлы. Лимит разовой загрузки состоявляет <b><?=$content['upload_limit'];?> файл(ов)</b>
+        </div>
     </div>
 </div>
 

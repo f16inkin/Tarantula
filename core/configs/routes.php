@@ -170,7 +170,7 @@ return[
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
-            'controller' => 'ControllerPagination',
+            'controller' => 'ControllerStorageInspector',
             'action' => 'LoadPage',
             'arguments' => 1
         ]
@@ -180,7 +180,7 @@ return[
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
-            'controller' => 'ControllerPagination',
+            'controller' => 'ControllerStorageInspector',
             'action' => 'DisplaceFiles',
             'arguments' => 1
         ]
@@ -190,7 +190,7 @@ return[
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
-            'controller' => 'ControllerPagination',
+            'controller' => 'ControllerStorageInspector',
             'action' => 'GetPagesCount',
             'arguments' => 1
         ]
