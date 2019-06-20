@@ -40,17 +40,18 @@ class FolderChecker implements StorageChecker
      * @return bool
      */
     private function createUserDirectory(string $folder){
-        return mkdir($folder) ? true : false;
+        return mkdir($folder);
     }
 
     /**
-     * Проверяет хранилище storage и в случае отсутсвия пользовательской директории создает ее
-     * ---------------------------------------------------------------------------------------
+     * Проверяет хранилище storage и в случае отсутсвия пользовательской директории создает ее.
+     * Если папка уже создана, то вернет true. Иначе попробует создать папку и вернет результат операции true/false
+     * ------------------------------------------------------------------------------------------------------------
      * @return bool
      */
     public function checkFolder(){
         if (!file_exists($this->_folder)){
-            $this->createUserDirectory($this->_folder);
+            return $this->createUserDirectory($this->_folder);
         }
         return true;
     }
@@ -62,8 +63,10 @@ class FolderChecker implements StorageChecker
      * @return array
      */
     public function scanStorage():array{
+        //Обрезаю первые два элемента . и ..
         $files = array_slice(scandir($this->_folder), 2);
         $convertedFiles = [];
+        //Конвертирую в кодировку UTF-8
         foreach ($files as $file){
             if (is_file($this->_folder.'/'.$file)){
                 $convertedFiles[] = mb_convert_encoding($file, "UTF8", "Windows-1251");

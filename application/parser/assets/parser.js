@@ -254,7 +254,7 @@ function loadPage(current_page, checker_id) {
         //Выставляю лимит и количество файлов
         let files_limit = res.files_limit;
         let files_count = res.files_count;
-        $('.alert-primary > b').text(files_count+'/'+files_limit+' шт.');
+        $('.alert-primary > b').text(`${files_count} - доступно / ${files_limit} - лимит разовой обработки.`);
         //При переходе по страницам выделяет элементы, если выделен главный чекюокс
         $('input[type=checkbox]').prop('checked', $('#check_start').prop('checked'));
     });

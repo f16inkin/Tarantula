@@ -47,7 +47,7 @@
                     <i class="fa fa-trash" aria-hidden="true"></i> Удалить
                 </button>
                 <button class="btn btn-primary btn-sm">
-                    <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Обработать все
+                    <i class="fa fa-database" aria-hidden="true"></i> Загрузить в БД
                 </button>
             </h5>
         </div>

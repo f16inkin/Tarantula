@@ -47,7 +47,7 @@ class ControllerMain extends ControllerParserBase
 
     }
 
-    public function actionFirstStep() : void{
+    public function actionFirstStep(){
         $content = $this->scanStorage();
         if (isset($content)){
             $this->loadPage('/parser/ajax/successed/main/step-2/step-2.page', $content);
