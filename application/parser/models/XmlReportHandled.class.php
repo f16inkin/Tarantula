@@ -9,7 +9,7 @@
 namespace application\parser\models;
 
 
-class XmlHandled
+class XmlReportHandled
 {
     private $_sessions = [];    //номер смены
     private $_tanks = [];       //информация по емкостям
@@ -35,7 +35,7 @@ class XmlHandled
      */
     public function __get($name)
     {
-        return $name;
+        return $this->$name;
     }
 
 }

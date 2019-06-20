@@ -11,14 +11,23 @@ namespace application\parser\models;
 
 use SimpleXMLElement;
 
-class XmlHandlersFactory
+/**
+ * Фабрика секционных обработчиков.
+ * Каждый реализующий интерфейс iXmlHandler класс:
+ * - парсит свою заданную в логике секцию файла
+ * - сохраняет данные своей секции в БД
+ * -----------------------------------------------
+ * Class XmlSectionHandlersFactory
+ * @package application\parser\models
+ */
+class XmlSectionHandlersFactory
 {
     private $_handlers = []; //обработчики Xml файлов: XmlSessionSection, XmlTanksSection и тд.
 
-    public function __construct()
+    public function __construct(int $_subdivision_id)
     {
         $this->_handlers['sessions'] = new XmlSessionsSectionHandler();
-        $this->_handlers['tanks'] = new XmlTanksSectionHandler();
+        $this->_handlers['tanks'] = new XmlTanksSectionHandler($_subdivision_id);
 
     }
 
@@ -31,7 +40,7 @@ class XmlHandlersFactory
      * ]
      * и формировать массив вида:
      * array = [
-     *      'session' => [
+     *      'sessions' => [
      *          [0] => ['Number' => data,'StartDateTime' => data,'EndDateTime' => data,'Operator' => data],
      *          [1] => ['Number' => data,'StartDateTime' => data,'EndDateTime' => data,'Operator' => data],
      *          [2] => ['Number' => data,'StartDateTime' => data,'EndDateTime' => data,'Operator' => data]
@@ -64,10 +73,10 @@ class XmlHandlersFactory
      * и вернет его
      * ------------------------------------------------------------------------------------------------------
      * @param SimpleXMLElement $simpleXMLElement
-     * @return XmlHandled
+     * @return XmlReportHandled
      */
-    public function handle(SimpleXMLElement $simpleXMLElement) : XmlHandled{
-        $handled = new XmlHandled();
+    public function handle(SimpleXMLElement $simpleXMLElement) : XmlReportHandled{
+        $handled = new XmlReportHandled();
         foreach ($this->_handlers as $iXmlHandler){
             $prop = $iXmlHandler->getPropertyName();
             $handled->$prop = $iXmlHandler->get($simpleXMLElement);

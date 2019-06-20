@@ -208,5 +208,18 @@ return[
             'action' => 'UploadReports',
             'arguments' => 0
         ]
+    ],
+    /**
+     * Обработка XML отчетов
+     */
+    [
+        '^parser/handler/handle/([0-9]+)' => [
+            'construct' => true,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerXmlSectionHandlersFactory',
+            'action' => 'Index',
+            'arguments' => 1
+        ]
     ]
 ];
