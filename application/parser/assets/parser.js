@@ -105,7 +105,7 @@ const showFirstStep = function () {
         cache: false
     });
     request.done(function (response) {
-        //Очистить рабочую оласть, работает и без очистки
+        //Очистить рабочую область, работает и без очистки
         parser_content.empty();
         //Загрузить разметку страницы
         parser_content.html(response);
@@ -483,4 +483,19 @@ function toggleStage(stage) {
     $('.slide span').removeClass('active').siblings().addClass('inactive');
     //Активирую указанный значек
     $('#'+stage).removeClass('inactive').addClass('active');
+}
+
+function uploadToDatabase() {
+    let subdivision_id = 4;
+    let request = $.ajax({
+        type: "POST",
+        url: "/parser/handler/handle/" + subdivision_id,
+        cache: false
+    });
+    request.done(function (response) {
+        //Очистить рабочую область, работает и без очистки
+        parser_content.empty();
+        //Загрузить разметку страницы
+        parser_content.html(response);
+    });
 }

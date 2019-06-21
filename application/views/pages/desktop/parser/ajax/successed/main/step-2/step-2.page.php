@@ -19,10 +19,10 @@
                 <span id="stage_2"><i class="fa fa-file-code"></i></span>
             </div>
             <div class="slide tableCell">
-                <span id="stage_3"><i class="fa fa-database"></i></span>
+                <span id="stage_3"><i class="fa fa-user"></i></span>
             </div>
             <div class="slide tableCell">
-                <span id="stage_4"><i class="fa fa-user"></i></span>
+                <span id="stage_4"><i class="fa fa-database"></i></span>
             </div>
             <div class="slide tableCell">
                 <span id="stage_5"><i class="fa fa-check-circle"></i></span>
@@ -46,8 +46,8 @@
                 <button class="btn btn-danger btn-sm" onclick="deleteFiles(); return false;">
                     <i class="fa fa-trash" aria-hidden="true"></i> Удалить
                 </button>
-                <button class="btn btn-primary btn-sm">
-                    <i class="fa fa-database" aria-hidden="true"></i> Загрузить в БД
+                <button class="btn btn-primary btn-sm" onclick="uploadToDatabase(); return false;">
+                    <i class="fa fa-search" aria-hidden="true"></i> Посмотреть файлы
                 </button>
             </h5>
         </div>

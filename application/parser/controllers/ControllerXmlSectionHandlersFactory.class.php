@@ -22,21 +22,24 @@ class ControllerXmlSectionHandlersFactory extends ControllerParserBase
 
     public function actionIndex()
     {
+        //Объекты SimpleXmlElement
         $SXEs = $this->_xml_reports_handler->loadCorrectXml();
-        $i = 0;
-        foreach ($SXEs as $SXE){
-            $i ++;
-            $handled[$i] = $this->_xml_section_handlers_factory->handle($SXE['simpleXmlElement']);
+        //Содержит объекты обработанных Xml файлов
+        $handled = [];
+        if (!empty($SXEs)){
+            $iterator = 0;
+            foreach ($SXEs as $SXE){
+                $iterator ++;
+                $handled[$iterator] = $this->_xml_section_handlers_factory->handle($SXE['simpleXmlElement']);
+                $content[$iterator]['session'] = $handled[$iterator]->_sessions;
+                $content[$iterator]['tanks'] = $handled[$iterator]->_tanks;
+            }
+            $this->loadPage('/parser/ajax/successed/main/step-3/step-3.page', $content);
+        }else{
+            $content['upload_limit'] = ini_get('max_file_uploads');
+            $this->loadPage('/parser/ajax/successed/main/step-1/step-1.page', $content);
         }
-        foreach ($handled as $item) {
-            echo 'Смена начало';
-            echo '<pre>';
-            print_r($item->_sessions);
-            print_r($item->_tanks);
-            echo '</pre>';
-            echo 'Смена конец';
-            echo '<br>';
-        }
+
     }
 
 }

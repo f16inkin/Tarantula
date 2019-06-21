@@ -77,6 +77,11 @@ class XmlSectionHandlersFactory
      */
     public function handle(SimpleXMLElement $simpleXMLElement) : XmlReportHandled{
         $handled = new XmlReportHandled();
+        /**
+         * Создается объект XmlReportHandled. Каждое свойство этого объекта заполняется одноименным парсером секций
+         * $_sessions = XmlSessionsSectionHandler->get(SXE) и так далее.
+         * $prop - свойство которое будет заполнять парсер секций
+         */
         foreach ($this->_handlers as $iXmlHandler){
             $prop = $iXmlHandler->getPropertyName();
             $handled->$prop = $iXmlHandler->get($simpleXMLElement);
