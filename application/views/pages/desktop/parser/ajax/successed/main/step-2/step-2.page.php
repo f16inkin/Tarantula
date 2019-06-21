@@ -30,6 +30,23 @@
         </div>
     </div>
 </div>
+<div class="parser-nav-bar">
+    <div class="parser-nav-bar-container">
+        <button class="btn btn-warning btn-sm" data-toggle="collapse" data-target="#files_collapse_container">
+            Показать файлы  <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
+        </button>
+    </div>
+    <div class="parser-nav-bar-container">
+        <button class="btn btn-danger btn-sm" onclick="deleteFiles(); return false;">
+            <i class="fa fa-trash" aria-hidden="true"></i> Удалить
+        </button>
+    </div>
+    <div class="parser-nav-bar-container">
+        <button class="btn btn-primary btn-sm" onclick="uploadToDatabase(); return false;">
+            <i class="fa fa-search" aria-hidden="true"></i> Посмотреть файлы
+        </button>
+    </div>
+</div>
 <div id="parser-workplace">
     <div style="text-align: center;">
         Внимательно посмотрите на загруженные файлы. Если какие либо на ваш взгляд являются лишними. Их можно удалить
@@ -38,7 +55,7 @@
         <div class="alert alert-primary" style="padding: 5px;" role="alert">
             В директории найдены файлы: <b></b>
         </div>
-        <div class="card-header" id="headingOne" style="margin-top: -1rem;">
+        <!--<div class="card-header" id="headingOne" style="margin-top: -1rem;">
             <h5 class="mb-0">
                 <button class="btn btn-secondary btn-sm" data-toggle="collapse" data-target="#files_collapse_container">
                     Показать файлы  <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
@@ -50,7 +67,7 @@
                     <i class="fa fa-search" aria-hidden="true"></i> Посмотреть файлы
                 </button>
             </h5>
-        </div>
+        </div>-->
         <div id="files_collapse_container" class="collapse" aria-labelledby="headingOne" data-parent="#parser-content">
             <div class="card-body" style="padding: 0.25rem;">
                 <!----->

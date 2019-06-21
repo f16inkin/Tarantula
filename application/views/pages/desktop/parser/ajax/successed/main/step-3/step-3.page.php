@@ -50,14 +50,15 @@
                     <div class="card-header">
                         <h5 class="mb-0">
                             <input type="text" value="<?=$single['session']['Number'];?>" hidden>
-                            <button class="btn btn-primary" style="width: 500px;" data-toggle="collapse" data-target="#Session_<?=$single['session']['Number'];?>">
+                            <button class="btn btn-primary btn-sm" style="width: 500px;" data-toggle="collapse" data-target="#Session_<?=$single['session']['Number'];?>">
                                 <div>
                                     <?//='ID: '.$singleSession['RecordId'];?>
                                     <?='№ Смены: '.$single['session']['Number'];?>
                                     <?='Оператор: '.$single['session']['Operator'];?>
                                 </div>
                             </button>
-                            <button  class="btn btn-danger">Удалить</button>
+                            <button  class="btn btn-danger btn-sm">Удалить</button>
+                            <span class="btn btn-success btn-sm"><i class="fa fa-check-circle"></i> Корректный</span>
                         </h5>
                     </div>
                     <div id="Session_<?=$single['session']['Number']; ?>" class="collapse" data-parent="#parser-content">
