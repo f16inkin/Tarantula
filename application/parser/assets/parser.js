@@ -6,11 +6,7 @@
  *                                      Public Variables и загрузка страницы
  * --------------------------------------------------------------------------------------------------------------------
  */
-/**
- * Константы идентификаторы обработчиков хранилищь
- */
-const FOLDER_CHECKER_ID = 'folder';
-const MYSQL_CHECKER_ID = 'mysql';
+
 /**
  * Часто используемые в обращении статические элементы
  */
@@ -134,7 +130,7 @@ const deleteFiles = function (){
          */
         let request = $.ajax({
             type: "POST",
-            url: "/parser/pagination/displace/" + FOLDER_CHECKER_ID,
+            url: "/parser/inspector/displace",
             data: {"file_names": file_names, "quantity": file_names.length, "current_page": current_page},
             cache: false,
             beforeSend: function () {
@@ -170,7 +166,7 @@ const deleteFiles = function (){
             //Если в ответе есть команда строить заного навигатор, то выполняю функцию, которая требует еще один
             //запрос к серверу
             if (build_pagination){
-                buildPagination(FOLDER_CHECKER_ID, page);
+                buildPagination(page);
             }
 
             //Снимаю главный чекбокс
@@ -194,17 +190,46 @@ const deleteFiles = function (){
  */
 const filesLoad = function (files, files_count, files_limit) {
     $.each(files, function (key, value) {
-        let unique_id = value.replace('.', '');
+        let unique_id = value.file_name.replace('.','');
+        let fileName = value.file_name;
+        let sessionNumber = '-';
+        let operator = '-';
+        let sessionStart = '-';
+        let sessionEnd = '-';
+        if (value.session != null){
+            sessionNumber = value.session.Number;
+            operator = value.session.Operator;
+            sessionStart = value.session.StartDateTime;
+            sessionEnd = value.session.EndDateTime;
+        }
         let line =
-            $(`<tr id='table_line_${unique_id}' class='tr-table-content'>` +
-                `<td>` +
-                `<input id='check_${unique_id}' class='hidden-checkbox checkable' type='checkbox' value='${value}'/>` +
-                `<label for='check_${unique_id}'>` +
-                `<div><i class='fa fa-check'></i></div>` +
-                `</label>` +
-                `</td>` +
-                `<td>${value}</td>` +
-                `</tr>`).hide().fadeIn(1000);
+            $(`<tr id='table_line_${unique_id}' class='tr-table-content'>
+                    <td>
+                        <input id='check_${unique_id}' class='hidden-checkbox checkable' type='checkbox' value='${value.file_name}'/>
+                            <label for='check_${unique_id}'>
+                                <div><i class='fa fa-check'></i></div>
+                            </label>
+                    </td>
+                    <td>
+                         <button class="btn btn-outline-primary btn-sm" onclick="loadSessionData('${fileName}')">
+                             <i class="fa fa-search" aria-hidden="true"></i> ${fileName}
+                        </button> 
+                    </td>
+                    <td>${sessionNumber}</td>
+                    <td>${sessionStart}</td>
+                    <td>${sessionEnd}</td>
+                    <td>${operator}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm">
+                             <i class="fa fa-search" aria-hidden="true"></i> Посмотреть файлы
+                        </button> 
+                    </td>
+                    <td>
+                        <div class="text-success">
+                            <i class="fa fa-check-circle"></i> Корректный
+                        </div>
+                    </td>
+                </tr>`).hide().fadeIn(1000);
         $('#table-pagination-content').append(line);
     });
     //Выставляю лимит и количество файлов
@@ -226,10 +251,10 @@ const filesLoad = function (files, files_count, files_limit) {
  * @param {int} current_page
  * @param {string} checker_id
  */
-function loadPage(current_page, checker_id) {
+function loadPage(current_page) {
     let request = $.ajax({
         type: "POST",
-        url: "/parser/pagination/" + checker_id,
+        url: "/parser/inspector",
         data: {"current_page": current_page},
         cache: false
     });
@@ -238,17 +263,46 @@ function loadPage(current_page, checker_id) {
         $('#table-pagination-content').empty();
         res = JSON.parse(response);
         $.each(res.page_data, function(key, value) {
-            let unique_id = value.replace('.','');
+            let unique_id = value.file_name.replace('.','');
+            let fileName = value.file_name;
+            let sessionNumber = '-';
+            let operator = '-';
+            let sessionStart = '-';
+            let sessionEnd = '-';
+            let status = value.session.Status;
+            switch (value.session.Status) {
+                case 'correct' : text_type = 'success'; break;
+                case 'incorrect' : text_type = 'danger'; break;
+            }
+            if (value.session.Number != null){
+                sessionNumber = value.session.Number;
+                operator = value.session.Operator;
+                sessionStart = value.session.StartDateTime;
+                sessionEnd = value.session.EndDateTime;
+            }
             let line =
-                $(`<tr id='table_line_${unique_id}' class='tr-table-content'>` +
-                    `<td>` +
-                        `<input id='check_${unique_id}' class='hidden-checkbox checkable' type='checkbox' value='${value}'/>` +
-                            `<label for='check_${unique_id}'>` +
-                                `<div><i class='fa fa-check'></i></div>` +
-                            `</label>` +
-                    `</td>` +
-                    `<td>${value}</td>` +
-                `</tr>`).hide().fadeIn(1000);
+                $(`<tr id='table_line_${unique_id}' class='tr-table-content'>
+                    <td>
+                        <input id='check_${unique_id}' class='hidden-checkbox checkable' type='checkbox' value='${value.file_name}'/>
+                            <label for='check_${unique_id}'>
+                                <div><i class='fa fa-check'></i></div>
+                            </label>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary btn-sm" onclick="loadSessionData('${fileName}')">
+                             <i class="fa fa-search" aria-hidden="true"></i> ${fileName}
+                        </button> 
+                    </td>
+                    <td>${sessionNumber}</td>
+                    <td>${sessionStart}</td>
+                    <td>${sessionEnd}</td>
+                    <td>${operator}</td>
+                    <td>
+                        <div class='text-${text_type}'>
+                            <i class="fa fa-check-circle"></i> ${status}
+                        </div>
+                    </td>
+                </tr>`).hide().fadeIn(1000);
             $('#table-pagination-content').append(line);
         });
         //Выставляю лимит и количество файлов
@@ -295,7 +349,7 @@ parser_content.on('click', '.page-item', function () {
    let page = $(this).text();
     $(this).siblings().removeClass('active');
     $(this).addClass('active');
-   loadPage(page, FOLDER_CHECKER_ID);
+   loadPage(page);
 });
 
 /**
@@ -304,10 +358,10 @@ parser_content.on('click', '.page-item', function () {
  * @param {string} checker_id
  * @param {int} page
  */
-function buildPagination(checker_id, page) {
+function buildPagination(page) {
     let request = $.ajax({
         type: "POST",
-        url: "/parser/pagination/get-pages-count/" + checker_id,
+        url: "/parser/inspector/get-pages-count",
         cache: false
     });
     request.done(function (response) {
@@ -485,12 +539,44 @@ function toggleStage(stage) {
     $('#'+stage).removeClass('inactive').addClass('active');
 }
 
+function loadSessionData(file_name) {
+    let subdivision_id = 4;
+    let request = $.ajax({
+        type: "POST",
+        url: "/parser/get-session-data",
+        data: {'subdivision_id' : subdivision_id, 'file_name' : file_name},
+        cache: false,
+        beforeSend:function(){
+            //showFlashWindow('Загрузка', 'success_flash_window');
+        },
+        success:function () {
+            //hideFlashWindow('success_flash_window');
+        }
+    });
+    request.done(function (response) {
+        //очищаю модальное окно
+        $('#modal-content').empty();
+        //Отображаю его
+        $('#exampleModalCenter').modal('show');
+        //Загрузить разметку страницы
+        $('#modal-content').append(response);
+        $('#exampleModalLongTitle').text('Файл: '+file_name);
+
+    });
+}
+
 function uploadToDatabase() {
     let subdivision_id = 4;
     let request = $.ajax({
         type: "POST",
         url: "/parser/handler/handle/" + subdivision_id,
-        cache: false
+        cache: false,
+        beforeSend:function(){
+            showFlashWindow('Загрузка', 'success_flash_window');
+        },
+        success:function () {
+            hideFlashWindow('success_flash_window');
+        }
     });
     request.done(function (response) {
         //Очистить рабочую область, работает и без очистки

@@ -10,7 +10,9 @@ namespace application\parser\controllers;
 
 
 use application\parser\base\ControllerParserBase;
-use application\parser\models\FolderChecker;
+use application\parser\models\StorageInspector;
+use application\parser\models\XmlReportsHandler;
+use application\parser\models\XmlSectionHandlersFactory;
 
 class ControllerMain extends ControllerParserBase
 {
@@ -20,9 +22,9 @@ class ControllerMain extends ControllerParserBase
     }
 
     private function scanStorage(){
-        $folderChecker = new FolderChecker($this->_settings->getStorage());
-        if($folderChecker->checkFolder()){
-            $files = $folderChecker->scanStorage();
+        $storageInspector = new StorageInspector($this->_settings->getStorage(), $this->_settings->getFilesPerPage());
+        if($storageInspector->checkFolder()){
+            $files = $storageInspector->scanStorage();
             if (!empty($files)){
                 //Временная переменная для обозначения лимита файлов в пользовательской директории
                 $files_limit = $this->_settings->getFilesLimit();
@@ -30,7 +32,7 @@ class ControllerMain extends ControllerParserBase
                 $files_per_page = $this->_settings->getFilesPerPage();
                 $content['files_count'] = $files_count;
                 $content['allow_pagination'] = ($files_count > $files_per_page) ? true : false;
-                $content['storage_checker_id'] = 1;
+                //$content['storage_checker_id'] = 1;
                 $content['files_limit'] = $files_limit;
                 return $content; //success and data
             }
@@ -55,5 +57,24 @@ class ControllerMain extends ControllerParserBase
             $content['upload_limit'] = ini_get('max_file_uploads');
             $this->loadPage('/parser/ajax/successed/main/step-1/step-1.page', $content);
         }
+    }
+
+    public function actionGetSessionData(){
+        $subdivisionId = $_POST['subdivision_id'];
+        $fileName = $_POST['file_name'];
+        $xmlSectionHandlesFactory = new XmlSectionHandlersFactory($subdivisionId);
+        //Файл SXE
+        $SXE = (new XmlReportsHandler($this->_settings->getStorage()))->loadXmlFile($fileName);
+        //Обработка одно файла
+        if ($SXE){
+            $handled = $xmlSectionHandlesFactory->handle($SXE);
+            $content['session'] = $handled->_sessions;
+            $content['tanks'] = $handled->_tanks;
+            $this->loadPage('/parser/ajax/successed/main/step-2/session-information.page', $content);
+        }else{
+            $this->loadPage('/parser/ajax/successed/main/step-2/incorrect.page');
+        }
+
+
     }
 }

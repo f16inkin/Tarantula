@@ -149,12 +149,12 @@ return[
         ]
     ],
     [
-        '^parser/tanks/subdivisions$' => [
+        '^parser/get-session-data$' => [
             'construct' => false,
             'module' => 'parser',
             'folder' => 'application',
-            'controller' => 'ControllerTanks',
-            'action' => 'GetSubdivisions',
+            'controller' => 'ControllerMain',
+            'action' => 'GetSessionData',
             'arguments' => 0
         ]
     ],
@@ -166,7 +166,7 @@ return[
      * 3) Вернет количество страниц для построения навигатора
      */
     [
-        '^parser/pagination/([a-z]+)' => [
+        '^parser/inspector$' => [
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
@@ -176,7 +176,7 @@ return[
         ]
     ],
     [
-        '^parser/pagination/displace/([a-z]+)' => [
+        '^parser/inspector/displace$' => [
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',
@@ -186,7 +186,7 @@ return[
         ]
     ],
     [
-        '^parser/pagination/get-pages-count/([a-z]+)' => [
+        '^parser/inspector/get-pages-count$' => [
             'construct' => true,
             'module' => 'parser',
             'folder' => 'application',

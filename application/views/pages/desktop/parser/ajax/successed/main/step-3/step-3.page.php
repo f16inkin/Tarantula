@@ -58,7 +58,7 @@
                                 </div>
                             </button>
                             <button  class="btn btn-danger btn-sm">Удалить</button>
-                            <span class="btn btn-success btn-sm"><i class="fa fa-check-circle"></i> Корректный</span>
+                            <span class="badge badge-success"><i class="fa fa-check-circle"></i> Корректный</span>
                         </h5>
                     </div>
                     <div id="Session_<?=$single['session']['Number']; ?>" class="collapse" data-parent="#parser-content">

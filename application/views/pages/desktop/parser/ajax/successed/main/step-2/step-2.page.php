@@ -55,19 +55,6 @@
         <div class="alert alert-primary" style="padding: 5px;" role="alert">
             В директории найдены файлы: <b></b>
         </div>
-        <!--<div class="card-header" id="headingOne" style="margin-top: -1rem;">
-            <h5 class="mb-0">
-                <button class="btn btn-secondary btn-sm" data-toggle="collapse" data-target="#files_collapse_container">
-                    Показать файлы  <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
-                </button>
-                <button class="btn btn-danger btn-sm" onclick="deleteFiles(); return false;">
-                    <i class="fa fa-trash" aria-hidden="true"></i> Удалить
-                </button>
-                <button class="btn btn-primary btn-sm" onclick="uploadToDatabase(); return false;">
-                    <i class="fa fa-search" aria-hidden="true"></i> Посмотреть файлы
-                </button>
-            </h5>
-        </div>-->
         <div id="files_collapse_container" class="collapse" aria-labelledby="headingOne" data-parent="#parser-content">
             <div class="card-body" style="padding: 0.25rem;">
                 <!----->
@@ -75,13 +62,18 @@
                     <table cellpadding="1" cellspacing="1" border="0" style="margin-bottom: 5px;" class="table-striped table-mine full-width box-shadow--2dp">
                         <thead>
                         <tr class="tr-table-header">
-                            <th>
+                            <th width="10%">
                                 <input id="check_start" class="hidden-checkbox" type="checkbox"/>
                                 <label for="check_start">
                                     <div><i class="fa fa-check"></i></div>
                                 </label>
                             </th>
-                            <th>Имя файла</th>
+                            <th width="20%">Имя файла</th>
+                            <th width="10%">Смена</th>
+                            <th width="15%">Начата</th>
+                            <th width="15%">Окончена</th>
+                            <th width="20%">Оператор</th>
+                            <th width="10%">Статус</th>
                         </tr>
                         </thead>
                         <tbody id="table-pagination-content"></tbody>
@@ -96,15 +88,30 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered " role="document" style="min-width: 900px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-content"></div>
+        </div>
+    </div>
+</div>
+
 <script>
     /**
      * Текущие функции будут работать только при загрузке этой страницы.
      * -----------------------------------------------------------------
      */
      //Загружаю строки файлов в таблицу
-     loadPage(1, FOLDER_CHECKER_ID);
+     loadPage(1);
      //Активирую первую кнопку навигатора
-     buildPagination(FOLDER_CHECKER_ID, 1);
+     buildPagination(1);
      //Установка титула старницы
      title.text('Проверка хранилища');
     /**

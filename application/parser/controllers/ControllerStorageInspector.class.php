@@ -10,33 +10,30 @@ namespace application\parser\controllers;
 
 
 use application\parser\base\ControllerParserBase;
-use application\parser\models\MySQLChecker;
 use application\parser\models\StorageInspector;
-use application\parser\models\FolderChecker;
+use application\parser\models\XmlSessionsSectionHandler;
 
 /**
  * Класс инспектирует хранилище
+ * ---------------------------------------
  * Class ControllerStorageInspector
  * @package application\parser\controllers
  */
 class ControllerStorageInspector extends ControllerParserBase
 {
-    private $_inspector;       //объект инспектора
-    private $_storage_checker;  //объект проверяющий хранилище, где хранятся файлы
+    private $_inspector;    //объект инспектора
+    private $_storage;      //путь к  хранилищу
 
     /**
      * ControllerPagination constructor.
      * --------------------------------
      * @param string $storageCheckerId
      */
-    public function __construct(string $storageCheckerId)
+    public function __construct()
     {
         parent::__construct();
-        switch ($storageCheckerId){
-            case 'folder' : $this->_storage_checker = new  FolderChecker($this->_settings->getStorage()); break;
-            case 'mysql' : $this->_storage_checker = new  MySQLChecker(); break;
-        }
-        $this->_inspector = new StorageInspector($this->_storage_checker, $this->_settings->getFilesPerPage());
+        $this->_storage = $this->_settings->getStorage();
+        $this->_inspector = new StorageInspector($this->_storage, $this->_settings->getFilesPerPage());
     }
 
     /**
@@ -45,12 +42,28 @@ class ControllerStorageInspector extends ControllerParserBase
     public function actionLoadPage(){
         $currentPage = $_POST['current_page']; //Текущая выбрана страница
         $files = $this->_inspector->loadPage($currentPage); //файлы которые будут отображены
+        $sessionHandler = new XmlSessionsSectionHandler();
+        $i = 0;
+        foreach ($files as $file){
+            $i ++;
+            //Важно проверить наличии SXE, иначе если файл битый или некорректный будет выбрасывать ошибку
+            if (isset($file['simpleXmlElement'])){
+                $data[$i]['session'] = $sessionHandler->get($file['simpleXmlElement']);
+                $data[$i]['session']['Status'] = 'correct';
+            }
+            else{
+                $data[$i]['session'] = null;
+                $data[$i]['session']['Status'] = 'incorrect';
+            }
+
+            $data[$i]['file_name'] = $file['file_name'];
+        }
         if (!empty($files)){
-            $filesCount = $this->_storage_checker->getFilesCount();
+            $filesCount = $this->_inspector->getFilesCount();
             $filesLimit = $this->_settings->getFilesLimit();
             $content['status'] = 'success';
             $content['message'] = 'Страница загружена';
-            $content['page_data'] = $files;
+            $content['page_data'] = $data;
             $content['files_limit'] = $filesLimit;
             $content['files_count'] = $filesCount;
         }else{
@@ -91,7 +104,7 @@ class ControllerStorageInspector extends ControllerParserBase
                 }
                 //Определяю количество страниц после удаления
 
-                $filesCount = $this->_storage_checker->getFilesCount();
+                $filesCount = $this->_inspector->getFilesCount();
                 $filesLimit = $this->_settings->getFilesLimit();
                 $content['status'] = 'success';
                 $content['message'] = 'Удаление прошло успешно';

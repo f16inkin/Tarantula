@@ -22,10 +22,12 @@ use application\parser\interfaces\StorageChecker;
 class FolderChecker implements StorageChecker
 {
     private $_folder;
+    private $_storage;
 
     public function __construct(string $storage)
     {
         $this->_folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login']; //Пользовательская папка
+        $this->_storage = $storage;
         //Если отсутсвует папка хранилище создаст ее. Пока пусть будет, но в планах удалить эту проверку
         //При автоматической установке модуля создавать нужную директорию
         if (!file_exists($storage)){
@@ -56,25 +58,9 @@ class FolderChecker implements StorageChecker
         return true;
     }
 
-    /**
-     * Метод проверяет хранилище (папку/базу данных) и возвращает массив конвертированных в UTF-8 файлов:
-     * ----------------------------------------------------------------------------------------------------------
-     * array = [0 => file_1, 1 => file_2, 2 => file_3]
-     * @return array
-     */
     public function scanStorage():array{
-        //Обрезаю первые два элемента . и ..
-        $files = array_slice(scandir($this->_folder), 2);
-        $convertedFiles = [];
-        //Конвертирую в кодировку UTF-8
-        foreach ($files as $file){
-            if (is_file($this->_folder.'/'.$file)){
-                $convertedFiles[] = mb_convert_encoding($file, "UTF8", "Windows-1251");
-            }else{
-                rmdir($this->_folder.'/'.$file);
-            }
-        }
-        return $convertedFiles;
+        $files = (new XmlReportsHandler($this->_storage))->loadCorrectXml();
+        return $files;
     }
 
     /**

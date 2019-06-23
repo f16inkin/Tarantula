@@ -14,6 +14,11 @@ class XmlReportsHandler extends Model
     {
         parent::__construct();
         $this->_folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login']; //пользовательская папка
+        //Если отсутсвует папка хранилище создаст ее. Пока пусть будет, но в планах удалить эту проверку
+        //При автоматической установке модуля создавать нужную директорию
+        if (!file_exists($storage)){
+            mkdir($storage);
+        }
     }
 
     /**
@@ -117,16 +122,15 @@ class XmlReportsHandler extends Model
      * @param int $is_correct
      * @return array|null
      */
-    public function scanDataBase(int $is_correct){
+    public function scanDataBase(){
         try{
             //Если таблица временных файлов заполнена
             if ($this->fillTable()){
                 //Считываю данные о файлах из БД
                 $query = ("SELECT * FROM `tarantula_temporary`
-                       WHERE `is_correct` = :is_correct AND `user` = :user_id");
+                       WHERE `user` = :user_id");
                 $result = $this->_db->prepare($query);
                 $result->execute([
-                    'is_correct' => $is_correct,
                     'user_id' => $_SESSION['user']['id']
                 ]);
                 if ($result->rowCount() > 0){
@@ -140,19 +144,30 @@ class XmlReportsHandler extends Model
         }
     }
 
+    public function loadXmlFile(string $file_name){
+        libxml_use_internal_errors(true);
+        $simpleXmlElement= simplexml_load_file($this->_folder.'/'.$file_name);
+        libxml_use_internal_errors(false);
+        return $simpleXmlElement;
+    }
+
     /**
      * Метод возвращает массив с объектами simpleXML для дальнейшей их обработки.
      * ---------------------------------------------------------------
      * @return array
      */
     public function loadCorrectXml(){
-        $files = $this->scanDataBase(1);
+        $files = $this->scanDataBase();
         $simpleXmlElements = [];
-        for ($i = 0; $i < count($files); $i++){
-            $simpleXmlElements[$i]['record_id'] = $files[$i]['id']; //id файла в таблцие временных файлов
-            $simpleXmlElements[$i]['file_name'] = $files[$i]['file_name']; //имя файла в таблице временных файлов
-            $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_folder.'/'.$files[$i]['file_name']) ? simplexml_load_file($this->_folder.'/'.$files[$i]['file_name']) : null;
+        libxml_use_internal_errors(true);
+        if (isset($files)){
+            for ($i = 0; $i < count($files); $i++){
+                $simpleXmlElements[$i]['record_id'] = $files[$i]['id']; //id файла в таблцие временных файлов
+                $simpleXmlElements[$i]['file_name'] = $files[$i]['file_name']; //имя файла в таблице временных файлов
+                $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_folder.'/'.$files[$i]['file_name']) ? simplexml_load_file($this->_folder.'/'.$files[$i]['file_name']) : null;
+            }
         }
+        libxml_use_internal_errors(false);
         return $simpleXmlElements;
     }
 
