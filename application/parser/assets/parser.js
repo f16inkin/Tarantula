@@ -249,7 +249,6 @@ const filesLoad = function (files, files_count, files_limit) {
  * Загружает страницу с файлами
  * --------------------------------
  * @param {int} current_page
- * @param {string} checker_id
  */
 function loadPage(current_page) {
     let request = $.ajax({
@@ -269,10 +268,17 @@ function loadPage(current_page) {
             let operator = '-';
             let sessionStart = '-';
             let sessionEnd = '-';
-            let status = value.session.Status;
             switch (value.session.Status) {
-                case 'correct' : text_type = 'success'; break;
-                case 'incorrect' : text_type = 'danger'; break;
+                case 'correct' :
+                    text_type = 'success';
+                    text_icon = 'fa fa-check-circle';
+                    text_status = 'Корректный';
+                    break;
+                case 'incorrect' :
+                    text_type = 'danger';
+                    text_icon = 'fa fa-times-circle';
+                    text_status = 'Не корректный';
+                    break;
             }
             if (value.session.Number != null){
                 sessionNumber = value.session.Number;
@@ -299,7 +305,7 @@ function loadPage(current_page) {
                     <td>${operator}</td>
                     <td>
                         <div class='text-${text_type}'>
-                            <i class="fa fa-check-circle"></i> ${status}
+                            <i class='${text_icon}'></i> ${text_status}
                         </div>
                     </td>
                 </tr>`).hide().fadeIn(1000);
@@ -355,7 +361,6 @@ parser_content.on('click', '.page-item', function () {
 /**
  * Создает навигатор. И активирует выбранную кнопку
  * ------------------------------------------------
- * @param {string} checker_id
  * @param {int} page
  */
 function buildPagination(page) {
@@ -494,7 +499,7 @@ function reportsUpload() {
 function fillFileContainer() {
     let form = $('#upload-reports-form');
     let input = form.find('input');
-    let files_place = $('#parser-content').find($('#files_container'));
+    let files_place = parser_content.find($('#files_container'));
     let card = parser_content.find($('.card'));
     let files = input[0].files;
     files_place.empty();
