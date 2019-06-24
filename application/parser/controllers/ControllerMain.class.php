@@ -46,10 +46,27 @@ class ControllerMain extends ControllerParserBase
      */
     public function actionIndex(){
         $this->loadPage('/parser/ajax/successed/main/main.page');
-
     }
 
     public function actionFirstStep(){
+        $content['upload_limit'] = ini_get('max_file_uploads');
+        $this->loadPage('/parser/ajax/successed/main/step-1/step-1.page', $content);
+    }
+
+    public function actionSecondStep(){
+        $content = $this->scanStorage();
+        if (isset($content)){
+            $this->loadPage('/parser/ajax/successed/main/step-2/step-2.page', $content);
+        }else{
+
+        }
+
+    }
+
+    /**
+     *
+     */
+    public function actionGetStarted(){
         $content = $this->scanStorage();
         if (isset($content)){
             $this->loadPage('/parser/ajax/successed/main/step-2/step-2.page', $content);
@@ -70,7 +87,7 @@ class ControllerMain extends ControllerParserBase
             $handled = $xmlSectionHandlesFactory->handle($SXE);
             $content['session'] = $handled->_sessions;
             $content['tanks'] = $handled->_tanks;
-            $this->loadPage('/parser/ajax/successed/main/step-2/session-information.page', $content);
+            $this->loadPage('/parser/ajax/successed/main/step-2/correct.page', $content);
         }else{
             $this->loadPage('/parser/ajax/successed/main/step-2/incorrect.page');
         }

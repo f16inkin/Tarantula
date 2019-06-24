@@ -86,6 +86,7 @@ class ControllerStorageInspector extends ControllerParserBase
      */
     public function actionDisplaceFiles(){
         $files = $_POST['file_names'];
+        $sessionHandler = new XmlSessionsSectionHandler();
         //Если известны удаляемые файлы
         if (!empty($files)){
             //Определяю количество страниц до удаления
@@ -94,16 +95,36 @@ class ControllerStorageInspector extends ControllerParserBase
             $quantity = $_POST['quantity'];
             //Вычисляю файлы которые нужно загрузить на страницу, номер страницы, а так же макрер для построения навигатора
             $uploadedFiles = $this->_inspector->loadFiles($quantity, $currentPage);
+
+            $data = [];
+            //Если в массиве присутсвуют SXE элементы в ключе data
+            if (key_exists('data', $uploadedFiles)){
+                $i = 0;
+                foreach ($uploadedFiles['data'] as $file){
+                    $i ++;
+                    //Важно проверить наличии SXE, иначе если файл битый или некорректный будет выбрасывать ошибку
+                    if (isset($file['simpleXmlElement'])){
+                        $data[$i]['session'] = $sessionHandler->get($file['simpleXmlElement']);
+                        $data[$i]['session']['Status'] = 'correct';
+                    }
+                    else{
+                        $data[$i]['session'] = null;
+                        $data[$i]['session']['Status'] = 'incorrect';
+                    }
+
+                    $data[$i]['file_name'] = $file['file_name'];
+                }
+                $uploadedFiles['data'] = $data;
+            }
             //Если все файлы успешно удалены с хранилища
             if ($this->_inspector->deleteFiles($this->_settings->getStorage(), $files)){
                 //Определяю количество страниц после удаления и в случае если их стало меньще посылаю маркер о том,
-                // что нужно перегрузить навигатор
+                //что нужно перегрузить навигатор
                 $pagesCountAfter = $this->_inspector->getPagesCount();
                 if ($pagesCountAfter < $pagesCountBefore){
                     $uploadedFiles['build'] = true;
                 }
                 //Определяю количество страниц после удаления
-
                 $filesCount = $this->_inspector->getFilesCount();
                 $filesLimit = $this->_settings->getFilesLimit();
                 $content['status'] = 'success';

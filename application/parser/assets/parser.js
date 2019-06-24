@@ -94,10 +94,10 @@ const showMainData = function () {
  * Содержание определаяется в контроллере и подгружается в респонсе. Дальнейшие действия определяются скриптом
  * подгруженной страницы
  */
-const showFirstStep = function () {
+const getStarted = function () {
     let request = $.ajax({
         type: "POST",
-        url: "/parser/first-step",
+        url: "/parser/get-started",
         cache: false
     });
     request.done(function (response) {
@@ -111,6 +111,24 @@ const showFirstStep = function () {
 
 /**
  * Шаг №1. Удаляет строки/файлы из пользовательской директории/таблицы
+ */
+const firstStep = function () {
+    let request = $.ajax({
+        type: "POST",
+        url: "/parser/progress-line/first-step",
+        cache: false
+    });
+    request.done(function (response) {
+        //Очистить рабочую область, работает и без очистки
+        parser_content.empty();
+        //Загрузить разметку страницы
+        parser_content.html(response);
+    });
+    return false;
+};
+
+/**
+ *
  */
 const deleteFiles = function (){
     let file_names = [];    //Имена файлов из директории + расширение
@@ -196,7 +214,19 @@ const filesLoad = function (files, files_count, files_limit) {
         let operator = '-';
         let sessionStart = '-';
         let sessionEnd = '-';
-        if (value.session != null){
+        switch (value.session.Status) {
+            case 'correct' :
+                text_type = 'success';
+                text_icon = 'fa fa-check-circle';
+                text_status = 'Корректный';
+                break;
+            case 'incorrect' :
+                text_type = 'danger';
+                text_icon = 'fa fa-times-circle';
+                text_status = 'Не корректный';
+                break;
+        }
+        if (value.session.Number != null){
             sessionNumber = value.session.Number;
             operator = value.session.Operator;
             sessionStart = value.session.StartDateTime;
@@ -220,13 +250,8 @@ const filesLoad = function (files, files_count, files_limit) {
                     <td>${sessionEnd}</td>
                     <td>${operator}</td>
                     <td>
-                        <button class="btn btn-primary btn-sm">
-                             <i class="fa fa-search" aria-hidden="true"></i> Посмотреть файлы
-                        </button> 
-                    </td>
-                    <td>
-                        <div class="text-success">
-                            <i class="fa fa-check-circle"></i> Корректный
+                        <div class='text-${text_type}'>
+                            <i class='${text_icon}'></i> ${text_status}
                         </div>
                     </td>
                 </tr>`).hide().fadeIn(1000);
@@ -241,7 +266,7 @@ const filesLoad = function (files, files_count, files_limit) {
      */
 
     if (files_count === 0){
-        setTimeout(showFirstStep, 1000);
+        setTimeout(getStarted, 1000);
     }
 };
 
@@ -253,7 +278,7 @@ const filesLoad = function (files, files_count, files_limit) {
 function loadPage(current_page) {
     let request = $.ajax({
         type: "POST",
-        url: "/parser/inspector",
+        url: "/parser/inspector/inspect",
         data: {"current_page": current_page},
         cache: false
     });
@@ -441,7 +466,7 @@ function reportsUpload() {
                 </div>`;
             let handle_button =
                 `<div class="parser-nav-bar-container">
-                    <button class='btn btn-primary btn-sm' onclick='showFirstStep(); return false;'>
+                    <button class='btn btn-primary btn-sm' onclick='getStarted(); return false;'>
                     <i class='fa fa-chevron-circle-right' aria-hidden='true'></i> Обработать</button>
                 </div>`;
             let upload_button =
@@ -544,6 +569,11 @@ function toggleStage(stage) {
     $('#'+stage).removeClass('inactive').addClass('active');
 }
 
+/**
+ * Загружает информацию по смене, емкостям, отпуску, приему считанную из XML файла
+ * -------------------------------------------------------------------------------
+ * @param {string} file_name
+ */
 function loadSessionData(file_name) {
     let subdivision_id = 4;
     let request = $.ajax({
@@ -571,22 +601,5 @@ function loadSessionData(file_name) {
 }
 
 function uploadToDatabase() {
-    let subdivision_id = 4;
-    let request = $.ajax({
-        type: "POST",
-        url: "/parser/handler/handle/" + subdivision_id,
-        cache: false,
-        beforeSend:function(){
-            showFlashWindow('Загрузка', 'success_flash_window');
-        },
-        success:function () {
-            hideFlashWindow('success_flash_window');
-        }
-    });
-    request.done(function (response) {
-        //Очистить рабочую область, работает и без очистки
-        parser_content.empty();
-        //Загрузить разметку страницы
-        parser_content.html(response);
-    });
+
 }
