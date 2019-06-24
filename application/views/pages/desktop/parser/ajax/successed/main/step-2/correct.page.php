@@ -6,29 +6,25 @@
     <p><?=$content['session']['StartDateTime'];?></p>
     <p><?=$content['session']['EndDateTime'];?></p>
     <p><?=$content['session']['Operator'];?></p>
-
-
-
-
-
 </div>
-<div style="text-align: center;"><h5>Емкости</h5></div>
+
 <div>
+    <div style="text-align: center;"><h5>Емкости</h5></div>
     <table cellpadding="1" cellspacing="1" border="0" class="table-mine  full-width box-shadow--2dp">
         <thead>
-        <tr class="tr-table-header">
-            <th width="3%">Емкость</th>
-            <th width="">Топливо</th>
-            <th width="">Начальный объем</th>
-            <th width="">Принято</th>
-            <th width="">Отпуск</th>
-            <th width="">Расчетный остаток</th>
-            <th width="">Фактический остаток</th>
-            <th width="">Излишки</th>
-            <th width="">Температура</th>
-            <th width="">Плотность</th>
-            <th width="">Масса</th>
-        </tr>
+            <tr class="tr-table-header">
+                <th>Емкость</th>
+                <th>Топливо</th>
+                <th>Начальный объем</th>
+                <th>Принято</th>
+                <th>Отпуск</th>
+                <th>Расчетный остаток</th>
+                <th>Фактический остаток</th>
+                <th>Излишки</th>
+                <th>Температура</th>
+                <th>Плотность</th>
+                <th>Масса</th>
+            </tr>
         </thead>
         <tbody id="table-content">
         <?php foreach ($content['tanks'] as $tankFuel) :?>
@@ -46,6 +42,23 @@
                 <td><?=$tankFuel['EndMass'];?></td>
             </tr>
         <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+<div>
+    <div style="text-align: center;"><h5>Отпуск топлива</h5></div>
+    <table cellpadding="1" cellspacing="1" border="0" class="table-mine  full-width box-shadow--2dp">
+        <thead>
+            <tr class="tr-table-header">
+                <th>Вид оплаты</th>
+                <th>Аи-92</th>
+                <th>Аи-95</th>
+                <th>Аи-98</th>
+                <th>Дт Евро</th>
+            </tr>
+        </thead>
+        <tbody>
+
         </tbody>
     </table>
 </div>

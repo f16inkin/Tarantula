@@ -41,6 +41,12 @@
             <button class="btn btn-success btn-sm" onclick="reportsUpload(); return false;">
                 <i class="fa fa-upload" aria-hidden="true"></i> Загрузить</button>
         </div>
+        <?php if(isset($content['files'])):?>
+        <div class="parser-nav-bar-container">
+            <button class='btn btn-primary btn-sm' onclick='secondStep(); return false;'>
+                <i class='fa fa-chevron-circle-right' aria-hidden='true'></i> Обработать</button>
+        </div>
+        <?php endif; ?>
     </div>
 </form>
 <div id="files_container">
@@ -54,9 +60,15 @@
 <div id="parser-workplace">
     <div style="text-align: center;">Шаг №1. Загрузка файлов.</div>
     <div class="card" style="padding: 5px;">
-        <div class="alert alert-danger" role="alert">
-            В директории отсутствуют файлы. Лимит разовой загрузки состоявляет <b><?=$content['upload_limit'];?> файл(ов)</b>
-        </div>
+        <?php if(isset($content['files'])):?>
+            <div class="alert alert-primary" role="alert">
+                В директории есть файлы. Файл(ов): <b><?=$content['files']['files_count'];?> / </b>Лимит разовой обработки: <b><?=$content['files']['files_limit'];?></b>
+            </div>
+        <?php else: ?>
+            <div class="alert alert-danger" role="alert">
+                В директории отсутствуют файлы. Лимит разовой загрузки состоявляет <b><?=$content['upload_limit'];?> файл(ов)</b>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -69,4 +81,6 @@
     title.text('Загрузка файлов');
     //Переключаю состояния этапов
     toggleStage('stage_1');
+    //Инициализирую линию прогресса
+    initProgressLine();
 </script>

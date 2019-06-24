@@ -128,7 +128,7 @@ class XmlTanksSectionHandler extends ModelParserBase implements iXmlHandler
         //Шаг №2
         foreach ($sessionData as $item){
             $TankNum = (string)$item['TankNum'];
-            $sessionData[$TankNum]['Overage'] = $item['EndFactVolume'] - $item['EndFuelVolume'];
+            $sessionData[$TankNum]['Overage'] = round(($item['EndFactVolume'] - $item['EndFuelVolume']),2);
         }
         /*
          * Собираю все в выходной массив.

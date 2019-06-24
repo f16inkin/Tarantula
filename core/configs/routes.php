@@ -177,6 +177,26 @@ return[
             'arguments' => 0
         ]
     ],
+    [
+        '^parser/progress-line/second-step$' => [
+            'construct' => false,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerMain',
+            'action' => 'SecondStep',
+            'arguments' => 0
+        ]
+    ],
+    [
+        '^parser/progress-line/third-step$' => [
+            'construct' => false,
+            'module' => 'parser',
+            'folder' => 'application',
+            'controller' => 'ControllerMain',
+            'action' => 'ThirdStep',
+            'arguments' => 0
+        ]
+    ],
     /**
      * Инспектор
      * -----------------------------------------------------------------

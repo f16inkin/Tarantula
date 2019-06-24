@@ -49,6 +49,7 @@ class ControllerMain extends ControllerParserBase
     }
 
     public function actionFirstStep(){
+        $content['files'] = $this->scanStorage();
         $content['upload_limit'] = ini_get('max_file_uploads');
         $this->loadPage('/parser/ajax/successed/main/step-1/step-1.page', $content);
     }
@@ -58,15 +59,19 @@ class ControllerMain extends ControllerParserBase
         if (isset($content)){
             $this->loadPage('/parser/ajax/successed/main/step-2/step-2.page', $content);
         }else{
-
+            $content['upload_limit'] = ini_get('max_file_uploads');
+            $this->loadPage('/parser/ajax/successed/main/step-1/step-1.page', $content);
         }
+    }
 
+    public function actionThirdStep(){
+        $this->loadPage('/parser/ajax/successed/main/step-3/step-3.page');
     }
 
     /**
      *
      */
-    public function actionGetStarted(){
+    /*public function actionGetStarted(){
         $content = $this->scanStorage();
         if (isset($content)){
             $this->loadPage('/parser/ajax/successed/main/step-2/step-2.page', $content);
@@ -74,7 +79,7 @@ class ControllerMain extends ControllerParserBase
             $content['upload_limit'] = ini_get('max_file_uploads');
             $this->loadPage('/parser/ajax/successed/main/step-1/step-1.page', $content);
         }
-    }
+    }*/
 
     public function actionGetSessionData(){
         $subdivisionId = $_POST['subdivision_id'];

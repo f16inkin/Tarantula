@@ -69,6 +69,18 @@ parser_controls.on('click', function () {
 parser_content.on('click', '#stage_1', function () {
     firstStep();
 });
+/**
+ * Обрабатывает нажатие на вторую кнопку "Линии прогресса"
+ */
+parser_content.on('click', '#stage_2', function () {
+    secondStep();
+});
+/**
+ * Обрабатывает нажатие на третью кнопку "Линии прогресса"
+ */
+parser_content.on('click', '#stage_3', function () {
+    thirdStep();
+});
 /*
  * --------------------------------------------------------------------------------------------------------------------
  *                                                  Функции AJAX
@@ -94,13 +106,9 @@ const showMainData = function () {
     });
 };
 
-/**
- * Подгружает контент для первого шага. Только основную разметку без внутреннего содержимого.
- * Содержание определаяется в контроллере и подгружается в респонсе. Дальнейшие действия определяются скриптом
- * подгруженной страницы
- */
+
 const getStarted = function () {
-    let request = $.ajax({
+    /*let request = $.ajax({
         type: "POST",
         url: "/parser/get-started",
         cache: false
@@ -110,12 +118,20 @@ const getStarted = function () {
         parser_content.empty();
         //Загрузить разметку страницы
         parser_content.html(response);
-    });
-
+    });*/
+    let stage = localStorage.getItem("progressStage");
+    switch (stage) {
+        case "stage_1": firstStep(); break;
+        case "stage_2": secondStep(); break;
+        case "stage_3": thirdStep(); break;
+        default: firstStep(); break;
+    }
 };
 
 /**
- * Шаг №1. Удаляет строки/файлы из пользовательской директории/таблицы
+ * Шаг №1
+ * ------------------
+ * @returns {boolean}
  */
 const firstStep = function () {
     let request = $.ajax({
@@ -129,6 +145,48 @@ const firstStep = function () {
         //Загрузить разметку страницы
         parser_content.html(response);
     });
+    localStorage.setItem('progressStage', 'stage_1');
+    return false;
+};
+
+/**
+ * Шаг №2
+ * ------------------
+ * @returns {boolean}
+ */
+const secondStep = function () {
+    let request = $.ajax({
+        type: "POST",
+        url: "/parser/progress-line/second-step",
+        cache: false
+    });
+    request.done(function (response) {
+        //Очистить рабочую область, работает и без очистки
+        parser_content.empty();
+        //Загрузить разметку страницы
+        parser_content.html(response);
+    });
+    localStorage.setItem('progressStage', 'stage_2');
+    return false;
+};
+/**
+ * Шаг №3
+ * ------------------
+ * @returns {boolean}
+ */
+const thirdStep = function () {
+    let request = $.ajax({
+        type: "POST",
+        url: "/parser/progress-line/third-step",
+        cache: false
+    });
+    request.done(function (response) {
+        //Очистить рабочую область, работает и без очистки
+        parser_content.empty();
+        //Загрузить разметку страницы
+        parser_content.html(response);
+    });
+    localStorage.setItem('progressStage', 'stage_3');
     return false;
 };
 
@@ -471,7 +529,7 @@ function reportsUpload() {
                 </div>`;
             let handle_button =
                 `<div class="parser-nav-bar-container">
-                    <button class='btn btn-primary btn-sm' onclick='getStarted(); return false;'>
+                    <button class='btn btn-primary btn-sm' onclick='secondStep(); return false;'>
                     <i class='fa fa-chevron-circle-right' aria-hidden='true'></i> Обработать</button>
                 </div>`;
             let upload_button =

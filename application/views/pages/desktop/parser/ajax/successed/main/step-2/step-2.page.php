@@ -13,7 +13,7 @@
         <div class="after"></div>
         <div class="bulletTrack table">
             <div  class="slide tableCell">
-                <span id="stage_1" class="active"><i class="fa fa-folder"></i></span>
+                <span id="stage_1"><i class="fa fa-folder"></i></span>
             </div>
             <div class="slide tableCell">
                 <span id="stage_2"><i class="fa fa-file-code"></i></span>
@@ -90,7 +90,7 @@
 
 <!-- Modal -->
 <div class="modal fade bd-example-modal-lg" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered " role="document" style="min-width: 900px;">
+    <div class="modal-dialog modal-dialog-centered " role="document" style="max-width: 1100px;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
