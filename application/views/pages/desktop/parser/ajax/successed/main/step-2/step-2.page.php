@@ -13,7 +13,7 @@
         <div class="after"></div>
         <div class="bulletTrack table">
             <div  class="slide tableCell">
-                <span id="stage_1" class="active" onclick="firstStep();"><i class="fa fa-folder"></i></span>
+                <span id="stage_1" class="active"><i class="fa fa-folder"></i></span>
             </div>
             <div class="slide tableCell">
                 <span id="stage_2"><i class="fa fa-file-code"></i></span>
@@ -122,9 +122,5 @@
     toggleStage('stage_2');
     //Инициализирую линию прогресса
     initProgressLine();
-    const stage_1 = parser_content.find($('#stage_1'));// ;
-    let parser_nav_bar1 = parser_content.find($('.parser-nav-bar'));
-    console.log(stage_1);
-    console.log(parser_nav_bar1);
 </script>
 
