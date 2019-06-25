@@ -24,11 +24,11 @@ class ControllerMain extends ControllerParserBase
     private function scanStorage(){
         $storageInspector = new StorageInspector($this->_settings->getStorage(), $this->_settings->getFilesPerPage());
         if($storageInspector->checkFolder()){
-            $files = $storageInspector->scanStorage();
-            if (!empty($files)){
+            $files_count = $storageInspector->getFilesCount();//scanStorage();
+            if ($files_count > 0){
                 //Временная переменная для обозначения лимита файлов в пользовательской директории
                 $files_limit = $this->_settings->getFilesLimit();
-                $files_count = count($files);
+                //$files_count = count($files);
                 $files_per_page = $this->_settings->getFilesPerPage();
                 $content['files_count'] = $files_count;
                 $content['allow_pagination'] = ($files_count > $files_per_page) ? true : false;
