@@ -21,7 +21,7 @@ class StorageInspector
      * Pagination constructor.
      * Создает объект постраничного навигатора.
      * --------------------------------------
-     * @param StorageChecker $storage_checker
+     * @param string $storage
      * @param int $files_per_page
      */
     public function __construct(string $storage, int $files_per_page)
@@ -63,11 +63,13 @@ class StorageInspector
      * Метод не используется в цикле. А значит достаточно разового создания обработчика файлов по нужде его
      * использования. В конструкторе объект XmlReportsHandler потому и не создается. В метод аргументом он тоже
      * не передается через интерфейс, потому что
+     * ---------------------------------------------------------------------------------------------------------
+     * @param int $start_file - начальный файл
+     * @param int $quantity - количесвто подгружаемых файлов
      * @return array может быть толькоодин обработчик xml отчетов
      */
-    public function scanStorage($start, $end) : array {
-        //$files = (new XmlReportsHandler($this->_storage))->loadCorrectXml();
-        $files = (new XmlReportsHandler($this->_storage))->loadXmlPage($start,$end);
+    public function scanStorage(int $start_file, int $quantity) : array {
+        $files = (new XmlReportsHandler($this->_storage))->loadXmlPage($start_file, $quantity);
         return $files;
     }
 
@@ -76,8 +78,7 @@ class StorageInspector
      * ------------------------------------------------------------------
      * @return int
      */
-    public function getFilesCount(): int
-    {
+    public function getFilesCount() : int {
         return count(array_slice(scandir($this->_folder), 2));
     }
 
@@ -94,11 +95,12 @@ class StorageInspector
 
     /**
      * Загружает файлы указанной страницы.
+     * -----------------------------------
      * @param int $current_page
      * @return array
      */
     public function loadPage(int $current_page) : array {
-        //Вычисляю первый файл в массиве
+        //Вычисляю первый файл на загружаемой странице
         $startFile = ($current_page - 1) * $this->_files_per_page;
         //Получаю файлы из хранилища в массив
         $page = $this->scanStorage($startFile, $this->_files_per_page);
