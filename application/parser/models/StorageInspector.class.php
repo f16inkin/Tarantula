@@ -65,8 +65,9 @@ class StorageInspector
      * не передается через интерфейс, потому что
      * @return array может быть толькоодин обработчик xml отчетов
      */
-    public function scanStorage() : array {
-        $files = (new XmlReportsHandler($this->_storage))->loadCorrectXml();
+    public function scanStorage($start, $end) : array {
+        //$files = (new XmlReportsHandler($this->_storage))->loadCorrectXml();
+        $files = (new XmlReportsHandler($this->_storage))->loadXmlPage($start,$end);
         return $files;
     }
 
@@ -97,12 +98,10 @@ class StorageInspector
      * @return array
      */
     public function loadPage(int $current_page) : array {
-        //Получаю файлы из хранилища в массив
-        $files = $this->scanStorage();
         //Вычисляю первый файл в массиве
         $startFile = ($current_page - 1) * $this->_files_per_page;
-        //Получаю массив файлов, которые будут выведены на страницу
-        $page = array_slice($files, $startFile, $this->_files_per_page);
+        //Получаю файлы из хранилища в массив
+        $page = $this->scanStorage($startFile, $this->_files_per_page);
         return $page;
     }
 
@@ -118,7 +117,7 @@ class StorageInspector
         //Массив с именами подгружаемых файлов
         $loadedFiles = [];
         //Сканирую хранилище на наличие файлов
-        $files = $this->scanStorage();
+        $files = $this->scanStorage(1,10);
         /**
          * Разбиваю массив файлов, на страницы
          * $stack = [0 => [file1, file2, file3], 1 => [file4, file5, file6]];

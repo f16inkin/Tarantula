@@ -171,4 +171,32 @@ class XmlReportsHandler extends Model
         return $simpleXmlElements;
     }
 
+    //Test method
+    public function loadXmlPage($start_file, $end_file){
+        //Выбираю только нужные 10 файлов не подгружая всю директорию
+        $query = ("SELECT * FROM `tarantula_temporary`
+                       WHERE `user` = :user_id LIMIT :start_file,:end_file");
+        $result = $this->_db->prepare($query);
+        $result->execute([
+            'user_id' => $_SESSION['user']['id'],
+            'start_file' => $start_file,
+            'end_file' => $end_file
+        ]);
+        if ($result->rowCount() > 0){
+            $files = $result->fetchAll();
+            //return $files;
+        }
+        $simpleXmlElements = [];
+        libxml_use_internal_errors(true);
+        if (isset($files)){
+            for ($i = 0; $i < count($files); $i++){
+                $simpleXmlElements[$i]['record_id'] = $files[$i]['id']; //id файла в таблцие временных файлов
+                $simpleXmlElements[$i]['file_name'] = $files[$i]['file_name']; //имя файла в таблице временных файлов
+                $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_folder.'/'.$files[$i]['file_name']) ? simplexml_load_file($this->_folder.'/'.$files[$i]['file_name']) : null;
+            }
+        }
+        libxml_use_internal_errors(false);
+        return $simpleXmlElements;
+    }
+
 }
