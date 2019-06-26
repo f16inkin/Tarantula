@@ -31,7 +31,7 @@ class XmlReportsHandler extends Model
         //Сканирую директорию на наличие XML отчетов
         $files = array_slice(scandir($this->_folder),2);
         //Если директория пуста, верну null
-        if (empty($files)){
+        /*if (empty($files)){
             return null;
         }
         $dividedFiles= [];
@@ -43,16 +43,18 @@ class XmlReportsHandler extends Model
          * определяются как incorrect
          *
          */
-        for ($i = 0; $i < count($files); $i++){
+        /*for ($i = 0; $i < count($files); $i++){
             $fileName = $files[$i];
-            $isCorrect = simplexml_load_file($this->_folder.'/'.$files[$i]) ? true : false;
+            //$isCorrect = simplexml_load_file($this->_folder.'/'.$files[$i]) ? true : false;
             $dividedFiles[$i]['fileName'] = $fileName;
-            $dividedFiles[$i]['isCorrect'] = $isCorrect ? 1 : 0;
+            //$dividedFiles[$i]['isCorrect'] = $isCorrect ? 1 : 0;
 
         }
         //Возвращаю обработку ошибок в стандартное положение.
         libxml_use_internal_errors(false);
-        return $dividedFiles;
+        return $dividedFiles;*/
+        return $files;
+
     }
 
     /**
@@ -156,7 +158,7 @@ class XmlReportsHandler extends Model
      * ---------------------------------------------------------------
      * @return array
      */
-    public function loadCorrectXml(){
+    /*public function loadCorrectXml(){
         $files = $this->scanDataBase();
         $simpleXmlElements = [];
         libxml_use_internal_errors(true);
@@ -169,35 +171,32 @@ class XmlReportsHandler extends Model
         }
         libxml_use_internal_errors(false);
         return $simpleXmlElements;
-    }
+    }*/
 
-    //Test method
+    //Данный метод загружает только одну страницу!!! От этого нужно и идти
     public function loadXmlPage(int $start_file, int $quantity){
         //Выбираю только нужное количесвто файлов не подгружая всю директорию
-        $query = ("SELECT * FROM `tarantula_temporary`
-                       WHERE `user` = :user_id LIMIT :start_file, :quantity");
-        $result = $this->_db->prepare($query);
-        $result->execute([
-            'user_id' => $_SESSION['user']['id'],
-            'start_file' => $start_file,
-            'quantity' => $quantity
-        ]);
-        if ($result->rowCount() > 0){
-            $files = $result->fetchAll();
-        }
-        //Подулеит то что выше и ниже этого, на две функции
+        $files = $this->scanStorage();
+
         $simpleXmlElements = [];
-        libxml_use_internal_errors(true);
         if (isset($files)){
-            //Не уверен, но если оставить в определении цикла count($files), то с каждой итерацией будет выполнятся count
+            libxml_use_internal_errors(true);
+            //Данный перебор занимает очень много времени. На данный момент работаю с 500 файлами.
+            $end_file = $start_file + $quantity;
             $files_count = count($files);
-            for ($i = 0; $i < $files_count; $i++){
-                $simpleXmlElements[$i]['record_id'] = $files[$i]['id']; //id файла в таблцие временных файлов
-                $simpleXmlElements[$i]['file_name'] = $files[$i]['file_name']; //имя файла в таблице временных файлов
-                $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_folder.'/'.$files[$i]['file_name']) ? simplexml_load_file($this->_folder.'/'.$files[$i]['file_name']) : null;
+            if ($end_file > $files_count){
+                $end_file = $files_count;
             }
+            for ($i = $start_file; $i < $end_file; $i++){
+                $isCorrect = simplexml_load_file($this->_folder.'/'.$files[$i]) ? true : false;
+                //$simpleXmlElements[$i]['record_id'] = $files[$i]['id']; //id файла в таблцие временных файлов
+                $simpleXmlElements[$i]['file_name'] = $files[$i];//['fileName']; //имя файла в таблице временных файлов
+                $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_folder.'/'.$files[$i]) ? simplexml_load_file($this->_folder.'/'.$files[$i]) : null;
+                //$simpleXmlElements[$i]['isCorrect'] = $isCorrect ? 1 : 0;
+            }
+            libxml_use_internal_errors(false);
         }
-        libxml_use_internal_errors(false);
+
         return $simpleXmlElements;
     }
 

@@ -115,54 +115,44 @@ class StorageInspector
      * @param int $current_page - страница с которой удалялись файлы
      * @return array
      */
-    public function loadFiles(int $quantity, int $current_page) : array {
-        //Массив с именами подгружаемых файлов
+    public function loadFiles(int $current_page, int $quantity, int $pages_count) : array {
+        $startFile = ($current_page - 1) * $this->_files_per_page;
+        /**
+         * Здесь уже идет подгрузка страницы после того как файлы были удалены.
+         * Теперь изходя из количества удаленных файлов $quantity, я должен определить подгружаемые файлы.
+         * Это $quantity последних
+         */
         $loadedFiles = [];
-        //Сканирую хранилище на наличие файлов
-        $files = $this->scanStorage(1,10);
-        /**
-         * Разбиваю массив файлов, на страницы
-         * $stack = [0 => [file1, file2, file3], 1 => [file4, file5, file6]];
-         */
-        $stack = array_chunk($files, $this->_files_per_page);
-        /**
-         * Ключи для формирования новых индексов массива в соответсвии со страницами
-         * $stack = [1 => [file1, file2, file3], 2 => [file4, file5, file6];
-         */
-        $keys = range(1, count($stack));
-        //Переиндексирую ключи
-        $stack = array_combine($keys, $stack);
-        //Нахожу последний инлекс в массиве равный последней странице
-        end($stack);
-        $lastPage = key($stack);
-        //Если файлы удаляются с последней страницы
-        if ($current_page == $lastPage){
-            //Если количество удаляемых файлов = количеству имеющихся на странице / полная очистка страницы
-            if ($quantity == count($stack[$lastPage])){
+        $page = $this->scanStorage($startFile, $this->_files_per_page);
+        $last_page = $pages_count; //Номер последней страницы
+        //Если страница последняя
+        if ($current_page === $last_page){
+            //Если удаляются все файлы на странице
+            if (empty($page)){
                 $nextPageNumber = $current_page-1;
-                //И если страница не первая, так как 1 - 1 = 0
+                //Если страница не первая
                 if ($nextPageNumber > 0){
-                    $next_page = $stack[$nextPageNumber];
-                    $loadedFiles['data'] = array_slice($next_page, 0, count($next_page));
-                    $loadedFiles['page'] = $nextPageNumber;//
-                    $loadedFiles['build'] = true;
+                    $loadedFiles['data'] = $this->scanStorage($startFile-$this->_files_per_page, $this->_files_per_page);; //Данных быть не может
+                    $loadedFiles['page'] = $nextPageNumber; //Следующая страница
+                    $loadedFiles['build'] = true; //Перестраиваем навигатор
+                }
+                //Если страница первая, но и последняя
+                else{
+                    $loadedFiles['data'] = [];
+                    $loadedFiles['page'] = $nextPageNumber; //Следующая страница
+                    $loadedFiles['build'] = true; //Перестраиваем навигатор
                 }
             }
-            //Если удаляются не все файлы со страницы, а лишь часть, то остаюсь на этой же странице
+            //Если удаляются не все файлы со страницы
             else{
-                $loadedFiles['page'] = $current_page;
+                $loadedFiles['page'] = $current_page; //Остается текущая страница
+                $loadedFiles['build'] = false;  //Навигатор не перестраивается
             }
         }
-        //Удаление с любой не первой и последней страницы
         else{
-            $previousPage = $stack[$current_page+1];
-            //Если осталось на предэдущей странице 3 файла, а я удаляю 4, тоесть больше чем может подгрузиться.
-            // То навигатор нужн оперестроить
-            if (count($previousPage) <= $quantity ){
-                $loadedFiles['build'] = true;
-            }
-            $loadedFiles['data'] = array_slice($previousPage, 0, $quantity);
-            $loadedFiles['page'] = $current_page;
+            $loadedFiles['data'] = array_slice($page, -$quantity);
+            $loadedFiles['page'] = $current_page; //Остается текущая страница
+            $loadedFiles['build'] = true;  //Навигатор не перестраивается
         }
         return $loadedFiles;
     }
