@@ -51,15 +51,17 @@ class ControllerMain extends ControllerParserBase
     public function actionFirstStep(){
         $content['files'] = $this->scanStorage();
         $content['upload_limit'] = ini_get('max_file_uploads');
+        $content['max_file_size'] = $this->_settings->getUploadFileMaxSize();
         $this->loadPage('/parser/ajax/successed/main/step-1/step-1.page', $content);
-    }
 
+    }
     public function actionSecondStep(){
         $content = $this->scanStorage();
         if (isset($content)){
             $this->loadPage('/parser/ajax/successed/main/step-2/step-2.page', $content);
         }else{
             $content['upload_limit'] = ini_get('max_file_uploads');
+            $content['max_file_size'] = $this->_settings->getUploadFileMaxSize();
             $this->loadPage('/parser/ajax/successed/main/step-1/step-1.page', $content);
         }
     }

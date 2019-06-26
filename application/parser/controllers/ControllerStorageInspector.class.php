@@ -85,49 +85,6 @@ class ControllerStorageInspector extends ControllerParserBase
      * Удаляет файлы из пользовательской директории. Если в директории еще остались файлы, то подгружает их.
      */
     public function actionDisplaceFiles(){
-        $files = $_POST['file_names'];
-        $sessionHandler = new XmlSessionsSectionHandler();
-        $pagesCount = $this->_inspector->getPagesCount();
-        //Если известны удаляемые файлы
-        if (!empty($files)){
-            if ($this->_inspector->deleteFiles($this->_settings->getStorage(), $files)){
-                $currentPage = $_POST['current_page'];
-                $deletedQuantity = $_POST['quantity'];
-                $uploadedFiles = $this->_inspector->loadFiles( $currentPage, $deletedQuantity, $pagesCount);
-            }
-            $data = [];
-            //Если в массиве присутсвуют SXE элементы в ключе data
-            if (key_exists('data', $uploadedFiles)){
-                $i = 0;
-                foreach ($uploadedFiles['data'] as $file){
-                    $i ++;
-                    //Важно проверить наличии SXE, иначе если файл битый или некорректный будет выбрасывать ошибку
-                    if (isset($file['simpleXmlElement'])){
-                        $data[$i]['session'] = $sessionHandler->get($file['simpleXmlElement']);
-                        $data[$i]['session']['Status'] = 'correct';
-                    }
-                    else{
-                        $data[$i]['session'] = null;
-                        $data[$i]['session']['Status'] = 'incorrect';
-                    }
 
-                    $data[$i]['file_name'] = $file['file_name'];
-                }
-                $uploadedFiles['data'] = $data;
-            }
-            //Определяю количество страниц после удаления
-            $filesCount = $this->_inspector->getFilesCount();
-            $filesLimit = $this->_settings->getFilesLimit();
-            $content['data']['uploaded_files'] = $uploadedFiles;
-            $content['data']['files_limit'] = $filesLimit;
-            $content['data']['files_count'] = $filesCount;
-        }else{
-            //Примерный вид ответа
-            $content['status'] = 'fail';
-            $content['message'] = 'Ошибка при обработке хранилища. Файлы не найдены';
-            $content['data'] = [];
-        }
-        //В итоге верну такой ответ в виде JSON
-        echo json_encode($content);
     }
 }

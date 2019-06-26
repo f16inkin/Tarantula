@@ -8,15 +8,16 @@ class ReportsUploader
 {
     private $_valid_types = ['xml', 'txt']; //белый список
     private $_upload_folder;                //пользовательская директория
-    private $_file_size_limit = 32000;      //максимальный размер загружаемого файла
+    private $_file_size_limit;      //максимальный размер загружаемого файла
 
     /**
      * ReportsUploader constructor.
      * @param string $storage
      */
-    public function __construct(string $storage)
+    public function __construct(string $storage, int $_file_size_limit)
     {
         $this->_upload_folder = $storage.'/'.$_SESSION['user']['id'].'-'.$_SESSION['user']['login'];
+        $this->_file_size_limit = $_file_size_limit;
     }
 
     /**

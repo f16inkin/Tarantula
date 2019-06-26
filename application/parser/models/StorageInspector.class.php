@@ -9,8 +9,6 @@
 namespace application\parser\models;
 
 
-use application\parser\interfaces\StorageChecker;
-
 class StorageInspector
 {
     private $_files_per_page;
@@ -60,20 +58,6 @@ class StorageInspector
     }
 
     /**
-     * Метод не используется в цикле. А значит достаточно разового создания обработчика файлов по нужде его
-     * использования. В конструкторе объект XmlReportsHandler потому и не создается. В метод аргументом он тоже
-     * не передается через интерфейс, потому что
-     * ---------------------------------------------------------------------------------------------------------
-     * @param int $start_file - начальный файл
-     * @param int $quantity - количесвто подгружаемых файлов
-     * @return array может быть толькоодин обработчик xml отчетов
-     */
-    public function scanStorage(int $start_file, int $quantity) : array {
-        $files = (new XmlReportsHandler($this->_storage))->loadXmlPage($start_file, $quantity);
-        return $files;
-    }
-
-    /**
      * Метод вернет подсчитаное количество файлов находящихся в хранилище
      * ------------------------------------------------------------------
      * @return int
@@ -100,61 +84,20 @@ class StorageInspector
      * @return array
      */
     public function loadPage(int $current_page) : array {
-        //Вычисляю первый файл на загружаемой странице
-        $startFile = ($current_page - 1) * $this->_files_per_page;
-        //Получаю файлы из хранилища в массив
-        $page = $this->scanStorage($startFile, $this->_files_per_page);
+        $page = (new XmlReportsHandler($this->_storage))->loadXmlPage($current_page, $this->_files_per_page);
         return $page;
     }
 
     /**
      * Метод получает файлы которые нужно подгрузить. Расчет происходит исходя из количества удаляемых файлов и текущей
-     * страницы, с которой происодит удаление
+     * страницы, с которой происходит удаление
      * ----------------------------------------------------------------------------------------------------------------
      * @param int $quantity - количество удаленных файлов
      * @param int $current_page - страница с которой удалялись файлы
      * @return array
      */
-    public function loadFiles(int $current_page, int $quantity, int $pages_count) : array {
-        $startFile = ($current_page - 1) * $this->_files_per_page;
-        /**
-         * Здесь уже идет подгрузка страницы после того как файлы были удалены.
-         * Теперь изходя из количества удаленных файлов $quantity, я должен определить подгружаемые файлы.
-         * Это $quantity последних
-         */
-        $loadedFiles = [];
-        $page = $this->scanStorage($startFile, $this->_files_per_page);
-        $last_page = $pages_count; //Номер последней страницы
-        //Если страница последняя
-        if ($current_page === $last_page){
-            //Если удаляются все файлы на странице
-            if (empty($page)){
-                $nextPageNumber = $current_page-1;
-                //Если страница не первая
-                if ($nextPageNumber > 0){
-                    $loadedFiles['data'] = $this->scanStorage($startFile-$this->_files_per_page, $this->_files_per_page);; //Данных быть не может
-                    $loadedFiles['page'] = $nextPageNumber; //Следующая страница
-                    $loadedFiles['build'] = true; //Перестраиваем навигатор
-                }
-                //Если страница первая, но и последняя
-                else{
-                    $loadedFiles['data'] = [];
-                    $loadedFiles['page'] = $nextPageNumber; //Следующая страница
-                    $loadedFiles['build'] = true; //Перестраиваем навигатор
-                }
-            }
-            //Если удаляются не все файлы со страницы
-            else{
-                $loadedFiles['page'] = $current_page; //Остается текущая страница
-                $loadedFiles['build'] = false;  //Навигатор не перестраивается
-            }
-        }
-        else{
-            $loadedFiles['data'] = array_slice($page, -$quantity);
-            $loadedFiles['page'] = $current_page; //Остается текущая страница
-            $loadedFiles['build'] = true;  //Навигатор не перестраивается
-        }
-        return $loadedFiles;
+    public function loadFiles(int $current_page, int $deleted_quantity) : array {
+
     }
 
     /**

@@ -19,7 +19,7 @@ class ControllerReportsUploader extends ControllerParserBase
     public function __construct()
     {
         parent::__construct();
-        $this->_reports_uploader = new ReportsUploader($this->_settings->getStorage());
+        $this->_reports_uploader = new ReportsUploader($this->_settings->getStorage(), $this->_settings->getUploadFileMaxSize());
     }
 
     /**

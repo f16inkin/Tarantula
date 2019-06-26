@@ -64,9 +64,14 @@
             <div class="alert alert-primary" role="alert">
                 В директории есть файлы. Файл(ов): <b><?=$content['files']['files_count'];?> / </b>Лимит разовой обработки: <b><?=$content['files']['files_limit'];?></b>
             </div>
+            <div class="alert alert-warning" role="alert">
+                Лимит разовой загрузки состоявляет <b><?=$content['upload_limit'];?> файл(ов).</b>
+                Максимальный размер загружаемого файла равен: <b><?=$content['max_file_size']/1000;?> Кб.</b>
+            </div>
         <?php else: ?>
             <div class="alert alert-danger" role="alert">
                 В директории отсутствуют файлы. Лимит разовой загрузки состоявляет <b><?=$content['upload_limit'];?> файл(ов)</b>
+                Максимальный размер загружаемого файла равен: <b><?=$content['max_file_size']/1000;?> Кб.</b>
             </div>
         <?php endif; ?>
     </div>
