@@ -85,6 +85,71 @@ class ControllerStorageInspector extends ControllerParserBase
      * Удаляет файлы из пользовательской директории. Если в директории еще остались файлы, то подгружает их.
      */
     public function actionDisplaceFiles(){
+        $files = $_POST['file_names'];
+        //Если известны удаляемые файлы
+        if (!empty($files)){
+            $pagesCountBefore = $this->_inspector->getPagesCount();
+            $currentPage = $_POST['current_page'];
+            $deleted_quantity = $_POST['quantity'];
+            //Вычисляю файлы которые нужно загрузить на страницу
+            $loadedFiles = $this->_inspector->loadFiles($currentPage, $deleted_quantity);
+            $loadedFiles['build'] = false;
+            $data = null;//$loadedFiles['data'];
+            //Если все файлы успешно удалены с хранилища
+            if ($this->_inspector->deleteFiles($this->_settings->getStorage(), $files)){
+                //Определяю количество страниц после удаления и в случае если их стало меньще посылаю маркер о том,
+                // что нужно перегрузить навигатор
+                $pagesCountAfter = $this->_inspector->getPagesCount();
+                if ($pagesCountAfter < $pagesCountBefore){
+                    $loadedFiles['build'] = true;
+                }
+                //------------------------------------------------------------------------------------------------
+                $sessionHandler = new XmlSessionsSectionHandler();
+                $i = 0;
+                if (isset($loadedFiles['data'])){
+                    foreach ($loadedFiles['data'] as $file){
+                        $i ++;
+                        //Важно проверить наличии SXE, иначе если файл битый или некорректный будет выбрасывать ошибку
+                        if (isset($file['simpleXmlElement'])){
+                            $data[$i]['session'] = $sessionHandler->get($file['simpleXmlElement']);
+                            $data[$i]['session']['Status'] = 'correct';
+                        }
+                        else{
+                            $data[$i]['session'] = null;
+                            $data[$i]['session']['Status'] = 'incorrect';
+                        }
+                        $data[$i]['file_name'] = $file['file_name'];
+                    }
+
+                }
+                /**
+                 * Загрузка
+                 */
+                $filesCount = $this->_inspector->getFilesCount();
+                $filesLimit = $this->_settings->getFilesLimit();
+                $content['status'] = 'success';
+                $content['message'] = 'Страница загружена';
+                $content['page_data'] = $data;
+                $content['files_limit'] = $filesLimit;
+                $content['files_count'] = $filesCount;
+                $content['page'] = $loadedFiles['page'];
+                $content['build'] = $loadedFiles['build'];
+            }
+            /**
+             * Если файлы удалить не удалось, знач
+             */
+            else{
+                //Примерный вид ответа
+                $content['status'] = 'fail';
+                $content['message'] = 'Не удалось удалить файлы';
+            }
+        }else{
+            //Примерный вид ответа
+            $content['status'] = 'fail';
+            $content['message'] = 'Ошибка при обработке хранилища. Файлы не найдены';
+        }
+        //В итоге верну такой ответ в виде JSON
+        echo json_encode($content);
 
     }
 }

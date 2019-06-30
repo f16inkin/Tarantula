@@ -61,6 +61,10 @@ class XmlTanksSectionHandler extends ModelParserBase implements iXmlHandler
             $sessionData[$tankNum]['TankNum'] = $tankNum;
             $sessionData[$tankNum]['StartFuelVolume'] = str_replace(',', '.', (string)$item['StartFuelVolume']);
             $sessionData[$tankNum]['EndFactVolume'] = str_replace(',', '.', (string)$item['EndFactVolume']);
+            /**
+             * EndFactVolume учавсвует в вычислениях, пэтому значение не может быть "".
+             */
+            $sessionData[$tankNum]['EndFactVolume'] = (!empty((string)$item['EndFactVolume']) ? (string)$item['EndFactVolume'] : 0);
             $sessionData[$tankNum]['EndDensity'] = (!empty((string)$item['EndDensity']) ? (string)$item['EndDensity'] : 0);
             $sessionData[$tankNum]['EndTemperature'] = (!empty((string)$item['EndTemperature']) ? (string)$item['EndTemperature'] : 0);
             $sessionData[$tankNum]['EndMass'] = (!empty((string)$item['EndMass']) ? (string)$item['EndMass'] : 0);

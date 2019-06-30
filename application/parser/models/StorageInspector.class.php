@@ -97,7 +97,56 @@ class StorageInspector
      * @return array
      */
     public function loadFiles(int $current_page, int $deleted_quantity) : array {
+        $xmlHandler = new XmlReportsHandler($this->_storage);
+        $files = $xmlHandler->scanStorage();
+        $stack = array_chunk($files, $this->_files_per_page);
+        /**
+         * Ключи для формирования новых индексов массива в соответсвии со страницами
+         * $stack = [1 => [file1, file2, file3], 2 => [file4, file5, file6];
+         */
+        $keys = range(1, count($stack));
+        //Переиндексирую ключи
+        $stack = array_combine($keys, $stack);
+        //Нахожу последний инлекс в массиве равный последней странице
+        end($stack);
+        $lastPage = key($stack);
+        if ($current_page == $lastPage){
+            //Если количество удаляемых файлов = количеству имеющихся на странице / полная очистка страницы
+            if ($deleted_quantity == count($stack[$lastPage])){
+                $nextPageNumber = $current_page-1;
+                //И если страница не первая, так как 1 - 1 = 0
+                if ($nextPageNumber > 0){
+                    $next_page = $stack[$nextPageNumber];
+                    $loadedFiles['data'] = array_slice($next_page, 0, count($next_page));
+                    $loadedFiles['page'] = $nextPageNumber;//
+                }else{
+                    $loadedFiles['page'] = 0;
+                }
+            }
+            //Если удаляются не все файлы со страницы, а лишь часть, то остаюсь на этой же странице
+            else{
+                $loadedFiles['page'] = $current_page;
+                $loadedFiles['data'] = null;
+            }
+        }
+        //Удаление с любой не первой и последней страницы
+        else{
+            $previousPage = $stack[$current_page+1];
+            //Если осталось на предэдущей странице 3 файла, а я удаляю 4, тоесть больше чем может подгрузиться.
+            $loadedFiles['data'] = array_slice($previousPage, 0, $deleted_quantity);
+            $loadedFiles['page'] = $current_page;
+        }
+        /**
+         * Формирую массив с данными
+         */
+        if (isset($loadedFiles['data'])){
+            $loadedFiles['data'] = $xmlHandler->loadXmlFiles($loadedFiles['data']);
+        }
+        else{
+            $loadedFiles['data'] = null;
+        }
 
+        return $loadedFiles;
     }
 
     /**

@@ -235,11 +235,11 @@ const deleteFiles = function (){
                 });
             });
             res = JSON.parse(response);
-            let files = res.data.uploaded_files.data;
-            let files_limit = res.data.files_limit;
-            let files_count = res.data.files_count;
-            let page = res.data.uploaded_files.page;
-            let build_pagination = res.data.uploaded_files.build;
+            let files = res.page_data;
+            let files_limit = res.files_limit;
+            let files_count = res.files_count;
+            let page = res.page;
+            let build_pagination = res.build;
             const loadFiles = function () {
                 filesLoad(files, files_count, files_limit);
             };
@@ -249,7 +249,6 @@ const deleteFiles = function (){
             if (build_pagination){
                 buildPagination(page);
             }
-
             //Снимаю главный чекбокс
             $('#check_start').prop('checked', false);
         });
@@ -478,6 +477,7 @@ function reportsUpload() {
     let form = $('#upload-reports-form');
     let formData = new FormData();
     let input = form.find('input');
+    let button = form.find('button');
     let files_container = parser_content.find($('#files_container'));
     /**
      * Если загружаются файлы, то каждый загружается в массв
@@ -512,7 +512,7 @@ function reportsUpload() {
          */
         beforeSend: function () {
             //input.prop('disabled', true);
-            //button.attr('disabled', true);
+            button.attr('disabled', true);
         },
         /**
          * При удачном выполнении ajax запроса, добавляю кнопки Обработать и Загрузить в навигацию
@@ -547,7 +547,7 @@ function reportsUpload() {
          */
         complete: function () {
             //input.prop('disabled', false);
-            //button.attr('disabled', false);
+            button.attr('disabled', false);
             //input.val('');
         }
     });

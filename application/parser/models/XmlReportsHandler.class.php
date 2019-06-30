@@ -40,8 +40,8 @@ class XmlReportsHandler extends Model
         $i = 0;
         foreach ($files as $file) {
             $i++;
-            $simpleXmlElements[$i]['file_name'] = $file[$i];
-            $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_folder.'/'.$file[$i]) ? simplexml_load_file($this->_folder.'/'.$file[$i]) : null;
+            $simpleXmlElements[$i]['file_name'] = $file;
+            $simpleXmlElements[$i]['simpleXmlElement'] = simplexml_load_file($this->_folder.'/'.$file) ? simplexml_load_file($this->_folder.'/'.$file) : null;
         }
         libxml_use_internal_errors(false);
         return $simpleXmlElements;
