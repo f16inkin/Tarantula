@@ -545,7 +545,7 @@ function buildPagination(page) {
             //Первая страница в стеке кнопок навигации
             let first_page = $("li.page-button").first().text();
             //Последняя страница в данный момент
-            let last_page = +first_page + PAGES_LIMIT;//$("li.page-button").last().text();
+            let last_page = +first_page + PAGES_LIMIT - 1;//$("li.page-button").last().text();
             //Начальаня точка навигации
             //Кнопки
             let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Previous</a></li>`;
@@ -554,8 +554,10 @@ function buildPagination(page) {
             if (last_page > response){
                 last_page = response;
             }
+            //Маленький фикс, проблем с определением количества страниц
             if (first_page == ''){
                 first_page = 1;
+                last_page = PAGES_LIMIT;
             }
             if (first_page > response){
                 first_page = last_page - PAGES_LIMIT + 1;
@@ -574,6 +576,9 @@ function buildPagination(page) {
                 $('#pagination-list').prepend(previous_button);
             }
             $('#page_' + page).addClass('active');
+            console.log(first_page + ' first_page');
+            console.log(last_page + ' last_page');
+            console.log('-------------------------');
         }
     });
 }
