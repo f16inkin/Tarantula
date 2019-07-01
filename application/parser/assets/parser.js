@@ -457,7 +457,6 @@ parser_content.on('click', '.next-pages-button', function () {
     });
     request.done(function (response) {
         //Текущая выбораннаая страница
-        let current_page = $('li.active').text();
         let first_page = $("li.page-button").first().text();
         //Последняя страница в данный момент
         let last_page = $("li.page-button").last().text();
@@ -465,10 +464,10 @@ parser_content.on('click', '.next-pages-button', function () {
         let start_page = +last_page + 1;
         //Конечная кнопка навигации
         let end_page = +last_page + PAGES_LIMIT;
-        console.log(first_page);
-        console.log(last_page);
-        console.log(start_page);
-        console.log(end_page);
+        if (end_page > response){
+            end_page = response;
+        }
+        //Кнопки
         let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Previous</a></li>`;
         let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Next</a></li>`;
         $('#pagination-list').empty();
@@ -476,11 +475,20 @@ parser_content.on('click', '.next-pages-button', function () {
             let line = `<li id='page_${i}' class='page-item page-button'><a class='page-link'>${i}</a></li>`;
             $('#pagination-list').append(line);
         }
-        if (response > last_page){
+        let marker_page = $("li.page-button").first().text();
+        if (response > end_page){
             $('#pagination-list').append(next_button);
+        }
+        if (marker_page > PAGES_LIMIT){
+            $('#pagination-list').prepend(previous_button);
         }
         $('#page_' + start_page).addClass('active');
         loadPage(start_page);
+        console.log(last_page + ' last_page');
+        console.log(start_page + ' start_page');
+        console.log(end_page + ' end_page');
+        console.log(response + ' response');
+        console.log('-----------------------------');
     });
 
 });
@@ -497,29 +505,45 @@ function buildPagination(page) {
         cache: false
     });
     request.done(function (response) {
-        //
-        let limited_page = 0;
-        let previous_button = `<li class="page-item disabled"><a class="page-link previous-pages-button" tabindex="-1">Previous</a></li>`;
-        let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Next</a></li>`;
-        let pagination_list = $('ul#pagination-list');
-        //Очистить
-        pagination_list.empty();
-        //Если количество страниц больше допустимого для разового отображения
-        if (response > PAGES_LIMIT){
-            limited_page = PAGES_LIMIT;
+        if (response > 0){
+            //Первая страница в стеке кнопок навигации
+            let first_page = $("li.page-button").first().text();
+            //Последняя страница в данный момент
+            let last_page = +first_page + PAGES_LIMIT;//$("li.page-button").last().text();
+            //Начальаня точка навигации
+            //Кнопки
+            let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Previous</a></li>`;
+            let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Next</a></li>`;
+            //Если конечная кнопка навигации указывает на страницу, большую чем есть на самом деле
+            if (last_page > response){
+                last_page = response;
+            }
+            if (first_page == ''){
+                first_page = 1;
+            }
+            if (first_page > response){
+                first_page = last_page - PAGES_LIMIT + 1;
+            }
+            //Зачистка пагинации
+            $('#pagination-list').empty();
 
-            pagination_list.append(next_button);
+            for (let i = first_page; i < +last_page + 1; i++) {
+                let line = `<li id='page_${i}' class='page-item page-button'><a class='page-link'>${i}</a></li>`;
+                $('#pagination-list').append(line);
+            }
+            if (response > last_page){
+                $('#pagination-list').append(next_button);
+            }
+            if (first_page > PAGES_LIMIT){
+                $('#pagination-list').prepend(previous_button);
+            }
+            $('#page_' + page).addClass('active');
+            console.log(page + ' page');
+            console.log(first_page + ' first_page');
+            console.log(last_page + ' last_page');
+            console.log(response + ' response');
+            console.log('-----------------------------');
         }
-        else {
-            limited_page = response + 1;
-        }
-        //Добавляю секцию куда выгружу контент
-        for (let i = 1; i <= limited_page; i++) {
-            let line = `<li id='page_${i}' class='page-item page-button'><a class='page-link'>${i}</a></li>`;
-            $('#pagination-list').append(line);
-        }
-        pagination_list.prepend(previous_button);
-        $('#page_'+page).addClass('active');
     });
 }
 
