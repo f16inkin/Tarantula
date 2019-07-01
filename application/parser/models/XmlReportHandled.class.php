@@ -13,6 +13,7 @@ class XmlReportHandled
 {
     private $_sessions = [];    //номер смены
     private $_tanks = [];       //информация по емкостям
+    private $_hoses = [];       //информация по емкостям
     private $_outcomes = [];    //информация по отпущенному топливу
     private $_incomes = [];     //информация по принятому топливу
 

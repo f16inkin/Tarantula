@@ -15,12 +15,25 @@ class ModelParserBase extends Model
 {
     protected $_tanksFuelTypes = [];
     protected $_subdivision_id;
+    protected $_payments = [];
 
     public function __construct(int $subdivision_id)
     {
         parent::__construct();
         $this->_tanksFuelTypes = $this->getTanksFuelType($subdivision_id);
         $this->_subdivision_id = $subdivision_id;
+        $this->_payments = [
+            'Наличные',
+            'Ведомость',
+            'Без скидки',
+            'Банк.карта',
+            'Карты ТОПДОН',
+            'Дисконтная карта',
+            'Со скидкой',
+            'Переливы',
+            'РН-Карта',
+            'Тех. прокачка',
+        ];
     }
 
     /**

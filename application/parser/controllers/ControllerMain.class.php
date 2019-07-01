@@ -94,6 +94,8 @@ class ControllerMain extends ControllerParserBase
             $handled = $xmlSectionHandlesFactory->handle($SXE);
             $content['session'] = $handled->_sessions;
             $content['tanks'] = $handled->_tanks;
+            $content['hoses'] = $handled->_hoses;
+            $content['outcomes'] = $handled->_outcomes;
             $this->loadPage('/parser/ajax/successed/main/step-2/correct.page', $content);
         }else{
             $this->loadPage('/parser/ajax/successed/main/step-2/incorrect.page');

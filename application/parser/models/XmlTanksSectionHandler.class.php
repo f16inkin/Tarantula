@@ -33,18 +33,6 @@ class XmlTanksSectionHandler extends ModelParserBase implements iXmlHandler
      * @return mixed
      */
     public function get(SimpleXMLElement $simpleXMLElement) : array {
-        //if (!isset($simpleXmlElement)){
-        //    return null;
-        //}
-        /**
-         * Объявляю массив в который будут собираться распарсенные данные из XML отчета
-         * arrXml= [SessionInformation = [], SessionData = []]:
-         * SessionInformation = [Number, StartDateTime, EndDateTime, Operator] - информация о смене.
-         * SessionData = [TankNum, StartFuelVolume, EndFactVolume, EndDensity, EndTemperature, EndMass, Fuel, Outcome,
-         * Income, EndFuelVolume, Overage] - информация о топливе за смену.
-         */
-        $arrXml = [];
-
         /*
          * Собираю массив из данных которые я могу считать из XML^
          * - Номер емкости,
@@ -132,14 +120,13 @@ class XmlTanksSectionHandler extends ModelParserBase implements iXmlHandler
         //Шаг №2
         foreach ($sessionData as $item){
             $TankNum = (string)$item['TankNum'];
-            $sessionData[$TankNum]['Overage'] = round(($item['EndFactVolume'] - $item['EndFuelVolume']),2);
+            $EndFactVolume = str_replace(',', '.', (string) $item['EndFactVolume']);
+            $sessionData[$TankNum]['Overage'] = round(($EndFactVolume - $item['EndFuelVolume']),2);
         }
         /*
-         * Собираю все в выходной массив.
          * Возвращаю данные если все прошло удачно.
          */
-        $arrXml = $sessionData;
-        return $arrXml;
+        return $sessionData;
     }
 
     /**
