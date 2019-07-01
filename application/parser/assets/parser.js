@@ -456,39 +456,75 @@ parser_content.on('click', '.next-pages-button', function () {
         cache: false
     });
     request.done(function (response) {
-        //Текущая выбораннаая страница
-        let first_page = $("li.page-button").first().text();
         //Последняя страница в данный момент
-        let last_page = $("li.page-button").last().text();
+        let page = $("li.page-button").last().text();
         //Начальаня точка навигации
-        let start_page = +last_page + 1;
+        let first_page = +page + 1;
         //Конечная кнопка навигации
-        let end_page = +last_page + PAGES_LIMIT;
-        if (end_page > response){
-            end_page = response;
-        }
+        let last_page = +page + PAGES_LIMIT;
+        let pagination_list = $('#pagination-list');
         //Кнопки
         let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Previous</a></li>`;
         let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Next</a></li>`;
-        $('#pagination-list').empty();
-        for (let i = start_page; i <= end_page; i++) {
+        if (last_page > response){
+            last_page = response;
+        }
+        //Полная зачитска навигатора, для перерисовки нового
+        pagination_list.empty();
+        //Построение новго навигатора
+        for (let i = first_page; i <= last_page; i++) {
             let line = `<li id='page_${i}' class='page-item page-button'><a class='page-link'>${i}</a></li>`;
-            $('#pagination-list').append(line);
+            pagination_list.append(line);
         }
-        let marker_page = $("li.page-button").first().text();
-        if (response > end_page){
-            $('#pagination-list').append(next_button);
+        //let marker_page = $("li.page-button").first().text();
+        if (response > last_page){
+            pagination_list.append(next_button);
         }
-        if (marker_page > PAGES_LIMIT){
-            $('#pagination-list').prepend(previous_button);
+        if (first_page > PAGES_LIMIT){
+            pagination_list.prepend(previous_button);
         }
-        $('#page_' + start_page).addClass('active');
-        loadPage(start_page);
-        console.log(last_page + ' last_page');
-        console.log(start_page + ' start_page');
-        console.log(end_page + ' end_page');
-        console.log(response + ' response');
-        console.log('-----------------------------');
+        $('#page_' + first_page).addClass('active');
+        loadPage(first_page);
+    });
+
+});
+
+parser_content.on('click', '.previous-pages-button', function () {
+    let request = $.ajax({
+        type: "POST",
+        url: "/parser/inspector/get-pages-count",
+        cache: false
+    });
+    request.done(function (response) {
+        //Последняя страница в данный момент
+        let page = $("li.page-button").first().text();
+        //Начальаня точка навигации
+        let first_page = +page - PAGES_LIMIT;
+        //Конечная кнопка навигации
+        let last_page = +page - 1;
+        let pagination_list = $('#pagination-list');
+        //Кнопки
+        let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Previous</a></li>`;
+        let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Next</a></li>`;
+        if (last_page > response){
+            last_page = response;
+        }
+        //Полная зачитска навигатора, для перерисовки нового
+        pagination_list.empty();
+        //Построение новго навигатора
+        for (let i = first_page; i <= last_page; i++) {
+            let line = `<li id='page_${i}' class='page-item page-button'><a class='page-link'>${i}</a></li>`;
+            pagination_list.append(line);
+        }
+        //let marker_page = $("li.page-button").first().text();
+        if (response > last_page){
+            pagination_list.append(next_button);
+        }
+        if (first_page > PAGES_LIMIT){
+            pagination_list.prepend(previous_button);
+        }
+        $('#page_' + first_page).addClass('active');
+        loadPage(first_page);
     });
 
 });
@@ -538,11 +574,6 @@ function buildPagination(page) {
                 $('#pagination-list').prepend(previous_button);
             }
             $('#page_' + page).addClass('active');
-            console.log(page + ' page');
-            console.log(first_page + ' first_page');
-            console.log(last_page + ' last_page');
-            console.log(response + ' response');
-            console.log('-----------------------------');
         }
     });
 }
