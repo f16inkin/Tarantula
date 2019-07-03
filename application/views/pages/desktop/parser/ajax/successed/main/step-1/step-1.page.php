@@ -50,12 +50,12 @@
     </div>
 </form>
 <div id="files_container">
-    <div class='single_file' title="CloseSession_2019-05-03_09-00-59.xml">
+    <!--<div class='single_file' title="CloseSession_2019-05-03_09-00-59.xml">
         <i class="fa fa-folder" ></i>CloseSession_2019-05-03_09-00-59.xml
     </div>
     <div class='single_file'>
         <i class="fa fa-folder"></i>c.txt
-    </div>
+    </div>-->
 </div>
 <div id="parser-workplace">
     <div style="text-align: center;">Шаг №1. Загрузка файлов.</div>

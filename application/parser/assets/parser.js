@@ -106,7 +106,7 @@ const showMainData = function () {
         //Добавляю секцию куда выгружу контент
         parser_content.html(response);
         //Устанавливаю заголовок
-        title.text('Parser');
+        title.text('Parser XML');
     });
 };
 
@@ -464,8 +464,8 @@ parser_content.on('click', '.next-pages-button', function () {
         let last_page = +page + PAGES_LIMIT;
         let pagination_list = $('#pagination-list');
         //Кнопки
-        let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Previous</a></li>`;
-        let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Next</a></li>`;
+        let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Предыдущая</a></li>`;
+        let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Следующая</a></li>`;
         if (last_page > response){
             last_page = response;
         }
@@ -504,8 +504,8 @@ parser_content.on('click', '.previous-pages-button', function () {
         let last_page = +page - 1;
         let pagination_list = $('#pagination-list');
         //Кнопки
-        let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Previous</a></li>`;
-        let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Next</a></li>`;
+        let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Предыдущая</a></li>`;
+        let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Следующая</a></li>`;
         if (last_page > response){
             last_page = response;
         }
@@ -548,8 +548,8 @@ function buildPagination(page) {
             let last_page = +first_page + PAGES_LIMIT - 1;//$("li.page-button").last().text();
             //Начальаня точка навигации
             //Кнопки
-            let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Previous</a></li>`;
-            let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Next</a></li>`;
+            let previous_button = `<li class="page-item"><a class="page-link previous-pages-button" tabindex="-1">Предыдущая</a></li>`;
+            let next_button = `<li class="page-item"><a class="page-link next-pages-button" tabindex="-1">Следующая</a></li>`;
             //Если конечная кнопка навигации указывает на страницу, большую чем есть на самом деле
             if (last_page > response){
                 last_page = response;
@@ -712,7 +712,7 @@ function fillFileContainer() {
        let file_extension = file_name.split(".").pop();
        let single_file =
            `<div class='single_file' title='${file_name}'>
-                <i class="fa fa-folder"></i> ${file_name}
+                <i class="fa fa-file"></i> ${file_name}
             </div>`;
        files_place.append(single_file);
     });

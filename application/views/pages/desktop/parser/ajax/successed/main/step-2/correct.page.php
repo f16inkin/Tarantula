@@ -2,23 +2,31 @@
 ?>
 <div id="accordion">
     <!--Смены-->
-    <div style="text-align: center;"><h6>Смена</h6></div>
-    <div>
-        <p><?=$content['session']['Number'];?></p>
-        <p><?=$content['session']['StartDateTime'];?></p>
-        <p><?=$content['session']['EndDateTime'];?></p>
-        <p><?=$content['session']['Operator'];?></p>
+    <div class="session-section">
+        <div style="text-align: center;"><h6>Смена № <?=$content['session']['Number'];?></h6></div>
+        <div>
+            <div><b class="fa fa-clock"> Начата:</b> <?=$content['session']['StartDateTime'];?></div>
+            <div><b class="fa fa-clock"> Окончена:</b> <?=$content['session']['EndDateTime'];?></div>
+            <div><b class="fa fa-user"> Оператор:</b> <?=$content['session']['Operator'];?></div>
+        </div>
     </div>
     <!--Смены-->
     <!--------------------------------------------------------------------------------------------------------------------->
     <!--Емкости-->
-    <div class="card">
+    <div class="card" style="margin-bottom: 3px;">
         <div class="card-header" id="headingOne">
-            <h6 class="mb-0">
+            <h5 class="mb-0">
                 <button class="btn btn-outline-dark" style="width: 100%" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                    <i class="fa fa-fill-drip"></i> Емкости
+                    <div class="row">
+                        <div class="col-1">
+                            <i class="fa fa-check-circle"></i>
+                        </div>
+                        <div class="col-10">
+                            <i class="fa fa-fill-drip"> Емкости</i>
+                        </div>
+                    </div>
                 </button>
-            </h6>
+            </h5>
         </div>
         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
             <div class="card-body">
@@ -62,15 +70,21 @@
     <!--Емкости-->
     <!--------------------------------------------------------------------------------------------------------------------->
     <!--Счетчики рукавов-->
-    <div class="card">
+    <div class="card" style="margin-bottom: 3px;">
         <div class="card-header" id="headingTwo">
             <h5 class="mb-0">
-                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                    <div style="text-align: center;"><h6>Счетчики рукавов</h6></div>
+                <button class="btn btn-outline-dark" style="width: 100%" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                    <div class="row">
+                        <div class="col-1">
+                            <i class="fa fa-check-circle"></i>
+                        </div>
+                        <div class="col-10">
+                            <i class="fa fa-tachometer-alt"> Счетчики рукавов</i>
+                        </div>
+                    </div>
                 </button>
             </h5>
         </div>
-
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
             <div class="card-body">
                 <table cellpadding="1" cellspacing="1" border="0" class="table-mine  full-width box-shadow--2dp">
@@ -103,11 +117,19 @@
     <!--Счетчики рукавов-->
     <!--------------------------------------------------------------------------------------------------------------------->
     <!--Отпуск-->
-    <div class="card">
+    <?php if(!empty($content['outcomes'])) :?>
+    <div class="card" style="margin-bottom: 3px;">
         <div class="card-header" id="headingThree">
             <h5 class="mb-0">
-                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-                    <div style="text-align: center;"><h6>Отпуск топлива</h6></div>
+                <button class="btn btn-outline-dark" style="width: 100%" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                    <div class="row">
+                        <div class="col-1">
+                            <i class="fa fa-check-circle"></i>
+                        </div>
+                        <div class="col-10">
+                            <i class="fa fa-gas-pump"> Отпуск топлива</i>
+                        </div>
+                    </div>
                 </button>
             </h5>
         </div>
@@ -120,7 +142,6 @@
                     <li class="nav-item">
                         <a class="nav-link" id="pills-volume-tab" data-toggle="pill" href="#pills-volume" role="tab" aria-controls="pills-volume" aria-selected="false">Отпуск топлива литры</a>
                     </li>
-
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane show active" id="pills-amount" role="tabpanel" aria-labelledby="pills-amount-tab">
@@ -171,6 +192,56 @@
             </div>
             </div>
         </div>
+    <?php endif; ?>
     <!--Отпуск-->
+    <!--------------------------------------------------------------------------------------------------------------------->
+    <!--Принято-->
+    <?php if(!empty($content['incomes'])) :?>
+    <div class="card" style="margin-bottom: 3px;">
+        <div class="card-header" id="headingFour">
+            <h5 class="mb-0">
+                <button class="btn btn-outline-dark" style="width: 100%" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                    <div class="row">
+                        <div class="col-1">
+                            <i class="fa fa-check-circle"></i>
+                        </div>
+                        <div class="col-10">
+                            <i class="fa fa-truck-moving"> Принято топлива</i>
+                        </div>
+                    </div>
+                </button>
+            </h5>
+        </div>
+        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+            <div class="card-body">
+                <table cellpadding="1" cellspacing="1" border="0" class="table-mine  full-width box-shadow--2dp">
+                    <thead>
+                    <tr class="tr-table-header">
+                        <th>Емкость</th>
+                        <th>Топливо</th>
+                        <th>Плотность</th>
+                        <th>Масса</th>
+                        <th>Объем</th>
+                        <th>Поставщик</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($content['incomes'] as $income) :?>
+                        <tr class="tr-table-content">
+                            <td><?=$income['TankNum']; ?></td>
+                            <td><?=$income['FuelName']; ?></td>
+                            <td><?=$income['Density']; ?></td>
+                            <td><?=$income['Mass']; ?></td>
+                            <td><?=$income['Volume']; ?></td>
+                            <td><?=$income['PartnerName']; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+    <!--Принято-->
     <!--------------------------------------------------------------------------------------------------------------------->
 </div>

@@ -186,3 +186,14 @@ input[type="file"] {
     padding: 6px 12px;
     cursor: pointer;
 }
+/*----------------------------------------------------------------------*/
+                            /*Xml Session Card*/
+/*----------------------------------------------------------------------*/
+.session-section{
+    width: 100%;
+    border: solid 1px;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    border-color: #dfdfdf;
+}

@@ -26,10 +26,12 @@ class XmlSectionHandlersFactory
 
     public function __construct(int $_subdivision_id)
     {
+        //Можно не наследоваться от ModelParserBase, достаточно реализовывать интерфейс
         $this->_handlers['sessions'] = new XmlSessionsSectionHandler();
         $this->_handlers['tanks'] = new XmlTanksSectionHandler($_subdivision_id);
         $this->_handlers['hoses'] = new XmlHosesSectionHandler($_subdivision_id);
         $this->_handlers['outcomes'] = new XmlOutcomesByRetailSectionHandler($_subdivision_id);
+        $this->_handlers['incomes'] = new XmlIncomesByDischargeSectionHandler($_subdivision_id);
 
     }
 

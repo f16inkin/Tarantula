@@ -96,6 +96,7 @@ class ControllerMain extends ControllerParserBase
             $content['tanks'] = $handled->_tanks;
             $content['hoses'] = $handled->_hoses;
             $content['outcomes'] = $handled->_outcomes;
+            $content['incomes'] = $handled->_incomes;
             $this->loadPage('/parser/ajax/successed/main/step-2/correct.page', $content);
         }else{
             $this->loadPage('/parser/ajax/successed/main/step-2/incorrect.page');
